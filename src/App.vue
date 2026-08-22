@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import SiteFooter from '@/components/SiteFooter.vue'
+import SiteHeader from '@/components/SiteHeader.vue'
 import { themeToCssVariables, useActiveTheme } from '@/composables/theme'
 
 const themeStyle = themeToCssVariables(useActiveTheme())
@@ -6,32 +8,24 @@ const themeStyle = themeToCssVariables(useActiveTheme())
 
 <template>
   <div class="app-shell" :style="themeStyle">
-    <nav class="site-nav" aria-label="Main navigation">
-      <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/about">About Me</RouterLink>
-      <RouterLink to="/contact">Contact</RouterLink>
-    </nav>
+    <SiteHeader />
 
     <main class="site-main">
       <RouterView />
     </main>
+
+    <SiteFooter />
   </div>
 </template>
 
 <style scoped>
-.site-nav {
+.app-shell {
   display: flex;
-  gap: 1.5rem;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.site-nav a {
-  text-decoration: none;
-  font-weight: 500;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .site-main {
-  min-height: calc(100vh - 4rem);
+  flex: 1;
 }
 </style>
