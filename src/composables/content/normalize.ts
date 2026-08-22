@@ -10,7 +10,6 @@ import type {
   AboutPageContent,
   ActorGalleryImage,
   ActorPageContent,
-  AwardEntry,
   ContactPageContent,
   HeadshotEntry,
   HomePageContent,
@@ -110,6 +109,7 @@ export function normalizeHomePage(raw: unknown): HomePageContent {
 export function normalizeAboutPage(raw: unknown): AboutPageContent {
   const source = isRecord(raw) ? raw : {}
   return {
+    aboutHeading: asTrimmedString(source.aboutHeading, DEFAULT_ABOUT_PAGE.aboutHeading),
     portraitImage: asOptionalTrimmedString(source.portraitImage),
     bioParagraphs:
       Array.isArray(source.bioParagraphs) && source.bioParagraphs.length > 0
@@ -122,6 +122,7 @@ export function normalizeAboutPage(raw: unknown): AboutPageContent {
 export function normalizeContactPage(raw: unknown): ContactPageContent {
   const source = isRecord(raw) ? raw : {}
   return {
+    contactHeading: asTrimmedString(source.contactHeading, DEFAULT_CONTACT_PAGE.contactHeading),
     email: typeof source.email === 'string' ? source.email.trim() : DEFAULT_CONTACT_PAGE.email,
     note: asOptionalTrimmedString(source.note),
   }
@@ -143,6 +144,9 @@ export function normalizeMusicianPage(raw: unknown): MusicianPageContent {
     intro: typeof source.intro === 'string' ? source.intro.trim() : DEFAULT_MUSICIAN_PAGE.intro,
     musicianHeading: asTrimmedString(source.musicianHeading, DEFAULT_MUSICIAN_PAGE.musicianHeading),
     awardsHeading: asTrimmedString(source.awardsHeading, DEFAULT_MUSICIAN_PAGE.awardsHeading),
+    awardsText: asOptionalTrimmedString(source.awardsText),
+    awardsFirstImage: asOptionalTrimmedString(source.awardsFirstImage),
+    awardsSecondImage: asOptionalTrimmedString(source.awardsSecondImage),
     highlightsHeading: asTrimmedString(
       source.highlightsHeading,
       DEFAULT_MUSICIAN_PAGE.highlightsHeading,
@@ -177,16 +181,6 @@ export function normalizeActorGalleryImage(raw: unknown, slug: string): ActorGal
     ...entryBase(source, slug),
     image: asOptionalTrimmedString(source.image),
     title: titleFrom(source, slug.trim()),
-  }
-}
-
-export function normalizeAward(raw: unknown, slug: string): AwardEntry {
-  const source = isRecord(raw) ? raw : {}
-  return {
-    ...entryBase(source, slug),
-    title: titleFrom(source, slug.trim()),
-    text: typeof source.text === 'string' ? source.text.trim() : '',
-    image: asOptionalTrimmedString(source.image),
   }
 }
 

@@ -19,12 +19,14 @@ export const DEFAULT_HOME_PAGE: HomePageContent = {
 }
 
 export const DEFAULT_ABOUT_PAGE: AboutPageContent = {
+  aboutHeading: 'About Me',
   portraitImage: undefined,
   bioParagraphs: [],
   statement: undefined,
 }
 
 export const DEFAULT_CONTACT_PAGE: ContactPageContent = {
+  contactHeading: 'Contact',
   email: '',
   note: undefined,
 }
@@ -40,6 +42,9 @@ export const DEFAULT_MUSICIAN_PAGE: MusicianPageContent = {
   intro: '',
   musicianHeading: 'Musician',
   awardsHeading: 'Awards',
+  awardsText: undefined,
+  awardsFirstImage: undefined,
+  awardsSecondImage: undefined,
   highlightsHeading: 'Highlights',
   projectsHeading: 'Original Projects',
   galleryHeading: 'Gallery',

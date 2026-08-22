@@ -5,7 +5,6 @@ import ImageLightbox from '@/components/ImageLightbox.vue'
 import type { LightboxImage } from '@/components/ImageLightbox.vue'
 import VideoEmbed from '@/components/VideoEmbed.vue'
 import {
-  useAwards,
   useHighlights,
   useMusicianGallery,
   useMusicianPage,
@@ -13,7 +12,6 @@ import {
 } from '@/composables/content'
 
 const page = useMusicianPage()
-const awards = useAwards()
 const highlights = useHighlights()
 const projects = useProjects()
 const gallery = useMusicianGallery()
@@ -46,11 +44,26 @@ function openLightbox(slug: string) {
 
     <section class="page musician-awards">
       <h2 class="musician-section-title">{{ page.awardsHeading }}</h2>
-      <article v-for="award in awards" :key="award.slug" class="award">
-        <img v-if="award.image" :src="award.image" :alt="award.title" class="award__image" />
-        <h3 class="award__title">{{ award.title }}</h3>
-        <p v-if="award.text" class="award__text">{{ award.text }}</p>
-      </article>
+      <p v-if="page.awardsText" class="musician-awards__text">{{ page.awardsText }}</p>
+      <div
+        v-if="page.awardsFirstImage || page.awardsSecondImage"
+        class="musician-awards__pictures"
+      >
+        <img
+          v-if="page.awardsFirstImage"
+          :src="page.awardsFirstImage"
+          alt=""
+          class="musician-awards__picture"
+        />
+        <div v-else class="musician-awards__fallback" aria-hidden="true"></div>
+        <img
+          v-if="page.awardsSecondImage"
+          :src="page.awardsSecondImage"
+          alt=""
+          class="musician-awards__picture"
+        />
+        <div v-else class="musician-awards__fallback" aria-hidden="true"></div>
+      </div>
     </section>
 
     <section class="page musician-highlights">
@@ -144,32 +157,29 @@ function openLightbox(slug: string) {
   text-align: center;
 }
 
-.award {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  align-items: center;
+.musician-awards__text {
   max-width: 44rem;
   margin: 0 auto;
   text-align: center;
 }
 
-.award__image {
+.musician-awards__pictures {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem 0.5rem;
+  width: 100%;
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+.musician-awards__picture,
+.musician-awards__fallback {
   display: block;
-  width: min(100%, 24rem);
-  aspect-ratio: 3 / 2;
+  width: 100%;
+  aspect-ratio: 3 / 4;
   object-fit: cover;
   border: 1px solid var(--color-border);
-}
-
-.award__title {
-  margin: 0;
-  font-family: var(--font-heading);
-  font-size: 1.4rem;
-}
-
-.award__text {
-  margin: 0;
+  background-color: var(--color-surface);
 }
 
 .musician-video {

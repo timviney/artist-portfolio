@@ -19,12 +19,14 @@ export interface HomePageContent {
 }
 
 export interface AboutPageContent {
+  aboutHeading: string
   portraitImage?: string
   bioParagraphs: string[]
   statement?: string
 }
 
 export interface ContactPageContent {
+  contactHeading: string
   email: string
   note?: string
 }
@@ -40,6 +42,9 @@ export interface MusicianPageContent {
   intro: string
   musicianHeading: string
   awardsHeading: string
+  awardsText?: string
+  awardsFirstImage?: string
+  awardsSecondImage?: string
   highlightsHeading: string
   projectsHeading: string
   galleryHeading: string
@@ -64,14 +69,6 @@ export interface ActorGalleryImage {
   slug: string
   image?: string
   title: string
-  order: number
-}
-
-export interface AwardEntry {
-  slug: string
-  title: string
-  text: string
-  image?: string
   order: number
 }
 

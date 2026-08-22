@@ -2,7 +2,6 @@ import type {
   AboutPageContent,
   ActorGalleryImage,
   ActorPageContent,
-  AwardEntry,
   ContactPageContent,
   HeadshotEntry,
   HomePageContent,
@@ -16,7 +15,6 @@ import {
   normalizeAboutPage,
   normalizeActorGalleryImage,
   normalizeActorPage,
-  normalizeAward,
   normalizeContactPage,
   normalizeHeadshot,
   normalizeHomePage,
@@ -38,7 +36,6 @@ const MUSICIAN_PATH = '/content/pages/musician.json'
 const ACTOR_VIDEOS_DIR = '/content/actor/videos/'
 const ACTOR_HEADSHOTS_DIR = '/content/actor/headshots/'
 const ACTOR_GALLERY_DIR = '/content/actor/gallery/'
-const MUSICIAN_AWARDS_DIR = '/content/musician/awards/'
 const MUSICIAN_HIGHLIGHTS_DIR = '/content/musician/highlights/'
 const MUSICIAN_PROJECTS_DIR = '/content/musician/projects/'
 const MUSICIAN_GALLERY_DIR = '/content/musician/gallery/'
@@ -104,10 +101,6 @@ export function useHeadshots(): HeadshotEntry[] {
 
 export function useActorGallery(): ActorGalleryImage[] {
   return loadEntries(ACTOR_GALLERY_DIR, normalizeActorGalleryImage)
-}
-
-export function useAwards(): AwardEntry[] {
-  return loadEntries(MUSICIAN_AWARDS_DIR, normalizeAward)
 }
 
 export function useHighlights(): VideoEntry[] {

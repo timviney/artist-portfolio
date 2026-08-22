@@ -13,7 +13,6 @@ import {
   normalizeAboutPage,
   normalizeActorGalleryImage,
   normalizeActorPage,
-  normalizeAward,
   normalizeContactPage,
   normalizeHeadshot,
   normalizeHomePage,
@@ -28,7 +27,6 @@ import {
   useActorGallery,
   useActorPage,
   useActorVideos,
-  useAwards,
   useContactPage,
   useHeadshots,
   useHighlights,
@@ -126,6 +124,22 @@ describe('normalizeMusicianPage', () => {
     expect(musician.awardsHeading).toBe('Prizes')
     expect(musician.highlightsHeading).toBe('Highlights')
   })
+
+  it('keeps the awards text and trims both picture slots independently', () => {
+    const musician = normalizeMusicianPage({
+      awardsText: ' Prizes below. ',
+      awardsFirstImage: ' /first.jpg ',
+      awardsSecondImage: '   ',
+    })
+    expect(musician.awardsText).toBe('Prizes below.')
+    expect(musician.awardsFirstImage).toBe('/first.jpg')
+    expect(musician.awardsSecondImage).toBeUndefined()
+
+    const empty = normalizeMusicianPage(undefined)
+    expect(empty.awardsText).toBeUndefined()
+    expect(empty.awardsFirstImage).toBeUndefined()
+    expect(empty.awardsSecondImage).toBeUndefined()
+  })
 })
 
 describe('entry normalizers', () => {
@@ -158,17 +172,6 @@ describe('entry normalizers', () => {
   it('actor gallery images fall back to a slug-derived title', () => {
     expect(normalizeActorGalleryImage({}, 'on-stage')?.title).toBe('On Stage')
     expect(normalizeActorGalleryImage({ title: 'Still' }, 'on-stage')?.title).toBe('Still')
-  })
-
-  it('awards default to an empty text and slug-derived title', () => {
-    const award = normalizeAward(undefined, 'best-actor')
-    expect(award.title).toBe('Best Actor')
-    expect(award.text).toBe('')
-    expect(award.image).toBeUndefined()
-
-    const full = normalizeAward({ text: ' For services to noise. ', image: ' /t.jpg ' }, 'trophy')
-    expect(full.text).toBe('For services to noise.')
-    expect(full.image).toBe('/t.jpg')
   })
 
   it('musician gallery images keep an optional description', () => {
@@ -275,11 +278,12 @@ describe('seeded content loaders', () => {
     expect(musician.projectsHeading).toBe('Original Projects')
   })
 
-  it('loads seeded awards where the first has no image (graceful fallback)', () => {
-    const awards = useAwards()
-    expect(awards).toHaveLength(2)
-    expect(awards[0].image).toBeUndefined()
-    expect(awards[0].text.length).toBeGreaterThan(0)
+  it('loads the seeded musician awards text with both picture slots filled', () => {
+    const musician = useMusicianPage()
+    expect(musician.awardsHeading).toBe('Awards')
+    expect(musician.awardsText).toContain('OffCommendation')
+    expect(musician.awardsFirstImage).toBe('/images/uploads/artwork-tide-lines-i.svg')
+    expect(musician.awardsSecondImage).toBe('/images/uploads/artwork-tide-lines-ii.svg')
   })
 
   it('loads seeded highlights and projects as ordered video lists', () => {

@@ -3,14 +3,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
 import {
-  useAwards,
   useHighlights,
   useMusicianGallery,
   useMusicianPage,
   useProjects,
 } from '@/composables/content'
 import type {
-  AwardEntry,
   MusicianGalleryImage,
   MusicianPageContent,
   VideoEntry,
@@ -26,7 +24,6 @@ vi.mock('@/composables/content', async (importOriginal) => {
   return {
     ...actual,
     useMusicianPage: vi.fn(actual.useMusicianPage),
-    useAwards: vi.fn(actual.useAwards),
     useHighlights: vi.fn(actual.useHighlights),
     useProjects: vi.fn(actual.useProjects),
     useMusicianGallery: vi.fn(actual.useMusicianGallery),
@@ -34,7 +31,6 @@ vi.mock('@/composables/content', async (importOriginal) => {
 })
 
 const mockedPage = vi.mocked(useMusicianPage)
-const mockedAwards = vi.mocked(useAwards)
 const mockedHighlights = vi.mocked(useHighlights)
 const mockedProjects = vi.mocked(useProjects)
 const mockedGallery = vi.mocked(useMusicianGallery)
@@ -48,7 +44,6 @@ async function mountMusician() {
 
 beforeEach(() => {
   mockedPage.mockReset()
-  mockedAwards.mockReset()
   mockedHighlights.mockReset()
   mockedProjects.mockReset()
   mockedGallery.mockReset()
@@ -76,36 +71,51 @@ describe('MusicianView', () => {
     expect(titles).toEqual(['Musician', 'Awards', 'Highlights', 'Original Projects', 'Gallery'])
   })
 
-  it('renders awards with titles and text and no images when the CMS has none', async () => {
+  it('renders the awards text and both pictures from the CMS', async () => {
     const wrapper = await mountMusician()
-    const renderedAwards = wrapper.findAll('.award')
+    const awards = wrapper.find('.musician-awards')
 
-    expect(renderedAwards).toHaveLength(2)
-    expect(renderedAwards[0].find('.award__title').text()).toBe(
-      'OffCommendation - Best Supporting Performance',
-    )
-    expect(renderedAwards[0].find('.award__text').text()).toContain('Twelfth Night')
-    expect(renderedAwards[0].find('.award__image').exists()).toBe(false)
+    expect(awards.find('.musician-section-title').text()).toBe('Awards')
+    expect(awards.find('.musician-awards__text').text()).toContain('OffCommendation')
+    const pictures = awards.findAll('.musician-awards__picture')
+    expect(pictures).toHaveLength(2)
+    expect(pictures[0].attributes('src')).toBe('/images/uploads/artwork-tide-lines-i.svg')
+    expect(pictures[1].attributes('src')).toBe('/images/uploads/artwork-tide-lines-ii.svg')
   })
 
-  it('renders an award image above its text when the CMS provides one', async () => {
-    mockedAwards.mockReturnValue([
-      {
-        slug: 'trophy',
-        title: 'Best Score',
-        text: 'Won for The Long Shore.',
-        image: '/images/uploads/award.svg',
-        order: 1,
-      },
-    ] satisfies AwardEntry[])
+  it('renders a fallback block when only one award picture slot is filled', async () => {
+    mockedPage.mockReturnValue({
+      intro: '',
+      musicianHeading: 'Musician',
+      awardsHeading: 'Awards',
+      awardsText: 'One photo only.',
+      awardsFirstImage: '/images/uploads/first.jpg',
+      highlightsHeading: 'Highlights',
+      projectsHeading: 'Original Projects',
+      galleryHeading: 'Gallery',
+    } satisfies MusicianPageContent)
 
     const wrapper = await mountMusician()
-    const award = wrapper.find('.award')
 
-    expect(award.find('.award__image').attributes('src')).toBe('/images/uploads/award.svg')
-    expect(award.find('.award__image').attributes('alt')).toBe('Best Score')
-    expect(award.find('.award__title').exists()).toBe(true)
-    expect(award.find('.award__text').exists()).toBe(true)
+    expect(wrapper.findAll('.musician-awards__picture')).toHaveLength(1)
+    expect(wrapper.find('.musician-awards__fallback').exists()).toBe(true)
+  })
+
+  it('hides the awards text and pictures entirely when neither is set', async () => {
+    mockedPage.mockReturnValue({
+      intro: '',
+      musicianHeading: 'Musician',
+      awardsHeading: 'Awards',
+      highlightsHeading: 'Highlights',
+      projectsHeading: 'Original Projects',
+      galleryHeading: 'Gallery',
+    } satisfies MusicianPageContent)
+
+    const wrapper = await mountMusician()
+
+    expect(wrapper.find('.musician-awards .musician-section-title').text()).toBe('Awards')
+    expect(wrapper.find('.musician-awards__text').exists()).toBe(false)
+    expect(wrapper.find('.musician-awards__pictures').exists()).toBe(false)
   })
 
   it('renders highlight videos with descriptions below and no top titles', async () => {
@@ -193,7 +203,6 @@ describe('MusicianView', () => {
       projectsHeading: 'Original Projects',
       galleryHeading: 'Gallery',
     } satisfies MusicianPageContent)
-    mockedAwards.mockReturnValue([] as AwardEntry[])
     mockedHighlights.mockReturnValue([] as VideoEntry[])
     mockedProjects.mockReturnValue([] as VideoEntry[])
     mockedGallery.mockReturnValue([] as MusicianGalleryImage[])
@@ -208,7 +217,8 @@ describe('MusicianView', () => {
       'Original Projects',
       'Gallery',
     ])
-    expect(wrapper.findAll('.award')).toHaveLength(0)
+    expect(wrapper.find('.musician-awards__text').exists()).toBe(false)
+    expect(wrapper.find('.musician-awards__pictures').exists()).toBe(false)
     expect(wrapper.findAll('.musician-video')).toHaveLength(0)
     expect(wrapper.find('.gallery-grid').exists()).toBe(false)
     expect(wrapper.find('.musician-next__link').attributes('href')).toBe('/actor')
