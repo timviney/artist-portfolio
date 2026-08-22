@@ -36,6 +36,25 @@ describe('ContactView', () => {
     expect(wrapper.find('.contact-email').text()).toBe('hello@maxrivera.example')
   })
 
+  it('renders a tel link for the CMS phone number', async () => {
+    const wrapper = mount(ContactView)
+
+    expect(wrapper.find('.contact-phone').exists()).toBe(true)
+    expect(wrapper.find('.contact-phone').text()).toBe('+44 7700 900123')
+    expect(wrapper.find('.contact-phone').attributes('href')).toBe('tel:+447700900123')
+  })
+
+  it('omits the phone link when no number is set', async () => {
+    mockedPage.mockReturnValue({
+      contactHeading: 'Contact',
+      email: 'me@example.com',
+    } satisfies ContactPageContent)
+
+    const wrapper = mount(ContactView)
+
+    expect(wrapper.find('.contact-phone').exists()).toBe(false)
+  })
+
   it('renders the CMS note when present', async () => {
     const wrapper = mount(ContactView)
 

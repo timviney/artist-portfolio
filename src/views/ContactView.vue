@@ -5,6 +5,10 @@ const page = useContactPage()
 const settings = useSiteSettings()
 
 const DEFAULT_REPLY_NOTE = "Messages go directly to the artist's email inbox."
+
+function telHref(phone: string): string {
+  return `tel:${phone.replace(/[\s()-]/g, '')}`
+}
 </script>
 
 <template>
@@ -14,6 +18,7 @@ const DEFAULT_REPLY_NOTE = "Messages go directly to the artist's email inbox."
     <div class="contact-enquiry">
       <a :href="`mailto:${page.email}`" class="contact-button">Enquire by email</a>
       <a :href="`mailto:${page.email}`" class="contact-email">{{ page.email }}</a>
+      <a v-if="page.phone" :href="telHref(page.phone)" class="contact-phone">{{ page.phone }}</a>
     </div>
 
     <p class="contact-note">{{ page.note ?? DEFAULT_REPLY_NOTE }}</p>
@@ -65,7 +70,8 @@ const DEFAULT_REPLY_NOTE = "Messages go directly to the artist's email inbox."
   color: var(--color-on-secondary);
 }
 
-.contact-email {
+.contact-email,
+.contact-phone {
   font-size: 1.05rem;
 }
 

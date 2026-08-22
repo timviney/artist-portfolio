@@ -4,6 +4,8 @@ import { useRoute } from 'vue-router'
 
 import { useSiteSettings } from '@/composables/content'
 
+import SocialIcon from '@/components/SocialIcon.vue'
+
 const NAV_LINKS = [
   { to: '/', label: 'Home' },
   { to: '/about', label: 'About Me' },
@@ -95,15 +97,31 @@ onUnmounted(() => {
         :aria-modal="menuOpen ? 'true' : undefined"
         aria-label="Main navigation"
       >
-        <RouterLink
-          v-for="link in NAV_LINKS"
-          :key="link.to"
-          :to="link.to"
-          class="site-nav__link"
-          @click="closeMenu"
-        >
-          {{ link.label }}
-        </RouterLink>
+        <div class="site-nav__links">
+          <RouterLink
+            v-for="link in NAV_LINKS"
+            :key="link.to"
+            :to="link.to"
+            class="site-nav__link"
+            @click="closeMenu"
+          >
+            {{ link.label }}
+          </RouterLink>
+        </div>
+
+        <ul v-if="settings.socialLinks.length > 0" class="site-nav__socials">
+          <li v-for="social in settings.socialLinks" :key="social.url">
+            <a
+              :href="social.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="site-nav__social"
+              :aria-label="social.label"
+            >
+              <SocialIcon :url="social.url" />
+            </a>
+          </li>
+        </ul>
       </nav>
     </div>
   </header>
@@ -185,6 +203,11 @@ onUnmounted(() => {
   margin-right: auto;
 }
 
+.site-nav__links {
+  display: flex;
+  gap: 1.5rem;
+}
+
 .site-nav__link {
   color: var(--color-text);
   text-decoration: none;
@@ -200,6 +223,33 @@ onUnmounted(() => {
 .site-nav__link.router-link-exact-active {
   text-decoration: underline;
   text-underline-offset: 0.3em;
+}
+
+.site-nav__socials {
+  position: absolute;
+  top: 50%;
+  right: 1.5rem;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 1.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-nav__social {
+  display: flex;
+  color: var(--color-text);
+}
+
+.site-nav__social:hover,
+.site-nav__social:focus-visible {
+  color: var(--color-primary);
+}
+
+.site-nav__social svg {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 @media (max-width: 640px) {
@@ -219,7 +269,7 @@ onUnmounted(() => {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2.5rem;
+    padding-bottom: 2.5rem;
     background-color: var(--color-bg);
   }
 
@@ -228,6 +278,24 @@ onUnmounted(() => {
     border-top: 0;
     font-family: var(--font-heading);
     font-size: 2rem;
+  }
+
+  .site-nav--open .site-nav__links {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    margin-block: auto;
+  }
+
+  .site-nav--open .site-nav__socials {
+    position: static;
+    transform: none;
+    margin-top: auto;
+  }
+
+  .site-nav--open .site-nav__social svg {
+    width: 1.75rem;
+    height: 1.75rem;
   }
 }
 </style>

@@ -28,6 +28,7 @@ export const DEFAULT_ABOUT_PAGE: AboutPageContent = {
 export const DEFAULT_CONTACT_PAGE: ContactPageContent = {
   contactHeading: 'Contact',
   email: '',
+  phone: undefined,
   note: undefined,
 }
 

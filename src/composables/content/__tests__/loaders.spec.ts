@@ -208,13 +208,17 @@ describe('normalizeContactPage', () => {
     expect(normalizeContactPage(undefined)).toEqual(DEFAULT_CONTACT_PAGE)
   })
 
-  it('trims the email and keeps an optional note', () => {
+  it('trims the email, keeps an optional phone and note', () => {
     const contact = normalizeContactPage({
       email: ' hi@example.com ',
+      phone: ' +44 7700 900123 ',
       note: 'Replies within two days.',
     })
     expect(contact.email).toBe('hi@example.com')
+    expect(contact.phone).toBe('+44 7700 900123')
     expect(contact.note).toBe('Replies within two days.')
+
+    expect(normalizeContactPage({}).phone).toBeUndefined()
   })
 
   it('coerces a non-string email to the empty default', () => {
@@ -301,7 +305,9 @@ describe('seeded content loaders', () => {
   })
 
   it('loads the seeded contact page email', () => {
-    expect(useContactPage().email).toMatch(/@/)
+    const contact = useContactPage()
+    expect(contact.email).toMatch(/@/)
+    expect(contact.phone).toBeDefined()
   })
 
   it('loads the seeded musician gallery with descriptions', () => {

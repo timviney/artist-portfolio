@@ -124,6 +124,7 @@ export function normalizeContactPage(raw: unknown): ContactPageContent {
   return {
     contactHeading: asTrimmedString(source.contactHeading, DEFAULT_CONTACT_PAGE.contactHeading),
     email: typeof source.email === 'string' ? source.email.trim() : DEFAULT_CONTACT_PAGE.email,
+    phone: asOptionalTrimmedString(source.phone),
     note: asOptionalTrimmedString(source.note),
   }
 }

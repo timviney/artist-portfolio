@@ -29,6 +29,39 @@ describe('SiteHeader', () => {
     expect(wrapper.text()).not.toContain('Musician')
   })
 
+  it('renders an icon link for each seeded social profile', async () => {
+    const { wrapper } = await mountHeader()
+    const socials = wrapper.findAll('.site-nav__social')
+
+    expect(socials.map((social) => social.attributes('aria-label'))).toEqual([
+      'Instagram',
+      'YouTube',
+      'Spotlight',
+    ])
+    expect(socials.map((social) => social.attributes('href'))).toEqual([
+      'https://www.instagram.com/',
+      'https://www.youtube.com/',
+      'https://www.spotlight.com/',
+    ])
+    for (const social of socials) {
+      expect(social.attributes('target')).toBe('_blank')
+      expect(social.attributes('rel')).toContain('noopener')
+      expect(social.find('svg').exists()).toBe(true)
+    }
+  })
+
+  it('keeps the social icons inside the nav so they appear in the mobile modal', async () => {
+    const { wrapper } = await mountHeader()
+
+    const nav = wrapper.find('.site-nav')
+    const socials = nav.find('.site-nav__socials')
+    expect(socials.exists()).toBe(true)
+    expect(nav.findAll('.site-nav__social')).toHaveLength(3)
+
+    await wrapper.find('.site-header__toggle').trigger('click')
+    expect(wrapper.find('.site-nav--open .site-nav__socials').exists()).toBe(true)
+  })
+
   it('marks only the active route as active', async () => {
     const { wrapper } = await mountHeader('/about')
     const links = wrapper.findAll('.site-nav__link')

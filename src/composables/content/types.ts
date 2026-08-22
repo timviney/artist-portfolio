@@ -28,6 +28,7 @@ export interface AboutPageContent {
 export interface ContactPageContent {
   contactHeading: string
   email: string
+  phone?: string
   note?: string
 }
 
