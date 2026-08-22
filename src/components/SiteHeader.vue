@@ -30,22 +30,6 @@ watch(
   <header class="site-header">
     <div class="site-header__inner">
       <RouterLink to="/" class="site-header__name">{{ settings.name }}</RouterLink>
-
-      <button
-        type="button"
-        class="site-header__toggle"
-        :aria-expanded="menuOpen"
-        aria-controls="site-navigation"
-        @click="toggleMenu"
-      >
-        <span class="visually-hidden">Toggle menu</span>
-        <span class="site-header__toggle-bars" aria-hidden="true">
-          <span></span>
-          <span></span>
-          <span></span>
-        </span>
-      </button>
-
       <nav
         id="site-navigation"
         class="site-nav"
@@ -62,6 +46,20 @@ watch(
           {{ link.label }}
         </RouterLink>
       </nav>
+      <button
+        type="button"
+        class="site-header__toggle"
+        :aria-expanded="menuOpen"
+        aria-controls="site-navigation"
+        @click="toggleMenu"
+      >
+        <span class="visually-hidden">Toggle menu</span>
+        <span class="site-header__toggle-bars" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
     </div>
   </header>
 </template>
@@ -69,19 +67,22 @@ watch(
 <style scoped>
 .site-header {
   border-bottom: 1px solid var(--color-border);
+  align-items: center;
 }
 
 .site-header__inner {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem 1.5rem;
   max-width: 90rem;
   margin: 0 auto;
   padding: 1rem 1.5rem;
 }
 
 .site-header__name {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   font-family: var(--font-heading);
   font-size: 1.35rem;
   color: var(--color-text);
@@ -114,7 +115,7 @@ watch(
 .site-nav {
   display: flex;
   gap: 1.5rem;
-  margin-left: auto;
+  margin-right: auto;
 }
 
 .site-nav__link {
