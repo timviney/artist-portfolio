@@ -59,17 +59,22 @@ const tiles = [
 .home__tiles {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.5rem;
+  gap: 1rem;
   width: 100%;
   align-self: center;
 }
 
 .home__tile {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  position: relative;
   text-decoration: none;
   color: var(--color-text);
+}
+
+.home__tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.55), rgb(0 0 0 / 0) 45%);
 }
 
 .home__tile-image,
@@ -83,14 +88,26 @@ const tiles = [
 }
 
 .home__tile-label {
+  position: absolute;
+  right: 0;
+  bottom: 1.25rem;
+  left: 0;
+  z-index: 1;
   font-family: var(--font-heading);
-  font-size: 1.4rem;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
   text-align: center;
+  color: #fff;
+  text-shadow: 0 1px 8px rgb(0 0 0 / 0.6);
+}
+
+@media (max-width: 640px) {
+  .home__tiles {
+    grid-template-columns: 1fr;
+  }
 }
 
 .home__tile:hover .home__tile-label,
 .home__tile:focus-visible .home__tile-label {
-  color: var(--color-primary);
   text-decoration: underline;
   text-underline-offset: 0.3em;
 }
