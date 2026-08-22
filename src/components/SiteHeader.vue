@@ -162,7 +162,9 @@ onUnmounted(() => {
   width: 20px;
   height: 2px;
   background-color: currentColor;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .site-header--menu-open .site-header__toggle-bars span:nth-child(1) {

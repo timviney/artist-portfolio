@@ -13,7 +13,15 @@ const embedUrl = computed(() => toEmbedUrl(props.videoUrl))
     <iframe
       :src="embedUrl"
       :title="title ?? 'Embedded video'"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allow="
+        accelerometer;
+        autoplay;
+        clipboard-write;
+        encrypted-media;
+        gyroscope;
+        picture-in-picture;
+        web-share;
+      "
       allowfullscreen
     ></iframe>
   </div>

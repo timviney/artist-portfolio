@@ -93,10 +93,10 @@ docs/                 # ARTIST_GUIDE.md etc.
   - [x] "Gallery" heading: headshots carousel (sideways prev/next, keyboard accessible) + portrait gallery grid with titles below
   - [x] Cross-link tile/section to the Musician page
   - [x] Component tests: sections render from content; graceful handling of missing images/videos
-- [ ] 7. Build the lightbox viewer
-  - [ ] Lightweight custom lightbox (no external modal library): fullscreen overlay for gallery images with prev/next and captions
-  - [ ] Keyboard navigation (arrows, Esc), click-outside close, body scroll lock; image-only (videos are inline embeds)
-  - [ ] Component tests: open/close, navigation, caption rendering
+- [x] 7. Build the lightbox viewer
+  - [x] Lightweight custom lightbox (no external modal library): fullscreen overlay for gallery images with prev/next and captions
+  - [x] Keyboard navigation (arrows, Esc), click-outside close, body scroll lock; image-only (videos are inline embeds)
+  - [x] Component tests: open/close, navigation, caption rendering
 - [ ] 8. Build the Musician view
   - [ ] Fullscreen hero image; "Musician" heading + intro text
   - [ ] Awards section (title, text, optional image); Highlights (videos with descriptions); Original Projects (videos); Gallery (pictures with descriptions)

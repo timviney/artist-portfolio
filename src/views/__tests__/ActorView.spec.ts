@@ -1,13 +1,8 @@
-import { mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { enableAutoUnmount, mount } from '@vue/test-utils'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
-import {
-  useActorGallery,
-  useActorPage,
-  useActorVideos,
-  useHeadshots,
-} from '@/composables/content'
+import { useActorGallery, useActorPage, useActorVideos, useHeadshots } from '@/composables/content'
 import type {
   ActorGalleryImage,
   ActorPageContent,
@@ -25,6 +20,8 @@ class ResizeObserverStub {
 }
 
 vi.stubGlobal('ResizeObserver', ResizeObserverStub)
+
+enableAutoUnmount(afterEach)
 
 vi.mock('@/composables/content', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/composables/content')>()
@@ -133,6 +130,49 @@ describe('ActorView', () => {
   it('links to the musician page', async () => {
     const wrapper = await mountActor()
     expect(wrapper.find('.actor-next__link').attributes('href')).toBe('/musician')
+  })
+
+  it('opens the lightbox showing the clicked gallery image', async () => {
+    const wrapper = await mountActor()
+    const triggers = wrapper.findAll('.gallery-grid__trigger')
+    const expectedSrc = triggers[0].find('img').attributes('src')
+
+    await triggers[0].trigger('click')
+
+    expect(document.body.querySelector('.image-lightbox')).not.toBeNull()
+    expect(document.body.querySelector('.image-lightbox__figure img')?.getAttribute('src')).toBe(
+      expectedSrc,
+    )
+    expect(document.body.querySelector('.image-lightbox__caption')?.textContent).toContain(
+      'As Prospero — The Tempest',
+    )
+  })
+
+  it('does not render lightbox triggers for entries without an image', async () => {
+    mockedGallery.mockReturnValue([
+      { slug: 'with', image: '/images/a.svg', title: 'With image', order: 1 },
+      { slug: 'without', image: undefined, title: 'Without image', order: 2 },
+    ])
+
+    const wrapper = await mountActor()
+    const items = wrapper.findAll('.gallery-grid__item')
+
+    expect(items[0].find('.gallery-grid__trigger').exists()).toBe(true)
+    expect(items[1].find('.gallery-grid__trigger').exists()).toBe(false)
+    expect(items[1].find('.gallery-grid__fallback').exists()).toBe(true)
+    expect(document.body.querySelector('.image-lightbox')).toBeNull()
+  })
+
+  it('closes the lightbox from its close button', async () => {
+    const wrapper = await mountActor()
+
+    await wrapper.findAll('.gallery-grid__trigger')[0].trigger('click')
+    expect(document.body.querySelector('.image-lightbox')).not.toBeNull()
+
+    ;(document.body.querySelector('.image-lightbox__close') as HTMLElement).click()
+    await wrapper.vm.$nextTick()
+
+    expect(document.body.querySelector('.image-lightbox')).toBeNull()
   })
 
   it('handles missing hero image, videos and galleries gracefully', async () => {

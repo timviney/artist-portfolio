@@ -28,9 +28,7 @@ describe('toEmbedUrl', () => {
   })
 
   it('converts Vimeo URLs including player links', () => {
-    expect(toEmbedUrl('https://vimeo.com/76979871')).toBe(
-      'https://player.vimeo.com/video/76979871',
-    )
+    expect(toEmbedUrl('https://vimeo.com/76979871')).toBe('https://player.vimeo.com/video/76979871')
     expect(toEmbedUrl('https://player.vimeo.com/video/76979871')).toBe(
       'https://player.vimeo.com/video/76979871',
     )

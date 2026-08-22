@@ -1,14 +1,12 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import { A11y, Keyboard, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 
+import ImageLightbox from '@/components/ImageLightbox.vue'
+import type { LightboxImage } from '@/components/ImageLightbox.vue'
 import VideoEmbed from '@/components/VideoEmbed.vue'
-import {
-  useActorGallery,
-  useActorPage,
-  useActorVideos,
-  useHeadshots,
-} from '@/composables/content'
+import { useActorGallery, useActorPage, useActorVideos, useHeadshots } from '@/composables/content'
 
 import 'swiper/css'
 import 'swiper/css/navigation'
@@ -17,6 +15,19 @@ const page = useActorPage()
 const videos = useActorVideos()
 const headshots = useHeadshots()
 const gallery = useActorGallery()
+
+const lightboxImages = computed<LightboxImage[]>(() =>
+  gallery
+    .filter((entry) => entry.image)
+    .map((entry) => ({ slug: entry.slug, image: entry.image, caption: entry.title })),
+)
+
+const lightboxIndex = ref<number | null>(null)
+
+function openLightbox(slug: string) {
+  const index = lightboxImages.value.findIndex((entry) => entry.slug === slug)
+  if (index !== -1) lightboxIndex.value = index
+}
 </script>
 
 <template>
@@ -54,7 +65,14 @@ const gallery = useActorGallery()
 
       <ul v-if="gallery.length > 0" class="gallery-grid">
         <li v-for="image in gallery" :key="image.slug" class="gallery-grid__item">
-          <img v-if="image.image" :src="image.image" :alt="image.title" />
+          <button
+            v-if="image.image"
+            type="button"
+            class="gallery-grid__trigger"
+            @click="openLightbox(image.slug)"
+          >
+            <img :src="image.image" :alt="image.title" />
+          </button>
           <div v-else class="gallery-grid__fallback" aria-hidden="true"></div>
           <p class="gallery-grid__title">{{ image.title }}</p>
         </li>
@@ -66,6 +84,13 @@ const gallery = useActorGallery()
         Musician <span aria-hidden="true">→</span>
       </RouterLink>
     </section>
+
+    <ImageLightbox
+      v-if="lightboxIndex !== null"
+      :images="lightboxImages"
+      :initial-index="lightboxIndex"
+      @close="lightboxIndex = null"
+    />
   </div>
 </template>
 
@@ -132,6 +157,15 @@ const gallery = useActorGallery()
   object-fit: cover;
   border: 1px solid var(--color-border);
   background-color: var(--color-surface);
+}
+
+.gallery-grid__trigger {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: zoom-in;
 }
 
 .gallery-grid__title {
