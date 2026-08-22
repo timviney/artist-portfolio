@@ -122,7 +122,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   padding: 3.5rem 4.5rem;
-  background-color: rgb(0 0 0 / 88%);
+  background-color: rgb(24 14 4 / 92%);
 }
 
 .image-lightbox:focus {
@@ -138,15 +138,19 @@ onBeforeUnmount(() => {
   border: 1px solid rgb(255 255 255 / 40%);
   border-radius: 9999px;
   background: none;
-  color: #fff;
+  color: #fffdf2;
   font-size: 1.75rem;
   line-height: 1;
   cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    transform 220ms var(--ease-out-soft);
 }
 
 .image-lightbox__button:hover,
 .image-lightbox__button:focus-visible {
-  border-color: #fff;
+  border-color: #fffdf2;
+  transform: scale(1.06);
 }
 
 .image-lightbox__close {
@@ -196,12 +200,16 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  color: #fff;
+  color: #fffdf2;
+  font-style: italic;
   text-align: center;
 }
 
 .image-lightbox__counter {
-  font-size: 0.9rem;
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-style: normal;
+  letter-spacing: 0.3em;
   opacity: 0.7;
 }
 

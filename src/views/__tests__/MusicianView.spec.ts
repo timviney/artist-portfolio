@@ -57,10 +57,10 @@ describe('MusicianView', () => {
     )
   })
 
-  it('renders the intro text under the Musician heading from the CMS', async () => {
+  it('renders the intro text below the Musician hero title from the CMS', async () => {
     const wrapper = await mountMusician()
 
-    expect(wrapper.find('.musician-intro .musician-section-title').text()).toBe('Musician')
+    expect(wrapper.find('.musician-hero__title').text()).toBe('Musician')
     expect(wrapper.find('.musician-intro__text').text()).toContain('cellist, guitarist and composer')
   })
 

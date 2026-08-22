@@ -31,7 +31,9 @@ const embedUrl = computed(() => toEmbedUrl(props.videoUrl))
 .video-embed {
   position: relative;
   aspect-ratio: 16 / 9;
+  border: 1px solid color-mix(in oklab, var(--color-ink) 35%, transparent);
   background-color: var(--color-ink);
+  box-shadow: var(--shadow-lift);
 }
 
 .video-embed iframe {

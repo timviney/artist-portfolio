@@ -4,12 +4,19 @@ import { describe, expect, it } from 'vitest'
 import SiteFooter from '../SiteFooter.vue'
 
 describe('SiteFooter', () => {
-  it('renders the seeded social links', () => {
+  it('renders the seeded social links as labelled icons', () => {
     const wrapper = mount(SiteFooter)
     const links = wrapper.findAll('.site-footer__social a')
 
-    expect(links.map((link) => link.text())).toEqual(['Instagram', 'YouTube', 'Spotlight'])
+    expect(links.map((link) => link.attributes('aria-label'))).toEqual([
+      'Instagram',
+      'YouTube',
+      'Spotlight',
+    ])
     expect(links[0].attributes('href')).toBe('https://www.instagram.com/')
+    for (const link of links) {
+      expect(link.find('svg').exists()).toBe(true)
+    }
   })
 
   it('renders the copyright line with the artist name and current year', () => {

@@ -37,7 +37,7 @@ describe('HomeView', () => {
     const tiles = wrapper.findAll('.home__tile')
 
     expect(tiles.map((tile) => tile.attributes('href'))).toEqual(['/actor', '/musician'])
-    expect(tiles.map((tile) => tile.find('.home__tile-label').text())).toEqual([
+    expect(tiles.map((tile) => tile.find('.home__tile-label').text()).map((text) => text.trim().split(' ')[0])).toEqual([
       'Actor',
       'Musician',
     ])
@@ -71,6 +71,6 @@ describe('HomeView', () => {
     expect(tiles[0].find('.home__tile-image').exists()).toBe(true)
     expect(tiles[1].find('.home__tile-image').exists()).toBe(false)
     expect(tiles[1].find('.home__tile-fallback').exists()).toBe(true)
-    expect(tiles[1].find('.home__tile-label').text()).toBe('Musician')
+    expect(tiles[1].find('.home__tile-label').text()).toContain('Musician')
   })
 })

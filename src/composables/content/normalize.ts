@@ -123,6 +123,7 @@ export function normalizeContactPage(raw: unknown): ContactPageContent {
   const source = isRecord(raw) ? raw : {}
   return {
     contactHeading: asTrimmedString(source.contactHeading, DEFAULT_CONTACT_PAGE.contactHeading),
+    contactImage: asOptionalTrimmedString(source.contactImage),
     email: typeof source.email === 'string' ? source.email.trim() : DEFAULT_CONTACT_PAGE.email,
     phone: asOptionalTrimmedString(source.phone),
     note: asOptionalTrimmedString(source.note),

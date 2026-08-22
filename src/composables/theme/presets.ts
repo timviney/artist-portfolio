@@ -2,8 +2,8 @@ import type { FontPairing, FontPairingPreset, ThemePreset } from './types'
 
 export const FONT_PAIRINGS: Record<FontPairingPreset, FontPairing> = {
   classic: {
-    heading: 'Georgia, Cambria, "Times New Roman", Times, serif',
-    body: 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    heading: '"Fraunces", Georgia, Cambria, "Times New Roman", serif',
+    body: '"Newsreader", Georgia, Cambria, "Times New Roman", serif',
   },
   modern: {
     heading: '"Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif',

@@ -35,13 +35,24 @@ function openLightbox(slug: string) {
     <section class="actor-hero" aria-label="Actor hero image">
       <img v-if="page.heroImage" :src="page.heroImage" alt="" />
       <div v-else class="actor-hero__fallback" aria-hidden="true"></div>
+      <div class="actor-hero__scrim" aria-hidden="true"></div>
+      <div class="actor-hero__content">
+        <h2 class="actor-section-title actor-hero__title">{{ page.actorHeading }}</h2>
+        <p class="actor-hero__caption">Stage &amp; screen</p>
+      </div>
     </section>
 
     <section class="page actor-videos">
-      <h2 class="actor-section-title">{{ page.actorHeading }}</h2>
-      <article v-for="video in videos" :key="video.slug" class="actor-video">
+      <article
+        v-for="(video, index) in videos"
+        :key="video.slug"
+        class="actor-video"
+        :class="{ 'actor-video--ruled': index > 0 }"
+      >
         <VideoEmbed :video-url="video.videoUrl" :title="video.title" />
-        <p v-if="video.description" class="actor-video__description">{{ video.description }}</p>
+        <p v-if="video.description" class="actor-video__description">
+          {{ video.description }}
+        </p>
       </article>
     </section>
 
@@ -110,40 +121,133 @@ function openLightbox(slug: string) {
   object-fit: cover;
 }
 
-.actor-hero__fallback {
-  background-color: var(--color-surface);
+.actor-hero img {
+  animation: hero-drift 14s var(--ease-out-soft) both;
 }
 
-.actor-videos,
-.actor-gallery {
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
+@keyframes hero-drift {
+  from {
+    transform: scale(1.06);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+.actor-hero__fallback {
+  background:
+    radial-gradient(
+      ellipse 90% 60% at 70% 20%,
+      color-mix(in oklab, var(--color-primary) 22%, var(--color-surface)),
+      transparent
+    ),
+    var(--surface-deep);
+}
+
+.actor-hero__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgb(24 14 4 / 0.72), rgb(24 14 4 / 0.06) 46%);
+}
+
+.actor-hero__content {
+  position: absolute;
+  right: 0;
+  bottom: clamp(2rem, 7vh, 4.5rem);
+  left: 0;
+  padding: 1.5rem;
+}
+
+.actor-hero__title,
+.actor-hero__caption {
+  max-width: 90rem;
+  margin: 0 auto;
+  color: #fffdf2;
 }
 
 .actor-section-title {
   margin: 0;
   text-align: center;
   font-family: var(--font-heading);
-  font-size: clamp(2.25rem, 6vw, 3.5rem);
+  font-size: clamp(2.5rem, 6vw, 4.25rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+.actor-hero__title {
+  text-align: left;
+  font-size: clamp(3.2rem, 9vw, 6.75rem);
+  font-weight: 380;
+  line-height: 0.98;
+}
+
+.actor-hero__caption {
+  margin-top: 0.8rem;
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  opacity: 0.82;
+}
+
+.actor-videos {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+  max-width: 64rem;
+  padding-block: 5rem;
 }
 
 .actor-video {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
+}
+
+.actor-video--ruled {
+  position: relative;
+  padding-top: 3.5rem;
+}
+
+.actor-video--ruled::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 15%;
+  left: 15%;
+  height: 1px;
+  background-image: linear-gradient(to right, transparent, var(--color-border), transparent);
 }
 
 .actor-video__description {
-  max-width: 44rem;
+  max-width: 40rem;
   margin: 0 auto;
+  font-size: 1.12rem;
+  font-style: italic;
   text-align: center;
+  color: color-mix(in oklab, var(--color-text), transparent 12%);
+}
+
+.actor-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  padding-block: 5rem;
+  background-image: linear-gradient(
+    to bottom,
+    transparent,
+    var(--accent-wash) 18%,
+    var(--accent-wash) 82%,
+    transparent
+  );
 }
 
 .gallery-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem 0.5rem;
+  gap: 1.5rem 1rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -168,9 +272,21 @@ function openLightbox(slug: string) {
   cursor: zoom-in;
 }
 
+.gallery-grid__trigger img {
+  transition:
+    transform 700ms var(--ease-out-soft),
+    box-shadow 400ms ease;
+}
+
+.gallery-grid__trigger:hover img,
+.gallery-grid__trigger:focus-visible img {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lift);
+}
+
 .gallery-grid__title {
-  margin: 0.1rem 0 0;
-  font-size: 1rem;
+  margin: 0.55rem 0 0;
+  font-size: 0.95rem;
   text-align: center;
 }
 
@@ -178,7 +294,9 @@ function openLightbox(slug: string) {
   width: 100%;
   max-width: 30rem;
   margin: 0 auto;
+  padding: 0.6rem;
   border: 1px solid var(--color-border);
+  background-color: var(--surface-deep);
 }
 
 .headshot-slide img,
@@ -190,16 +308,39 @@ function openLightbox(slug: string) {
 }
 
 .headshot-slide__fallback {
-  background-color: var(--color-surface);
+  background-color: var(--surface-deep);
 }
 
 .actor-next {
+  padding-block: 4.5rem 6rem;
   text-align: center;
 }
 
 .actor-next__link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6em;
+  color: var(--color-text);
   font-family: var(--font-heading);
-  font-size: 1.4rem;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  font-style: italic;
+  text-decoration: none;
+  transition: color 200ms ease;
+}
+
+.actor-next__link span {
+  display: inline-block;
+  transition: transform 320ms var(--ease-out-soft);
+}
+
+.actor-next__link:hover,
+.actor-next__link:focus-visible {
+  color: var(--color-primary);
+}
+
+.actor-next__link:hover span,
+.actor-next__link:focus-visible span {
+  transform: translateX(0.4em);
 }
 
 @media (min-width: 320px) {
