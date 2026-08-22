@@ -84,11 +84,11 @@ describe('ActorView', () => {
     const items = wrapper.findAll('.gallery-grid__item')
 
     expect(items.map((item) => item.find('.gallery-grid__title').text())).toEqual([
-      'As Prospero — The Tempest',
-      'In Rehearsal — The Tempest',
-      'Backstage — Harbour Sessions',
+      'As Prospero - The Tempest',
+      'In Rehearsal - The Tempest',
+      'Backstage - Harbour Sessions',
     ])
-    expect(items[0].find('img').attributes('alt')).toBe('As Prospero — The Tempest')
+    expect(items[0].find('img').attributes('alt')).toBe('As Prospero - The Tempest')
   })
 
   it('renders all seeded headshots as swiper slides', async () => {
@@ -144,7 +144,7 @@ describe('ActorView', () => {
       expectedSrc,
     )
     expect(document.body.querySelector('.image-lightbox__caption')?.textContent).toContain(
-      'As Prospero — The Tempest',
+      'As Prospero - The Tempest',
     )
   })
 

@@ -11,12 +11,12 @@ const images: LightboxImage[] = [
   {
     slug: 'prospero',
     image: '/images/uploads/gallery-prospero.svg',
-    caption: 'As Prospero — The Tempest',
+    caption: 'As Prospero - The Tempest',
   },
   {
     slug: 'rehearsal',
     image: '/images/uploads/gallery-rehearsal.svg',
-    caption: 'In Rehearsal — The Tempest',
+    caption: 'In Rehearsal - The Tempest',
   },
   { slug: 'backstage', image: '/images/uploads/gallery-backstage.svg' },
 ]
@@ -45,7 +45,7 @@ describe('ImageLightbox', () => {
     expect(query('.image-lightbox__figure img')?.getAttribute('src')).toBe(
       '/images/uploads/gallery-prospero.svg',
     )
-    expect(query('.image-lightbox__caption')?.textContent).toContain('As Prospero — The Tempest')
+    expect(query('.image-lightbox__caption')?.textContent).toContain('As Prospero - The Tempest')
     expect(query('.image-lightbox__counter')?.textContent).toContain('1 / 3')
   })
 
