@@ -2,8 +2,7 @@
   <div class="app-shell">
     <nav class="site-nav" aria-label="Main navigation">
       <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/gallery">Gallery</RouterLink>
-      <RouterLink to="/about">About</RouterLink>
+      <RouterLink to="/about">About Me</RouterLink>
       <RouterLink to="/contact">Contact</RouterLink>
     </nav>
 

@@ -6,11 +6,9 @@ test('home page loads', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Home')
 })
 
-test('navigation reaches all four placeholder pages', async ({ page }) => {
+test('navigation reaches all placeholder pages', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('link', { name: 'Gallery' }).click()
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Gallery')
-  await page.getByRole('link', { name: 'About' }).click()
+  await page.getByRole('link', { name: 'About Me' }).click()
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('About')
   await page.getByRole('link', { name: 'Contact' }).click()
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Contact')

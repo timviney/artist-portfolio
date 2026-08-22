@@ -2,17 +2,28 @@
 
 ## Overview
 
-Build a customisable, single-artist portfolio website using Vue 3 + TypeScript, hosted statically on AWS (S3 + CloudFront), with automated deployment via GitHub Actions.
+Build a customisable, single-artist portfolio website for an **actor-musician** using Vue 3 + TypeScript, hosted statically on AWS (S3 + CloudFront), with automated deployment via GitHub Actions.
 
 The purpose (from README): allow artists to host their own portfolio website without paying for Squarespace-style services. A technically-minded person sets up the project once (deploy infra, connect GitHub); after that, the artist customises everything themselves through a browser-based editor with **no development skills and no AWS backend**.
 
-Customisation works via **Sveltia CMS**, a Git-based CMS served at `/admin`: the artist edits content (artworks, bio, contact info, theme colours/fonts) and uploads images in a web UI; changes commit directly to the GitHub repo and the CI pipeline rebuilds and redeploys the site (~1–2 min publish delay). Videos are supported by embedding YouTube/Vimeo URLs — nothing is self-hosted. A draft preview mode was designed but is **deferred to post-v1** (see Future Enhancements).
+Customisation works via **Sveltia CMS**, a Git-based CMS served at `/admin`: the artist edits content (bio, contact info, headshots, photos, videos, theme colours/fonts) and uploads images in a web UI; changes commit directly to the GitHub repo and the CI pipeline rebuilds and redeploys the site (~1–2 min publish delay). Videos are supported by embedding YouTube/Vimeo URLs — nothing is self-hosted. A draft preview mode was designed but is **deferred to post-v1** (see Future Enhancements).
 
-**In scope (v1):** Home/hero, Gallery (filterable, lightbox, video embeds), About, Contact (links + mailto, no form backend), theme customisation (colours/fonts via CMS), Terraform infrastructure, GitHub Actions CI/CD, documentation for both the technical setter-upper and the non-technical artist.
+**In scope (v1):** Home with Actor/Musician headshot tiles, Actor page (hero, showreel videos, headshots carousel, portrait gallery), Musician page (hero, intro, awards, highlight/project videos, gallery), About Me, Contact (links + mailto, no form backend), theme customisation (colours/fonts via CMS), Terraform infrastructure, GitHub Actions CI/CD, documentation for both the technical setter-upper and the non-technical artist.
 
 **Out of scope (v1):** multi-artist tenancy, contact-form backend, custom domain/Route53/ACM, blog, e-commerce, SSR/SEO-heavy rendering optimisations, draft preview mode (deferred — see Future Enhancements), and — critically — **any form of layout composition**: artists edit content and theme only; page structure is fixed in code. No section/page builders (that is Squarespace's product, not this project's). Future flexibility comes from config toggles and layout presets on fixed slots, never from free-form composition.
 
-**agent notes** do not run playwright/e2e tests unless requested as they are slow. Always run the minimum tests/build required.
+**agent notes** do not run playwright/e2e tests unless requested as they are slow. Always run the minimum tests/build required. **Never create SVG/placeholder image files unless the user explicitly asks.**
+
+### Site structure (final design, locked 2026-08-22)
+
+The artist works as both actor and musician; the site splits into two halves reached from Home.
+
+- **Nav (all pages):** Home · About Me · Contact — Actor and Musician are deliberately **not** nav items.
+- **Home (`/`):** artist name/tagline (from site settings) and two headshots side by side linking to `/actor` and `/musician`.
+- **Actor (`/actor`):** fullscreen hero image → "Actor" heading with embedded videos → "Gallery" heading containing Headshots (sideways carousel) and Gallery Images (portrait grid, titles below) → link to Musician.
+- **Musician (`/musician`):** fullscreen hero image → "Musician" heading + intro text → Awards (title, text, image) → Highlights (videos with descriptions) → Original Projects (videos) → Gallery (pictures with descriptions) → link back to Actor.
+- **About Me (`/about`)** and **Contact (`/contact`)** as previously planned.
+- Page skeletons are hardcoded in Vue; **all images and text come from CMS content**, with graceful fallbacks when fields are missing.
 
 ## Future Enhancements (post-v1)
 
@@ -27,9 +38,9 @@ Ordered roughly by expected value:
 ## Architecture Summary
 
 - **App:** Vue 3 + TypeScript + Vite SPA. Dependencies kept minimal: `vue`, `vue-router`. State via composables (no Pinia needed at this scale).
-- **Content:** Markdown/JSON files under `content/`, edited by Sveltia CMS, imported at **build time** via `import.meta.glob`. Fully static output.
+- **Content:** JSON files under `content/` (settings/, pages/, actor/, musician/), edited by Sveltia CMS, imported at **build time** via `import.meta.glob`. Fully static output.
 - **Images:** uploaded via CMS to `public/images/uploads/`, committed to repo, served through CloudFront.
-- **Videos:** artwork entries have an optional `videoUrl` (YouTube/Vimeo); rendered as iframe embed in the lightbox. Poster/thumbnail image required alongside.
+- **Videos:** embedded YouTube/Vimeo URLs, rendered as iframes inline in the Actor/Musician sections. No video is self-hosted and the lightbox handles images only.
 - **Admin:** Sveltia CMS at `public/admin/` (index.html + config.yml matching the content schema). Auth via GitHub personal access token entered once by the artist.
 - **Infra:** private S3 bucket + CloudFront (Origin Access Control) defined in `infra/` with Terraform. Default `*.cloudfront.net` certificate. Deploy role via IAM OIDC trust with GitHub Actions.
 - **CI/CD:** `.github/workflows/` — CI on PRs (lint, typecheck, tests), deploy on push to `main` (build, sync to S3, invalidate CloudFront).
@@ -38,7 +49,7 @@ Ordered roughly by expected value:
 
 ```
 src/                  # Vue app (components/, views/, composables/, router/, styles/)
-content/              # CMS-managed content (settings/, pages/, artworks/)
+content/              # CMS-managed content (settings/, pages/, actor/, musician/)
 public/images/uploads/# CMS-uploaded media
 public/admin/         # Sveltia CMS entry point + config.yml
 infra/                # Terraform configuration
@@ -60,48 +71,59 @@ docs/                 # ARTIST_GUIDE.md etc.
   - [x] Load `content/**` at build time with `import.meta.glob`; provide sensible fallback defaults when files/fields are missing
   - [x] Seed `content/` with realistic example data (incl. one video artwork entry) and placeholder images
   - [x] Unit tests for loaders incl. missing-content fallback behaviour
+- [x] 2b. Restructure content layer for the actor–musician design (2026-08-22 redesign)
+  - [x] Replace the artworks model with actor/musician types + defaults + normalizers (home headshots, actor page + videos/headshots/gallery, musician page + awards/highlights/projects/gallery)
+  - [x] Replace loaders: `useHomePage`, `useActorPage`, `useActorVideos`, `useHeadshots`, `useActorGallery`, `useMusicianPage`, `useAwards`, `useHighlights`, `useProjects`, `useMusicianGallery`
+  - [x] Routes: drop `/gallery`; add `/actor` + `/musician` with placeholder views; nav placeholder shows Home/About Me/Contact; update router tests
+  - [x] Reseed content with an actor–musician persona: new folder collections, reuse kept placeholder SVGs in fitting slots, delete obsolete ones (create no new images)
+  - [x] Rewrite loader unit tests incl. fallback behaviour; verify lint/typecheck/test/build
 - [ ] 3. Implement the theme system
   - [ ] Map theme config (palette: primary/accent/background/text; font pairing from preset list) to CSS custom properties applied at app root
   - [ ] Verify contrast/responsive behaviour across presets; unit test the theme-to-CSS-variable mapping
 - [ ] 4. Build shared layout and navigation
-  - [ ] Header with site name + nav links, footer with social links + copyright; active-route styling; responsive mobile menu
+  - [ ] Header with site name + nav links (Home, About Me, Contact only), footer with social links + copyright; active-route styling; responsive mobile menu
   - [ ] Component tests for nav rendering and mobile toggle
 - [ ] 5. Build the Home view
-  - [ ] Hero section: featured image/artwork, artist name, tagline, CTAs to Gallery and Contact
-  - [ ] Component test: renders CMS-driven fields, handles empty featured image gracefully
-- [ ] 6. Build the Gallery view
-  - [ ] Responsive grid of artworks from content collection, category filter chips derived from artwork categories
-  - [ ] ArtworkCard component (image, title, meta) with graceful handling of missing images
-  - [ ] Component tests: grid rendering, filtering logic
+  - [ ] Artist name + tagline from site settings; two headshot tiles side by side linking to /actor and /musician
+  - [ ] Component test: renders CMS-driven headshots, handles missing images gracefully
+- [ ] 6. Build the Actor view
+  - [ ] Fullscreen hero image; "Actor" heading with video embeds
+  - [ ] "Gallery" heading: headshots carousel (sideways prev/next, keyboard accessible) + portrait gallery grid with titles below
+  - [ ] Cross-link tile/section to the Musician page
+  - [ ] Component tests: sections render from content; graceful handling of missing images/videos
 - [ ] 7. Build the lightbox viewer
-  - [ ] Lightweight custom lightbox (no external modal library): fullscreen overlay, image display, captions/details
-  - [ ] Keyboard navigation (arrows, Esc), click-outside close, body scroll lock
-  - [ ] Video support: when artwork has `videoUrl` (YouTube/Vimeo), render privacy-enhanced iframe embed instead of image
-  - [ ] Component tests: open/close, navigation, video-vs-image branch
-- [ ] 8. Build About and Contact views
+  - [ ] Lightweight custom lightbox (no external modal library): fullscreen overlay for gallery images with prev/next and captions
+  - [ ] Keyboard navigation (arrows, Esc), click-outside close, body scroll lock; image-only (videos are inline embeds)
+  - [ ] Component tests: open/close, navigation, caption rendering
+- [ ] 8. Build the Musician view
+  - [ ] Fullscreen hero image; "Musician" heading + intro text
+  - [ ] Awards section (title, text, optional image); Highlights (videos with descriptions); Original Projects (videos); Gallery (pictures with descriptions)
+  - [ ] Cross-link back to the Actor page
+  - [ ] Component tests for all sections
+- [ ] 9. Build About Me and Contact views
   - [ ] About: portrait photo, bio paragraphs, optional statement
   - [ ] Contact: email address, `mailto:` enquiry button, social links; note in UI copy that replies go to the artist's email
   - [ ] Component tests for both views
-- [ ] 9. Integrate Sveltia CMS
-  - [ ] Add `public/admin/index.html` + `config.yml` whose collections/schema exactly match the content layer types (settings, pages, artworks; media folder `public/images/uploads`)
+- [ ] 10. Integrate Sveltia CMS
+  - [ ] Add `public/admin/index.html` + `config.yml` whose collections/schema exactly match the content layer types (settings, pages, actor videos/headshots/gallery, musician awards/highlights/projects/gallery; media folder `public/images/uploads`)
   - [ ] Verify locally against seeded content (Sveltia local dev workflow)
   - [ ] Document GitHub fine-grained PAT setup for the artist's login
   - [ ] E2E smoke check that `/admin` serves and config parses
-- [ ] 10. Define AWS infrastructure with Terraform
+- [ ] 11. Define AWS infrastructure with Terraform
   - [ ] `infra/`: versioned private S3 bucket, CloudFront distribution with Origin Access Control, response-headers/caching policy, bucket policy limited to the distribution
   - [ ] IAM OIDC provider + least-privilege deploy role trusted by the GitHub repo (s3 sync + cloudfront invalidation only)
   - [ ] Outputs: bucket name, distribution ID, distribution URL
   - [ ] Validate: `terraform fmt`, `terraform validate`, and `terraform plan` (apply requires user's AWS credentials — user runs apply)
-- [ ] 11. Create GitHub Actions workflows
+- [ ] 12. Create GitHub Actions workflows
   - [ ] `ci.yml`: lint + typecheck + unit tests (+ e2e) on pull requests
   - [ ] `deploy.yml`: on push to `main` — install, lint, test, build, assume OIDC role, sync `dist/` to S3 with correct cache headers, create CloudFront invalidation
   - [ ] Document required repo variables/secrets (AWS region, role ARN, bucket name)
-- [ ] 12. Write documentation
+- [ ] 13. Write documentation
   - [ ] Rewrite README: what it is, architecture overview, developer quickstart, one-time setup/deploy guide (Terraform apply, GitHub secrets, CMS/PAT setup)
-  - [ ] Add `docs/ARTIST_GUIDE.md`: non-technical walkthrough — logging into /admin, adding/editing artworks, uploading images, embedding a video, changing colours/fonts, publishing expectations (1–2 min delay)
-- [ ] 13. Final verification pass
+  - [ ] Add `docs/ARTIST_GUIDE.md`: non-technical walkthrough — logging into /admin, editing each section (headshots, videos, awards, galleries), uploading images, embedding a video, changing colours/fonts, publishing expectations (1–2 min delay)
+- [ ] 14. Final verification pass
   - [ ] Full suite green: lint, typecheck, unit tests, e2e, production build
-  - [ ] Manual smoke checklist across all four routes at desktop + mobile widths, including a video-artwork lightbox session
+  - [ ] Manual smoke checklist across all five routes (/, /actor, /musician, /about, /contact) at desktop + mobile widths, including carousel, lightbox and an embedded video
   - [ ] Confirm `npm run preview` serves the built site correctly (SPA fallback caveat noted below)
 
 ## Current Unknowns
@@ -141,6 +163,11 @@ docs/                 # ARTIST_GUIDE.md etc.
 | Artwork slugs derived from filenames (`artworks/<slug>.json`) | Single source of truth, CMS-friendly (Sveltia uses filename as identifier); titles fall back to a prettified slug when absent. |
 | Font pairing presets defined in the content type: `classic \| modern \| editorial \| playful` | Lets seed data validate against the real preset list now; task 3 maps each preset to actual font stacks/CSS variables. Unknown values fall back to `classic`. |
 | Placeholder media committed as hand-made SVGs in `public/images/uploads/` | No offline source of real artwork photos; lightweight, diff-friendly, artist replaces them via the CMS upload flow. Seed contact email uses `.example` domain to avoid pointing at a real address. |
+| **Redesign (2026-08-22): actor–musician dual portfolio** | User's final design: nav = Home · About Me · Contact only; Home shows two headshot tiles linking to `/actor` and `/musician`; generic Gallery route + artworks collection removed. Page skeletons stay hardcoded in Vue; all images/text come from CMS content with graceful fallbacks. |
+| One Sveltia folder collection per page section (`actor/{videos,headshots,gallery}`, `musician/{awards,highlights,projects,gallery}`) | Each editable section maps to exactly one CMS collection — clearest UX for a non-technical artist; filename becomes the slug, `order` field controls display sequence. |
+| Section headings live in page JSON with hardcoded code fallbacks | Structure is fixed in code but wording stays artist-editable; missing fields render sensible defaults ("Actor", "Gallery", "Awards", …). |
+| Headshots = inline sideways carousel; gallery grids open an image-only lightbox | User choice. Videos are inline embeds in the new design, so the lightbox drops its planned video branch. |
+| Existing placeholder SVGs partially reused; no new image files created | User instruction: reuse existing placeholders where they fit (portrait → headshots, scenic images → heroes/galleries), delete the rest, and never create SVGs unless explicitly asked. Seed content ships with some slots intentionally empty to exercise graceful-missing behaviour. |
 
 ## Progress Log
 
@@ -154,3 +181,5 @@ docs/                 # ARTIST_GUIDE.md etc.
 | 2026-08-22 | Flipped to single **public** repo per user preference (portfolio visibility); trade-offs recorded. |
 | 2026-08-22 | Task 1 complete. Scaffolded Vite + Vue 3 + TS app in repo root: ESLint 10 flat config + Prettier + vue-tsc typecheck; Vitest 4 (jsdom) with router unit tests; Playwright skeleton with 2 passing e2e specs; vue-router 5 with placeholder routes for Home/Gallery/About/Contact; base stylesheet + planned directory structure (`src/components`, `src/composables`, `content/*`, `public/images/uploads`). User approved Node upgrade to 24.19 LTS during install resolution; TS pinned to ^6.0.3 (vue-tsc lacks TS7 support). All verification green: dev server HTTP 200, lint, typecheck, unit tests (2 passed), e2e (2 passed), production build. |
 | 2026-08-22 | Task 2 complete. Built content layer in `src/composables/content/`: TS types for settings/theme/pages/artworks, pure normalizers with per-field fallback defaults, and eager `import.meta.glob('/content/**/*.json')` loaders (`useSiteSettings`, `useTheme`, `useHomePage`, `useAboutPage`, `useContactPage`, `useArtworks` sorted by `order`, `useArtwork(slug)`). Seeded fictional artist "Max Rivera": site/theme/home/about/contact JSON + 6 artworks incl. one YouTube video entry; 8 SVG placeholder images in `public/images/uploads/`. 26 new unit tests cover normalizer fallbacks and seeded-content loading through the real glob path. Verification green: lint, typecheck, unit tests (28 passed), production build. Note: content module is tree-shaken out of the current bundle because no view consumes it yet — views wire up in tasks 5–8; glob inlining is verified by the Vitest run which uses the same Vite transform pipeline. |
+| 2026-08-22 | Design locked with user (Q&A): actor–musician dual portfolio. Nav = Home/About Me/Contact only; Home = two headshot tiles → `/actor` + `/musician`; Actor page = hero, videos, headshots carousel, portrait gallery; Musician page = hero, intro, awards, highlights, original projects, gallery; cross-links between both. Generic Gallery route + artworks collection removed; lightbox becomes image-only (videos inline); headshot carousel stays inline. Plan restructured: task 2b added, tasks 4–14 rewritten/renumbered, Overview gained a "Site structure" section, 5 new decisions recorded. |
+| 2026-08-22 | Task 2b complete (user approved immediate implementation). Content layer rebuilt for the new design: types/defaults/normalizers/loaders for `useHomePage` (headshot slots), `useActorPage`, `useActorVideos`, `useHeadshots`, `useActorGallery`, `useMusicianPage`, `useAwards`, `useHighlights`, `useProjects`, `useMusicianGallery`; shared generic `loadEntries(dir, normalize)` sorts by explicit `order`. Router: `/gallery` removed, `/actor` + `/musician` added with placeholder views; nav placeholder = Home/About Me/Contact; e2e spec updated to match (not run). Content reseeded as an actor-musician persona across 7 new folder collections (14 entry files); placeholder SVGs reused where they fit (portrait → headshots, scenic → heroes/galleries), `artwork-studio-process.svg` deleted, no new images created. 36 content tests + router tests green. Verification: lint ✓, typecheck ✓, unit tests 38 passed, production build ✓ (all five view chunks emitted). |

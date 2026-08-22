@@ -1,6 +1,6 @@
 {
   "name": "Max Rivera",
-  "tagline": "Mixed-media paintings about memory, coastlines and changing light.",
+  "tagline": "Actor and musician for stage and screen.",
   "socialLinks": [
     {
       "label": "Instagram",
@@ -9,6 +9,10 @@
     {
       "label": "YouTube",
       "url": "https://www.youtube.com/"
+    },
+    {
+      "label": "Spotlight",
+      "url": "https://www.spotlight.com/"
     }
   ]
 }

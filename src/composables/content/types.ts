@@ -24,10 +24,8 @@ export interface SiteSettings {
 }
 
 export interface HomePageContent {
-  heading: string
-  intro: string
-  featuredArtworkSlug?: string
-  heroImage?: string
+  actorHeadshot?: string
+  musicianHeadshot?: string
 }
 
 export interface AboutPageContent {
@@ -41,15 +39,57 @@ export interface ContactPageContent {
   note?: string
 }
 
-export interface Artwork {
+export interface ActorPageContent {
+  heroImage?: string
+  actorHeading: string
+  galleryHeading: string
+  headshotsHeading: string
+  imagesHeading: string
+}
+
+export interface MusicianPageContent {
+  heroImage?: string
+  intro: string
+  musicianHeading: string
+  awardsHeading: string
+  highlightsHeading: string
+  projectsHeading: string
+  galleryHeading: string
+}
+
+export interface VideoEntry {
   slug: string
   title: string
-  image?: string
   videoUrl?: string
-  medium?: string
-  dimensions?: string
-  year?: number
-  categories: string[]
+  description?: string
+  order: number
+}
+
+export interface HeadshotEntry {
+  slug: string
+  image?: string
+  alt?: string
+  order: number
+}
+
+export interface ActorGalleryImage {
+  slug: string
+  image?: string
+  title: string
+  order: number
+}
+
+export interface AwardEntry {
+  slug: string
+  title: string
+  text: string
+  image?: string
+  order: number
+}
+
+export interface MusicianGalleryImage {
+  slug: string
+  image?: string
   description?: string
   order: number
 }

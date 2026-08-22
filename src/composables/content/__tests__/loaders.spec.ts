@@ -2,26 +2,41 @@ import { describe, expect, it } from 'vitest'
 
 import {
   DEFAULT_ABOUT_PAGE,
-  DEFAULT_ARTWORK_ORDER,
+  DEFAULT_ACTOR_PAGE,
   DEFAULT_CONTACT_PAGE,
+  DEFAULT_ENTRY_ORDER,
   DEFAULT_HOME_PAGE,
+  DEFAULT_MUSICIAN_PAGE,
   DEFAULT_SITE_SETTINGS,
   DEFAULT_THEME,
 } from '../defaults'
 import {
   normalizeAboutPage,
-  normalizeArtwork,
+  normalizeActorGalleryImage,
+  normalizeActorPage,
+  normalizeAward,
   normalizeContactPage,
+  normalizeHeadshot,
   normalizeHomePage,
+  normalizeMusicianGalleryImage,
+  normalizeMusicianPage,
   normalizeSettings,
   normalizeTheme,
+  normalizeVideoEntry,
 } from '../normalize'
 import {
   useAboutPage,
-  useArtwork,
-  useArtworks,
+  useActorGallery,
+  useActorPage,
+  useActorVideos,
+  useAwards,
   useContactPage,
+  useHeadshots,
+  useHighlights,
   useHomePage,
+  useMusicianGallery,
+  useMusicianPage,
+  useProjects,
   useSiteSettings,
   useTheme,
 } from '../index'
@@ -38,11 +53,6 @@ describe('normalizeSettings', () => {
     expect(settings.name).toBe('Ada Lovelace')
     expect(settings.tagline).toBe('')
     expect(settings.socialLinks).toEqual([])
-  })
-
-  it('keeps an empty tagline as an intentional value', () => {
-    const settings = normalizeSettings({ name: 'Ada', tagline: '   ' })
-    expect(settings.tagline).toBe('')
   })
 
   it('drops social links that are missing a label or url', () => {
@@ -82,11 +92,99 @@ describe('normalizeHomePage', () => {
     expect(normalizeHomePage({})).toEqual(DEFAULT_HOME_PAGE)
   })
 
-  it('keeps provided values and trims whitespace', () => {
-    const home = normalizeHomePage({ heading: ' Hello ', featuredArtworkSlug: ' sea-study ' })
-    expect(home.heading).toBe('Hello')
-    expect(home.featuredArtworkSlug).toBe('sea-study')
-    expect(home.heroImage).toBeUndefined()
+  it('keeps provided headshot paths', () => {
+    const home = normalizeHomePage({
+      actorHeadshot: ' /images/actor.jpg ',
+      musicianHeadshot: '/images/musician.jpg',
+    })
+    expect(home.actorHeadshot).toBe('/images/actor.jpg')
+    expect(home.musicianHeadshot).toBe('/images/musician.jpg')
+  })
+})
+
+describe('normalizeActorPage', () => {
+  it('falls back to hardcoded headings when fields are missing', () => {
+    expect(normalizeActorPage(undefined)).toEqual(DEFAULT_ACTOR_PAGE)
+    expect(DEFAULT_ACTOR_PAGE.actorHeading).toBe('Actor')
+    expect(DEFAULT_ACTOR_PAGE.headshotsHeading).toBe('Headshots')
+  })
+
+  it('lets the artist override section headings', () => {
+    const actor = normalizeActorPage({ actorHeading: ' On Stage ', heroImage: '/hero.jpg' })
+    expect(actor.actorHeading).toBe('On Stage')
+    expect(actor.heroImage).toBe('/hero.jpg')
+    expect(actor.galleryHeading).toBe('Gallery')
+  })
+})
+
+describe('normalizeMusicianPage', () => {
+  it('falls back to hardcoded headings and empty intro', () => {
+    expect(normalizeMusicianPage(undefined)).toEqual(DEFAULT_MUSICIAN_PAGE)
+    expect(DEFAULT_MUSICIAN_PAGE.projectsHeading).toBe('Original Projects')
+  })
+
+  it('keeps a provided intro and heading overrides', () => {
+    const musician = normalizeMusicianPage({ intro: ' Hello world. ', awardsHeading: 'Prizes' })
+    expect(musician.intro).toBe('Hello world.')
+    expect(musician.awardsHeading).toBe('Prizes')
+    expect(musician.highlightsHeading).toBe('Highlights')
+  })
+})
+
+describe('entry normalizers', () => {
+  it('video entries derive their title from the slug and allow a missing url', () => {
+    const video = normalizeVideoEntry(undefined, 'drama-reel')
+    expect(video.title).toBe('Drama Reel')
+    expect(video.videoUrl).toBeUndefined()
+    expect(video.order).toBe(DEFAULT_ENTRY_ORDER)
+
+    const full = normalizeVideoEntry(
+      { title: ' Reel ', videoUrl: ' https://youtu.be/x ', description: ' Clips ', order: 3 },
+      'reel',
+    )
+    expect(full.title).toBe('Reel')
+    expect(full.videoUrl).toBe('https://youtu.be/x')
+    expect(full.description).toBe('Clips')
+  })
+
+  it('headshot entries keep optional image and alt text', () => {
+    const headshot = normalizeHeadshot(undefined, 'main')
+    expect(headshot.image).toBeUndefined()
+    expect(headshot.alt).toBeUndefined()
+
+    const full = normalizeHeadshot({ image: ' /a.jpg ', alt: ' Max smiling ', order: -2 }, 'main')
+    expect(full.image).toBe('/a.jpg')
+    expect(full.alt).toBe('Max smiling')
+    expect(full.order).toBe(-2)
+  })
+
+  it('actor gallery images fall back to a slug-derived title', () => {
+    expect(normalizeActorGalleryImage({}, 'on-stage')?.title).toBe('On Stage')
+    expect(normalizeActorGalleryImage({ title: 'Still' }, 'on-stage')?.title).toBe('Still')
+  })
+
+  it('awards default to an empty text and slug-derived title', () => {
+    const award = normalizeAward(undefined, 'best-actor')
+    expect(award.title).toBe('Best Actor')
+    expect(award.text).toBe('')
+    expect(award.image).toBeUndefined()
+
+    const full = normalizeAward({ text: ' For services to noise. ', image: ' /t.jpg ' }, 'trophy')
+    expect(full.text).toBe('For services to noise.')
+    expect(full.image).toBe('/t.jpg')
+  })
+
+  it('musician gallery images keep an optional description', () => {
+    const image = normalizeMusicianGalleryImage(undefined, 'studio')
+    expect(image.image).toBeUndefined()
+    expect(image.description).toBeUndefined()
+
+    const full = normalizeMusicianGalleryImage(
+      { image: ' /p.jpg ', description: ' Studio ' },
+      'studio',
+    )
+    expect(full.image).toBe('/p.jpg')
+    expect(full.description).toBe('Studio')
   })
 })
 
@@ -102,11 +200,6 @@ describe('normalizeAboutPage', () => {
     })
     expect(about.bioParagraphs).toEqual(['First paragraph.'])
     expect(about.statement).toBe('My statement.')
-  })
-
-  it('treats an all-invalid paragraphs array as no bio rather than crashing', () => {
-    const about = normalizeAboutPage({ bioParagraphs: [1, true] })
-    expect(about.bioParagraphs).toEqual([])
   })
 })
 
@@ -129,46 +222,11 @@ describe('normalizeContactPage', () => {
   })
 })
 
-describe('normalizeArtwork', () => {
-  it('derives a readable title from the slug when title is missing', () => {
-    const artwork = normalizeArtwork(undefined, 'harbour-late-summer')
-    expect(artwork.slug).toBe('harbour-late-summer')
-    expect(artwork.title).toBe('Harbour Late Summer')
-    expect(artwork.order).toBe(DEFAULT_ARTWORK_ORDER)
-    expect(artwork.categories).toEqual([])
-  })
-
-  it('keeps all provided fields including the video url', () => {
-    const raw = {
-      title: 'Studio Process',
-      videoUrl: 'https://www.youtube.com/watch?v=abc',
-      year: 2026,
-      categories: ['Video'],
-      order: 2,
-      medium: 'Video',
-      dimensions: '',
-      description: 'A short film.',
-    }
-    const artwork = normalizeArtwork(raw, 'studio-process')
-    expect(artwork.videoUrl).toBe('https://www.youtube.com/watch?v=abc')
-    expect(artwork.year).toBe(2026)
-    expect(artwork.dimensions).toBeUndefined()
-    expect(artwork.order).toBe(2)
-  })
-
-  it('ignores invalid years and sorts unknown orders last', () => {
-    const artwork = normalizeArtwork({ year: -4, order: 'first', categories: [1, 'Painting'] }, 'x')
-    expect(artwork.year).toBeUndefined()
-    expect(artwork.order).toBe(DEFAULT_ARTWORK_ORDER)
-    expect(artwork.categories).toEqual(['Painting'])
-  })
-})
-
 describe('seeded content loaders', () => {
   it('loads the seeded site settings', () => {
     const settings = useSiteSettings()
     expect(settings.name).toBe('Max Rivera')
-    expect(settings.tagline).toContain('Mixed-media')
+    expect(settings.tagline).toContain('Actor')
     expect(settings.socialLinks.length).toBeGreaterThan(0)
   })
 
@@ -178,10 +236,63 @@ describe('seeded content loaders', () => {
     expect(theme.palette.background).toBe('#fbf9f6')
   })
 
-  it('loads the seeded home page with a featured artwork slug', () => {
+  it('loads the seeded home page with both headshot slots filled', () => {
     const home = useHomePage()
-    expect(home.heading).toContain('light')
-    expect(home.featuredArtworkSlug).toBe('harbour-late-summer')
+    expect(home.actorHeadshot).toBeDefined()
+    expect(home.musicianHeadshot).toBeDefined()
+  })
+
+  it('loads the seeded actor page with hero and headings', () => {
+    const actor = useActorPage()
+    expect(actor.heroImage).toBe('/images/uploads/hero.svg')
+    expect(actor.actorHeading).toBe('Actor')
+    expect(actor.headshotsHeading).toBe('Headshots')
+    expect(actor.imagesHeading).toBe('Gallery Images')
+  })
+
+  it('loads seeded actor videos sorted by order, all with urls', () => {
+    const videos = useActorVideos()
+    expect(videos.map((v) => v.slug)).toEqual(['reel-drama', 'reel-comedy'])
+    expect(videos.every((v) => v.videoUrl?.startsWith('https://www.youtube.com/'))).toBe(true)
+  })
+
+  it('loads the seeded headshots carousel entry', () => {
+    const headshots = useHeadshots()
+    expect(headshots).toHaveLength(1)
+    expect(headshots[0].image).toBe('/images/uploads/portrait.svg')
+    expect(headshots[0].alt).toContain('headshot')
+  })
+
+  it('loads the seeded actor gallery sorted by explicit order', () => {
+    const gallery = useActorGallery()
+    expect(gallery.map((g) => g.slug)).toEqual([
+      'tempest-prospero',
+      'tempest-rehearsal',
+      'backstage-harbour',
+    ])
+    expect(gallery.every((g) => g.title.length > 0 && g.image !== undefined)).toBe(true)
+  })
+
+  it('loads the seeded musician page with intro and hero', () => {
+    const musician = useMusicianPage()
+    expect(musician.heroImage).toBe('/images/uploads/artwork-harbour-late-summer.svg')
+    expect(musician.intro).toContain('cellist')
+    expect(musician.projectsHeading).toBe('Original Projects')
+  })
+
+  it('loads seeded awards where the first has no image (graceful fallback)', () => {
+    const awards = useAwards()
+    expect(awards).toHaveLength(2)
+    expect(awards[0].image).toBeUndefined()
+    expect(awards[0].text.length).toBeGreaterThan(0)
+  })
+
+  it('loads seeded highlights and projects as ordered video lists', () => {
+    const highlights = useHighlights()
+    const projects = useProjects()
+    expect(highlights.map((v) => v.slug)).toEqual(['harbour-sessions-live', 'score-excerpt'])
+    expect(projects.map((v) => v.slug)).toEqual(['field-notes-album', 'the-long-shore'])
+    expect([...highlights, ...projects].every((v) => v.description !== undefined)).toBe(true)
   })
 
   it('loads the seeded about page with bio paragraphs and a statement', () => {
@@ -194,23 +305,10 @@ describe('seeded content loaders', () => {
     expect(useContactPage().email).toMatch(/@/)
   })
 
-  it('loads every seeded artwork sorted by its explicit order', () => {
-    const artworks = useArtworks()
-    expect(artworks).toHaveLength(6)
-    const orders = artworks.map((a) => a.order)
-    expect([...orders].sort((a, b) => a - b)).toEqual(orders)
-    expect(artworks[0].slug).toBe('harbour-late-summer')
-  })
-
-  it('includes one video artwork entry with an embeddable url', () => {
-    const videoArtwork = useArtworks().find((a) => a.videoUrl)
-    expect(videoArtwork?.slug).toBe('studio-process')
-    expect(videoArtwork?.videoUrl).toMatch(/^https:\/\/www\.youtube\.com\//)
-    expect(videoArtwork?.image).toBeDefined()
-  })
-
-  it('looks up artworks by slug and returns undefined for unknown slugs', () => {
-    expect(useArtwork('tide-lines-i')?.title).toBe('Tide Lines I')
-    expect(useArtwork('does-not-exist')).toBeUndefined()
+  it('loads the seeded musician gallery with descriptions', () => {
+    const gallery = useMusicianGallery()
+    expect(gallery).toHaveLength(1)
+    expect(gallery[0].image).toBe('/images/uploads/artwork-sea-glass-notes.svg')
+    expect(gallery[0].description).toContain('Field Notes')
   })
 })

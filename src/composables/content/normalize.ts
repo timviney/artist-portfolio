@@ -1,20 +1,27 @@
 import {
   DEFAULT_ABOUT_PAGE,
-  DEFAULT_ARTWORK_ORDER,
+  DEFAULT_ACTOR_PAGE,
   DEFAULT_CONTACT_PAGE,
-  DEFAULT_HOME_PAGE,
+  DEFAULT_ENTRY_ORDER,
+  DEFAULT_MUSICIAN_PAGE,
   DEFAULT_SITE_SETTINGS,
   DEFAULT_THEME,
 } from './defaults'
 import type {
   AboutPageContent,
-  Artwork,
+  ActorGalleryImage,
+  ActorPageContent,
+  AwardEntry,
   ContactPageContent,
   FontPairingPreset,
+  HeadshotEntry,
   HomePageContent,
+  MusicianGalleryImage,
+  MusicianPageContent,
   SiteSettings,
   SocialLink,
   ThemeConfig,
+  VideoEntry,
 } from './types'
 
 export const FONT_PAIRING_PRESETS = ['classic', 'modern', 'editorial', 'playful'] as const
@@ -32,10 +39,6 @@ function asTrimmedString(value: unknown, fallback: string): string {
 function asOptionalTrimmedString(value: unknown): string | undefined {
   const trimmed = asTrimmedString(value, '')
   return trimmed.length > 0 ? trimmed : undefined
-}
-
-function asOptionalPositiveInt(value: unknown): number | undefined {
-  return typeof value === 'number' && Number.isInteger(value) && value > 0 ? value : undefined
 }
 
 function asStringArray(value: unknown): string[] {
@@ -61,6 +64,26 @@ export function prettifySlug(slug: string): string {
     .filter((word) => word.length > 0)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ')
+}
+
+interface EntryBase {
+  slug: string
+  order: number
+}
+
+function entryBase(source: Record<string, unknown>, slug: string): EntryBase {
+  const safeSlug = slug.trim()
+  return {
+    slug: safeSlug,
+    order:
+      typeof source.order === 'number' && Number.isFinite(source.order)
+        ? source.order
+        : DEFAULT_ENTRY_ORDER,
+  }
+}
+
+function titleFrom(source: Record<string, unknown>, slug: string): string {
+  return asTrimmedString(source.title, prettifySlug(slug))
 }
 
 export function normalizeSettings(raw: unknown): SiteSettings {
@@ -96,10 +119,8 @@ export function normalizeTheme(raw: unknown): ThemeConfig {
 export function normalizeHomePage(raw: unknown): HomePageContent {
   const source = isRecord(raw) ? raw : {}
   return {
-    heading: asTrimmedString(source.heading, DEFAULT_HOME_PAGE.heading),
-    intro: asTrimmedString(source.intro, DEFAULT_HOME_PAGE.intro),
-    featuredArtworkSlug: asOptionalTrimmedString(source.featuredArtworkSlug),
-    heroImage: asOptionalTrimmedString(source.heroImage),
+    actorHeadshot: asOptionalTrimmedString(source.actorHeadshot),
+    musicianHeadshot: asOptionalTrimmedString(source.musicianHeadshot),
   }
 }
 
@@ -123,23 +144,76 @@ export function normalizeContactPage(raw: unknown): ContactPageContent {
   }
 }
 
-export function normalizeArtwork(raw: unknown, slug: string): Artwork {
+export function normalizeActorPage(raw: unknown): ActorPageContent {
   const source = isRecord(raw) ? raw : {}
-  const safeSlug = slug.trim()
-  const order =
-    typeof source.order === 'number' && Number.isFinite(source.order)
-      ? source.order
-      : DEFAULT_ARTWORK_ORDER
   return {
-    slug: safeSlug,
-    title: asTrimmedString(source.title, prettifySlug(safeSlug)),
-    image: asOptionalTrimmedString(source.image),
+    heroImage: asOptionalTrimmedString(source.heroImage),
+    actorHeading: asTrimmedString(source.actorHeading, DEFAULT_ACTOR_PAGE.actorHeading),
+    galleryHeading: asTrimmedString(source.galleryHeading, DEFAULT_ACTOR_PAGE.galleryHeading),
+    headshotsHeading: asTrimmedString(source.headshotsHeading, DEFAULT_ACTOR_PAGE.headshotsHeading),
+    imagesHeading: asTrimmedString(source.imagesHeading, DEFAULT_ACTOR_PAGE.imagesHeading),
+  }
+}
+
+export function normalizeMusicianPage(raw: unknown): MusicianPageContent {
+  const source = isRecord(raw) ? raw : {}
+  return {
+    heroImage: asOptionalTrimmedString(source.heroImage),
+    intro: typeof source.intro === 'string' ? source.intro.trim() : DEFAULT_MUSICIAN_PAGE.intro,
+    musicianHeading: asTrimmedString(source.musicianHeading, DEFAULT_MUSICIAN_PAGE.musicianHeading),
+    awardsHeading: asTrimmedString(source.awardsHeading, DEFAULT_MUSICIAN_PAGE.awardsHeading),
+    highlightsHeading: asTrimmedString(
+      source.highlightsHeading,
+      DEFAULT_MUSICIAN_PAGE.highlightsHeading,
+    ),
+    projectsHeading: asTrimmedString(source.projectsHeading, DEFAULT_MUSICIAN_PAGE.projectsHeading),
+    galleryHeading: asTrimmedString(source.galleryHeading, DEFAULT_MUSICIAN_PAGE.galleryHeading),
+  }
+}
+
+export function normalizeVideoEntry(raw: unknown, slug: string): VideoEntry {
+  const source = isRecord(raw) ? raw : {}
+  return {
+    ...entryBase(source, slug),
+    title: titleFrom(source, slug.trim()),
     videoUrl: asOptionalTrimmedString(source.videoUrl),
-    medium: asOptionalTrimmedString(source.medium),
-    dimensions: asOptionalTrimmedString(source.dimensions),
-    year: asOptionalPositiveInt(source.year),
-    categories: asStringArray(source.categories).filter((category) => category.length > 0),
     description: asOptionalTrimmedString(source.description),
-    order,
+  }
+}
+
+export function normalizeHeadshot(raw: unknown, slug: string): HeadshotEntry {
+  const source = isRecord(raw) ? raw : {}
+  return {
+    ...entryBase(source, slug),
+    image: asOptionalTrimmedString(source.image),
+    alt: asOptionalTrimmedString(source.alt),
+  }
+}
+
+export function normalizeActorGalleryImage(raw: unknown, slug: string): ActorGalleryImage {
+  const source = isRecord(raw) ? raw : {}
+  return {
+    ...entryBase(source, slug),
+    image: asOptionalTrimmedString(source.image),
+    title: titleFrom(source, slug.trim()),
+  }
+}
+
+export function normalizeAward(raw: unknown, slug: string): AwardEntry {
+  const source = isRecord(raw) ? raw : {}
+  return {
+    ...entryBase(source, slug),
+    title: titleFrom(source, slug.trim()),
+    text: typeof source.text === 'string' ? source.text.trim() : '',
+    image: asOptionalTrimmedString(source.image),
+  }
+}
+
+export function normalizeMusicianGalleryImage(raw: unknown, slug: string): MusicianGalleryImage {
+  const source = isRecord(raw) ? raw : {}
+  return {
+    ...entryBase(source, slug),
+    image: asOptionalTrimmedString(source.image),
+    description: asOptionalTrimmedString(source.description),
   }
 }
