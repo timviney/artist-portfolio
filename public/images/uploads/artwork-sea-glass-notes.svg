@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-label="Placeholder artwork: Sea-Glass Notes">
+  <rect width="1200" height="900" fill="#efe9df"/>
+  <rect x="120" y="140" width="260" height="200" rx="24" fill="#9dbfb2"/>
+  <rect x="460" y="220" width="220" height="170" rx="20" fill="#d9a27a"/>
+  <rect x="760" y="130" width="280" height="210" rx="26" fill="#7d98a1"/>
+  <rect x="220" y="480" width="240" height="190" rx="22" fill="#c2b6a5"/>
+  <rect x="560" y="520" width="300" height="180" rx="24" fill="#3a5a40" opacity="0.85"/>
+  <text x="60" y="820" font-family="Georgia, serif" font-size="44" fill="#5c554d">Sea-Glass Notes</text>
+</svg>

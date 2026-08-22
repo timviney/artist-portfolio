@@ -55,11 +55,11 @@ docs/                 # ARTIST_GUIDE.md etc.
   - [x] Add Vitest + @vue/test-utils, wire `npm run test`; add Playwright skeleton with one trivial passing spec
   - [x] Set up directory structure (components/views/composables/router/content), base global stylesheet, vue-router with placeholder routes for all four pages
   - [x] Verify: dev server runs, `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build` all pass
-- [ ] 2. Build the content layer
-  - [ ] Define TS types + loader composables for: site settings (name, tagline, social links, theme), home content, about page, contact page, artwork entries
-  - [ ] Load `content/**` at build time with `import.meta.glob`; provide sensible fallback defaults when files/fields are missing
-  - [ ] Seed `content/` with realistic example data (incl. one video artwork entry) and placeholder images
-  - [ ] Unit tests for loaders incl. missing-content fallback behaviour
+- [x] 2. Build the content layer
+  - [x] Define TS types + loader composables for: site settings (name, tagline, social links, theme), home content, about page, contact page, artwork entries
+  - [x] Load `content/**` at build time with `import.meta.glob`; provide sensible fallback defaults when files/fields are missing
+  - [x] Seed `content/` with realistic example data (incl. one video artwork entry) and placeholder images
+  - [x] Unit tests for loaders incl. missing-content fallback behaviour
 - [ ] 3. Implement the theme system
   - [ ] Map theme config (palette: primary/accent/background/text; font pairing from preset list) to CSS custom properties applied at app root
   - [ ] Verify contrast/responsive behaviour across presets; unit test the theme-to-CSS-variable mapping
@@ -136,6 +136,11 @@ docs/                 # ARTIST_GUIDE.md etc.
 | TypeScript pinned to ^6.0.x (not 7) | TS 7 is the new native compiler and removed `lib/tsc`; vue-tsc@3.3.11 cannot drive it yet (`ERR_PACKAGE_PATH_NOT_EXPORTED`). Revisit pin when a TS7-compatible vue-tsc ships. |
 | ESLint 10 flat config: plugin-vue `flat/essential` + @vue/eslint-config-typescript; Prettier owns formatting | `flat/essential` avoids stylistic template rules that conflict with Prettier. Verified working combo: eslint@10.9, eslint-plugin-vue@10.10, @vue/eslint-config-typescript@14.9. |
 | Latest majors adopted: vite@8, vitest@4, jsdom@30, vue-router@5, @playwright/test@1.62 | User requested latest compatible installs; full toolchain verified green on this set. Vitest config lives in separate `vitest.config.ts` sharing the `@` alias with `vite.config.ts`. |
+| Content stored as JSON files (not Markdown) | Structured fields map 1:1 to Sveltia widgets and TS types; avoids adding a markdown parser dependency for v1's fixed layout. Long-form text is arrays of paragraph strings (`bioParagraphs`). |
+| Content layer lives in `src/composables/content/` (types / defaults / normalize / loaders) | Keeps planned `composables/` structure; normalizers are pure functions over `unknown` so missing-file/missing-field fallbacks are unit-testable without mocking `import.meta.glob`. Loaders are non-reactive plain functions (content is static at build time). |
+| Artwork slugs derived from filenames (`artworks/<slug>.json`) | Single source of truth, CMS-friendly (Sveltia uses filename as identifier); titles fall back to a prettified slug when absent. |
+| Font pairing presets defined in the content type: `classic \| modern \| editorial \| playful` | Lets seed data validate against the real preset list now; task 3 maps each preset to actual font stacks/CSS variables. Unknown values fall back to `classic`. |
+| Placeholder media committed as hand-made SVGs in `public/images/uploads/` | No offline source of real artwork photos; lightweight, diff-friendly, artist replaces them via the CMS upload flow. Seed contact email uses `.example` domain to avoid pointing at a real address. |
 
 ## Progress Log
 
@@ -148,3 +153,4 @@ docs/                 # ARTIST_GUIDE.md etc.
 | 2026-08-22 | Decided single private repo for code + content; two-repo split recorded as future migration path. |
 | 2026-08-22 | Flipped to single **public** repo per user preference (portfolio visibility); trade-offs recorded. |
 | 2026-08-22 | Task 1 complete. Scaffolded Vite + Vue 3 + TS app in repo root: ESLint 10 flat config + Prettier + vue-tsc typecheck; Vitest 4 (jsdom) with router unit tests; Playwright skeleton with 2 passing e2e specs; vue-router 5 with placeholder routes for Home/Gallery/About/Contact; base stylesheet + planned directory structure (`src/components`, `src/composables`, `content/*`, `public/images/uploads`). User approved Node upgrade to 24.19 LTS during install resolution; TS pinned to ^6.0.3 (vue-tsc lacks TS7 support). All verification green: dev server HTTP 200, lint, typecheck, unit tests (2 passed), e2e (2 passed), production build. |
+| 2026-08-22 | Task 2 complete. Built content layer in `src/composables/content/`: TS types for settings/theme/pages/artworks, pure normalizers with per-field fallback defaults, and eager `import.meta.glob('/content/**/*.json')` loaders (`useSiteSettings`, `useTheme`, `useHomePage`, `useAboutPage`, `useContactPage`, `useArtworks` sorted by `order`, `useArtwork(slug)`). Seeded fictional artist "Max Rivera": site/theme/home/about/contact JSON + 6 artworks incl. one YouTube video entry; 8 SVG placeholder images in `public/images/uploads/`. 26 new unit tests cover normalizer fallbacks and seeded-content loading through the real glob path. Verification green: lint, typecheck, unit tests (28 passed), production build. Note: content module is tree-shaken out of the current bundle because no view consumes it yet — views wire up in tasks 5–8; glob inlining is verified by the Vitest run which uses the same Vite transform pipeline. |
