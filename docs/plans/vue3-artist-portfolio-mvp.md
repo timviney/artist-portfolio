@@ -47,12 +47,12 @@ docs/                 # ARTIST_GUIDE.md etc.
 
 ## Tasks
 
-- [ ] 1. Scaffold the Vue 3 + TypeScript project
-  - [ ] Create Vite + Vue 3 + TS app in repo root (respect existing README/.gitignore/LICENSE)
-  - [ ] Add ESLint (flat config, Vue + TS plugins), Prettier, `vue-tsc` typecheck script
-  - [ ] Add Vitest + @vue/test-utils, wire `npm run test`; add Playwright skeleton with one trivial passing spec
-  - [ ] Set up directory structure (components/views/composables/router/content), base global stylesheet, vue-router with placeholder routes for all four pages
-  - [ ] Verify: dev server runs, `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build` all pass
+- [x] 1. Scaffold the Vue 3 + TypeScript project
+  - [x] Create Vite + Vue 3 + TS app in repo root (respect existing README/.gitignore/LICENSE)
+  - [x] Add ESLint (flat config, Vue + TS plugins), Prettier, `vue-tsc` typecheck script
+  - [x] Add Vitest + @vue/test-utils, wire `npm run test`; add Playwright skeleton with one trivial passing spec
+  - [x] Set up directory structure (components/views/composables/router/content), base global stylesheet, vue-router with placeholder routes for all four pages
+  - [x] Verify: dev server runs, `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build` all pass
 - [ ] 2. Build the content layer
   - [ ] Define TS types + loader composables for: site settings (name, tagline, social links, theme), home content, about page, contact page, artwork entries
   - [ ] Load `content/**` at build time with `import.meta.glob`; provide sensible fallback defaults when files/fields are missing
@@ -130,6 +130,10 @@ docs/                 # ARTIST_GUIDE.md etc.
 | Fixed page structure; artists edit content + theme only | Avoids rebuilding Squarespace. Layout lives in code; all customisation is data (content, colours, fonts, toggles). Future flexibility = config knobs on fixed slots, not composition. |
 | Draft preview mode deferred to post-v1 | User decision: v1 ships without it. The designed approach (editorial workflow + `?preview=<branch>` fetching raw GitHub content, zero extra infra) is preserved in Future Enhancements for the follow-up session. |
 | Single **public** repo holding both code and content | User wants the project visible as portfolio work. Repo content equals site content (already public); public repos get unlimited Actions minutes; the Sveltia PAT is required for writes regardless of visibility. Two-repo split still adds cross-repo checkout + deploy triggering for no v1 benefit; documented as a future migration if template-distribution ever happens. Known trade-off: post-v1 draft branches would be publicly browsable pre-publish. Never commit secrets — AWS access uses OIDC roles only. |
+| Node upgraded to 24 LTS on dev machine (user-approved) | Latest stack requires it: vue-router 5 needs vite ≥7.3, and vite 7.3+/8 + jsdom 27+ require Node ≥22.12 (dev box had 22.8). CI runners already use current Node. |
+| TypeScript pinned to ^6.0.x (not 7) | TS 7 is the new native compiler and removed `lib/tsc`; vue-tsc@3.3.11 cannot drive it yet (`ERR_PACKAGE_PATH_NOT_EXPORTED`). Revisit pin when a TS7-compatible vue-tsc ships. |
+| ESLint 10 flat config: plugin-vue `flat/essential` + @vue/eslint-config-typescript; Prettier owns formatting | `flat/essential` avoids stylistic template rules that conflict with Prettier. Verified working combo: eslint@10.9, eslint-plugin-vue@10.10, @vue/eslint-config-typescript@14.9. |
+| Latest majors adopted: vite@8, vitest@4, jsdom@30, vue-router@5, @playwright/test@1.62 | User requested latest compatible installs; full toolchain verified green on this set. Vitest config lives in separate `vitest.config.ts` sharing the `@` alias with `vite.config.ts`. |
 
 ## Progress Log
 
@@ -141,3 +145,4 @@ docs/                 # ARTIST_GUIDE.md etc.
 | 2026-08-22 | Deferred draft preview mode to post-v1 per user decision; moved to new Future Enhancements section. |
 | 2026-08-22 | Decided single private repo for code + content; two-repo split recorded as future migration path. |
 | 2026-08-22 | Flipped to single **public** repo per user preference (portfolio visibility); trade-offs recorded. |
+| 2026-08-22 | Task 1 complete. Scaffolded Vite + Vue 3 + TS app in repo root: ESLint 10 flat config + Prettier + vue-tsc typecheck; Vitest 4 (jsdom) with router unit tests; Playwright skeleton with 2 passing e2e specs; vue-router 5 with placeholder routes for Home/Gallery/About/Contact; base stylesheet + planned directory structure (`src/components`, `src/composables`, `content/*`, `public/images/uploads`). User approved Node upgrade to 24.19 LTS during install resolution; TS pinned to ^6.0.3 (vue-tsc lacks TS7 support). All verification green: dev server HTTP 200, lint, typecheck, unit tests (2 passed), e2e (2 passed), production build. |
