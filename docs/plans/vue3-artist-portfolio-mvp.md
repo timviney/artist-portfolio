@@ -12,6 +12,8 @@ Customisation works via **Sveltia CMS**, a Git-based CMS served at `/admin`: the
 
 **Out of scope (v1):** multi-artist tenancy, contact-form backend, custom domain/Route53/ACM, blog, e-commerce, SSR/SEO-heavy rendering optimisations, draft preview mode (deferred — see Future Enhancements), and — critically — **any form of layout composition**: artists edit content and theme only; page structure is fixed in code. No section/page builders (that is Squarespace's product, not this project's). Future flexibility comes from config toggles and layout presets on fixed slots, never from free-form composition.
 
+**agent notes** do not run playwright/e2e tests unless requested as they are slow. Always run the minimum tests/build required.
+
 ## Future Enhancements (post-v1)
 
 Ordered roughly by expected value:
