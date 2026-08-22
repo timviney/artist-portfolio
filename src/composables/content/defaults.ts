@@ -5,23 +5,12 @@ import type {
   HomePageContent,
   MusicianPageContent,
   SiteSettings,
-  ThemeConfig,
 } from './types'
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   name: 'Your Name',
   tagline: '',
   socialLinks: [],
-}
-
-export const DEFAULT_THEME: ThemeConfig = {
-  palette: {
-    primary: '#9c6644',
-    accent: '#3a5a40',
-    background: '#fbf9f6',
-    text: '#262220',
-  },
-  fontPairing: 'classic',
 }
 
 export const DEFAULT_HOME_PAGE: HomePageContent = {

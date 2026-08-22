@@ -8,7 +8,6 @@ import {
   DEFAULT_HOME_PAGE,
   DEFAULT_MUSICIAN_PAGE,
   DEFAULT_SITE_SETTINGS,
-  DEFAULT_THEME,
 } from '../defaults'
 import {
   normalizeAboutPage,
@@ -21,7 +20,7 @@ import {
   normalizeMusicianGalleryImage,
   normalizeMusicianPage,
   normalizeSettings,
-  normalizeTheme,
+  normalizeThemeSelection,
   normalizeVideoEntry,
 } from '../normalize'
 import {
@@ -68,21 +67,19 @@ describe('normalizeSettings', () => {
   })
 })
 
-describe('normalizeTheme', () => {
-  it('falls back to the default theme when the file is missing', () => {
-    expect(normalizeTheme(undefined)).toEqual(DEFAULT_THEME)
+describe('normalizeThemeSelection', () => {
+  it('falls back to an empty selection when the file is missing or empty', () => {
+    expect(normalizeThemeSelection(undefined)).toEqual({})
+    expect(normalizeThemeSelection({})).toEqual({})
   })
 
-  it('merges a partial palette over the defaults', () => {
-    const theme = normalizeTheme({ palette: { primary: '#123456' } })
-    expect(theme.palette.primary).toBe('#123456')
-    expect(theme.palette.accent).toBe(DEFAULT_THEME.palette.accent)
-    expect(theme.fontPairing).toBe('classic')
+  it('keeps only the preset field, trimmed', () => {
+    const selection = normalizeThemeSelection({ preset: ' Chocolate Truffle ', palette: '#fff' })
+    expect(selection).toEqual({ preset: 'Chocolate Truffle' })
   })
 
-  it('rejects font pairings outside the preset list', () => {
-    const theme = normalizeTheme({ fontPairing: 'comic-sans-everything' })
-    expect(theme.fontPairing).toBe(DEFAULT_THEME.fontPairing)
+  it('coerces a non-string preset to no selection', () => {
+    expect(normalizeThemeSelection({ preset: 42 })).toEqual({})
   })
 })
 
@@ -230,10 +227,8 @@ describe('seeded content loaders', () => {
     expect(settings.socialLinks.length).toBeGreaterThan(0)
   })
 
-  it('loads the seeded theme with a known preset', () => {
-    const theme = useTheme()
-    expect(theme.fontPairing).toBe('classic')
-    expect(theme.palette.background).toBe('#fbf9f6')
+  it('loads the seeded theme selection', () => {
+    expect(useTheme()).toEqual({ preset: 'chocolate truffle' })
   })
 
   it('loads the seeded home page with both headshot slots filled', () => {

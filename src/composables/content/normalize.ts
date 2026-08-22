@@ -5,7 +5,6 @@ import {
   DEFAULT_ENTRY_ORDER,
   DEFAULT_MUSICIAN_PAGE,
   DEFAULT_SITE_SETTINGS,
-  DEFAULT_THEME,
 } from './defaults'
 import type {
   AboutPageContent,
@@ -13,18 +12,15 @@ import type {
   ActorPageContent,
   AwardEntry,
   ContactPageContent,
-  FontPairingPreset,
   HeadshotEntry,
   HomePageContent,
   MusicianGalleryImage,
   MusicianPageContent,
   SiteSettings,
   SocialLink,
-  ThemeConfig,
+  ThemeSelection,
   VideoEntry,
 } from './types'
-
-export const FONT_PAIRING_PRESETS = ['classic', 'modern', 'editorial', 'playful'] as const
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -96,23 +92,10 @@ export function normalizeSettings(raw: unknown): SiteSettings {
   }
 }
 
-export function normalizeTheme(raw: unknown): ThemeConfig {
+export function normalizeThemeSelection(raw: unknown): ThemeSelection {
   const source = isRecord(raw) ? raw : {}
-  const palette = isRecord(source.palette) ? source.palette : {}
-  const fallbackPalette = DEFAULT_THEME.palette
-  const fontPairing =
-    typeof source.fontPairing === 'string' &&
-    (FONT_PAIRING_PRESETS as readonly string[]).includes(source.fontPairing)
-      ? (source.fontPairing as FontPairingPreset)
-      : DEFAULT_THEME.fontPairing
   return {
-    palette: {
-      primary: asTrimmedString(palette.primary, fallbackPalette.primary),
-      accent: asTrimmedString(palette.accent, fallbackPalette.accent),
-      background: asTrimmedString(palette.background, fallbackPalette.background),
-      text: asTrimmedString(palette.text, fallbackPalette.text),
-    },
-    fontPairing,
+    preset: asOptionalTrimmedString(source.preset),
   }
 }
 

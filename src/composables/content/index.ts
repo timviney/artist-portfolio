@@ -9,7 +9,7 @@ import type {
   MusicianGalleryImage,
   MusicianPageContent,
   SiteSettings,
-  ThemeConfig,
+  ThemeSelection,
   VideoEntry,
 } from './types'
 import {
@@ -23,7 +23,7 @@ import {
   normalizeMusicianGalleryImage,
   normalizeMusicianPage,
   normalizeSettings,
-  normalizeTheme,
+  normalizeThemeSelection,
   normalizeVideoEntry,
 } from './normalize'
 
@@ -70,8 +70,8 @@ export function useSiteSettings(): SiteSettings {
   return normalizeSettings(readJson(SETTINGS_PATH))
 }
 
-export function useTheme(): ThemeConfig {
-  return normalizeTheme(readJson(THEME_PATH))
+export function useTheme(): ThemeSelection {
+  return normalizeThemeSelection(readJson(THEME_PATH))
 }
 
 export function useHomePage(): HomePageContent {

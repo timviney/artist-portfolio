@@ -1,5 +1,11 @@
+<script setup lang="ts">
+import { themeToCssVariables, useActiveTheme } from '@/composables/theme'
+
+const themeStyle = themeToCssVariables(useActiveTheme())
+</script>
+
 <template>
-  <div class="app-shell">
+  <div class="app-shell" :style="themeStyle">
     <nav class="site-nav" aria-label="Main navigation">
       <RouterLink to="/">Home</RouterLink>
       <RouterLink to="/about">About Me</RouterLink>

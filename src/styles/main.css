@@ -1,9 +1,16 @@
 :root {
-  --color-bg: #faf9f7;
-  --color-text: #211d19;
-  --color-primary: #2f6f6a;
-  --color-accent: #b45f3c;
-  --color-border: #e5e1db;
+  --color-primary: #713600;
+  --color-secondary: #c05800;
+  --color-surface: #fdfbd4;
+  --color-ink: #38240d;
+  --color-on-primary: #fdfbd4;
+  --color-on-secondary: #000000;
+  --color-on-surface: #38240d;
+  --color-on-ink: #fdfbd4;
+  --color-bg: #fdfbd4;
+  --color-text: #38240d;
+  --color-border: rgba(56, 36, 13, 0.15);
+  --font-heading: Georgia, Cambria, 'Times New Roman', Times, serif;
   --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 

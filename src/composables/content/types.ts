@@ -1,26 +1,16 @@
-export type FontPairingPreset = 'classic' | 'modern' | 'editorial' | 'playful'
-
 export interface SocialLink {
   label: string
   url: string
-}
-
-export interface ThemePalette {
-  primary: string
-  accent: string
-  background: string
-  text: string
-}
-
-export interface ThemeConfig {
-  palette: ThemePalette
-  fontPairing: FontPairingPreset
 }
 
 export interface SiteSettings {
   name: string
   tagline: string
   socialLinks: SocialLink[]
+}
+
+export interface ThemeSelection {
+  preset?: string
 }
 
 export interface HomePageContent {
