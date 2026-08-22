@@ -76,7 +76,7 @@ describe('ActorView', () => {
 
     expect(videos).toHaveLength(2)
     expect(videos[0].find('iframe').attributes('src')).toBe(
-      'https://www.youtube-nocookie.com/embed/aqz-KE-bpKQ',
+      'https://www.youtube-nocookie.com/embed/L_LUpnjgPso',
     )
     expect(videos[0].find('.actor-video__title').exists()).toBe(false)
     expect(videos[0].find('.actor-video__description').text()).toContain('dramatic work')

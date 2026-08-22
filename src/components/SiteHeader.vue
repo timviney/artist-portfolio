@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { nextTick, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { useSiteSettings } from '@/composables/content'
@@ -13,40 +13,65 @@ const NAV_LINKS = [
 const settings = useSiteSettings()
 const route = useRoute()
 const menuOpen = ref(false)
+const navElement = ref<HTMLElement | null>(null)
+const toggleButton = ref<HTMLButtonElement | null>(null)
+
+function onWindowKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape') closeMenu()
+}
+
+function openMenu() {
+  menuOpen.value = true
+  void nextTick(() => {
+    navElement.value?.querySelector('a')?.focus()
+  })
+}
+
+function closeMenu() {
+  if (!menuOpen.value) return
+  menuOpen.value = false
+  void nextTick(() => {
+    toggleButton.value?.focus()
+  })
+}
 
 function toggleMenu() {
-  menuOpen.value = !menuOpen.value
+  if (menuOpen.value) {
+    closeMenu()
+  } else {
+    openMenu()
+  }
 }
 
 watch(
   () => route.fullPath,
   () => {
-    menuOpen.value = false
+    closeMenu()
   },
 )
+
+watch(menuOpen, (open) => {
+  document.body.style.overflow = open ? 'hidden' : ''
+  if (open) {
+    window.addEventListener('keydown', onWindowKeydown)
+  } else {
+    window.removeEventListener('keydown', onWindowKeydown)
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', onWindowKeydown)
+  document.body.style.overflow = ''
+})
 </script>
 
 <template>
-  <header class="site-header">
+  <header class="site-header" :class="{ 'site-header--menu-open': menuOpen }">
     <div class="site-header__inner">
       <RouterLink to="/" class="site-header__name">{{ settings.name }}</RouterLink>
-      <nav
-        id="site-navigation"
-        class="site-nav"
-        :class="{ 'site-nav--open': menuOpen }"
-        aria-label="Main navigation"
-      >
-        <RouterLink
-          v-for="link in NAV_LINKS"
-          :key="link.to"
-          :to="link.to"
-          class="site-nav__link"
-          @click="menuOpen = false"
-        >
-          {{ link.label }}
-        </RouterLink>
-      </nav>
+
       <button
+        ref="toggleButton"
         type="button"
         class="site-header__toggle"
         :aria-expanded="menuOpen"
@@ -60,6 +85,26 @@ watch(
           <span></span>
         </span>
       </button>
+
+      <nav
+        id="site-navigation"
+        ref="navElement"
+        class="site-nav"
+        :class="{ 'site-nav--open': menuOpen }"
+        :role="menuOpen ? 'dialog' : undefined"
+        :aria-modal="menuOpen ? 'true' : undefined"
+        aria-label="Main navigation"
+      >
+        <RouterLink
+          v-for="link in NAV_LINKS"
+          :key="link.to"
+          :to="link.to"
+          class="site-nav__link"
+          @click="closeMenu"
+        >
+          {{ link.label }}
+        </RouterLink>
+      </nav>
     </div>
   </header>
 </template>
@@ -100,6 +145,13 @@ watch(
   cursor: pointer;
 }
 
+.site-header--menu-open .site-header__toggle {
+  position: relative;
+  z-index: 50;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
 .site-header__toggle-bars {
   display: flex;
   flex-direction: column;
@@ -110,6 +162,19 @@ watch(
   width: 20px;
   height: 2px;
   background-color: currentColor;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.site-header--menu-open .site-header__toggle-bars span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.site-header--menu-open .site-header__toggle-bars span:nth-child(2) {
+  opacity: 0;
+}
+
+.site-header--menu-open .site-header__toggle-bars span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
 }
 
 .site-nav {
@@ -142,19 +207,25 @@ watch(
 
   .site-nav {
     display: none;
-    flex-basis: 100%;
-    flex-direction: column;
-    gap: 0;
-    padding-bottom: 0.75rem;
   }
 
   .site-nav--open {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2.5rem;
+    background-color: var(--color-bg);
   }
 
   .site-nav__link {
-    padding: 0.6rem 0;
-    border-top: 1px solid var(--color-border);
+    padding: 0;
+    border-top: 0;
+    font-family: var(--font-heading);
+    font-size: 2rem;
   }
 }
 </style>

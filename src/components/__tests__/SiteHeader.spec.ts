@@ -74,4 +74,41 @@ describe('SiteHeader', () => {
     await wrapper.find('.site-nav__link').trigger('click')
     expect(wrapper.find('.site-nav').classes()).not.toContain('site-nav--open')
   })
+
+  it('exposes dialog semantics while the fullscreen menu is open', async () => {
+    const { wrapper } = await mountHeader()
+    const nav = wrapper.find('.site-nav')
+
+    expect(nav.attributes('role')).toBeUndefined()
+    expect(nav.attributes('aria-modal')).toBeUndefined()
+
+    await wrapper.find('.site-header__toggle').trigger('click')
+    expect(nav.attributes('role')).toBe('dialog')
+    expect(nav.attributes('aria-modal')).toBe('true')
+
+    await wrapper.find('.site-header__toggle').trigger('click')
+    expect(nav.attributes('role')).toBeUndefined()
+  })
+
+  it('locks body scroll while the menu is open and restores it on close', async () => {
+    const { wrapper } = await mountHeader()
+
+    await wrapper.find('.site-header__toggle').trigger('click')
+    expect(document.body.style.overflow).toBe('hidden')
+
+    await wrapper.find('.site-header__toggle').trigger('click')
+    expect(document.body.style.overflow).toBe('')
+  })
+
+  it('closes the menu when Escape is pressed', async () => {
+    const { wrapper } = await mountHeader()
+    await wrapper.find('.site-header__toggle').trigger('click')
+    expect(wrapper.find('.site-nav').classes()).toContain('site-nav--open')
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('.site-nav').classes()).not.toContain('site-nav--open')
+    expect(document.body.style.overflow).toBe('')
+  })
 })

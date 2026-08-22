@@ -5,7 +5,7 @@ import { toEmbedUrl } from '../video'
 describe('toEmbedUrl', () => {
   it('converts YouTube watch URLs to privacy-enhanced embed URLs', () => {
     expect(toEmbedUrl('https://www.youtube.com/watch?v=L_LUpnjgPso')).toBe(
-      'https://www.youtube-nocookie.com/embed/aqz-KE-bpKQ',
+      'https://www.youtube-nocookie.com/embed/L_LUpnjgPso',
     )
     expect(toEmbedUrl('https://www.youtube.com/watch?si=x&v=dQw4w9WgXcQ')).toBe(
       'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ',
