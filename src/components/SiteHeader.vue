@@ -76,7 +76,7 @@ watch(
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem 1.5rem;
-  max-width: 72rem;
+  max-width: 90rem;
   margin: 0 auto;
   padding: 1rem 1.5rem;
 }

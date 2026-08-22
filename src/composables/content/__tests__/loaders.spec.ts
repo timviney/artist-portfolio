@@ -103,7 +103,7 @@ describe('normalizeActorPage', () => {
   it('falls back to hardcoded headings when fields are missing', () => {
     expect(normalizeActorPage(undefined)).toEqual(DEFAULT_ACTOR_PAGE)
     expect(DEFAULT_ACTOR_PAGE.actorHeading).toBe('Actor')
-    expect(DEFAULT_ACTOR_PAGE.headshotsHeading).toBe('Headshots')
+    expect(DEFAULT_ACTOR_PAGE.galleryHeading).toBe('Gallery')
   })
 
   it('lets the artist override section headings', () => {
@@ -241,8 +241,7 @@ describe('seeded content loaders', () => {
     const actor = useActorPage()
     expect(actor.heroImage).toBe('/images/uploads/hero.svg')
     expect(actor.actorHeading).toBe('Actor')
-    expect(actor.headshotsHeading).toBe('Headshots')
-    expect(actor.imagesHeading).toBe('Gallery Images')
+    expect(actor.galleryHeading).toBe('Gallery')
   })
 
   it('loads seeded actor videos sorted by order, all with urls', () => {
@@ -253,7 +252,8 @@ describe('seeded content loaders', () => {
 
   it('loads the seeded headshots carousel entry', () => {
     const headshots = useHeadshots()
-    expect(headshots).toHaveLength(1)
+    expect(headshots.length).toBeGreaterThan(0)
+    expect(headshots[0].slug).toBe('main-headshot')
     expect(headshots[0].image).toBe('/images/uploads/portrait.svg')
     expect(headshots[0].alt).toContain('headshot')
   })

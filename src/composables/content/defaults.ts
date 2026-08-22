@@ -33,8 +33,6 @@ export const DEFAULT_ACTOR_PAGE: ActorPageContent = {
   heroImage: undefined,
   actorHeading: 'Actor',
   galleryHeading: 'Gallery',
-  headshotsHeading: 'Headshots',
-  imagesHeading: 'Gallery Images',
 }
 
 export const DEFAULT_MUSICIAN_PAGE: MusicianPageContent = {

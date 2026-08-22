@@ -33,8 +33,6 @@ export interface ActorPageContent {
   heroImage?: string
   actorHeading: string
   galleryHeading: string
-  headshotsHeading: string
-  imagesHeading: string
 }
 
 export interface MusicianPageContent {

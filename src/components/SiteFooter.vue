@@ -23,7 +23,7 @@ const year = new Date().getFullYear()
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem 1.5rem;
-  max-width: 72rem;
+  max-width: 90rem;
   margin: 0 auto;
   padding: 1.25rem 1.5rem;
   border-top: 1px solid var(--color-border);
