@@ -32,7 +32,7 @@ beforeEach(() => {
 describe('SiteHeader', () => {
   it('renders the artist name from site settings', async () => {
     const { wrapper } = await mountHeader()
-    expect(wrapper.find('.site-header__name').text()).toBe('Max Rivera')
+    expect(wrapper.find('.site-header__name').text()).toBe('Max Young')
   })
 
   it('renders only the three nav links', async () => {
@@ -48,15 +48,9 @@ describe('SiteHeader', () => {
     const { wrapper } = await mountHeader()
     const socials = wrapper.findAll('.site-nav__social')
 
-    expect(socials.map((social) => social.attributes('aria-label'))).toEqual([
-      'Instagram',
-      'YouTube',
-      'Spotlight',
-    ])
+    expect(socials.map((social) => social.attributes('aria-label'))).toEqual(['Instagram'])
     expect(socials.map((social) => social.attributes('href'))).toEqual([
-      'https://www.instagram.com/',
-      'https://www.youtube.com/',
-      'https://www.spotlight.com/',
+      'https://www.instagram.com/maxyoungacts/',
     ])
     for (const social of socials) {
       expect(social.attributes('target')).toBe('_blank')
@@ -71,7 +65,7 @@ describe('SiteHeader', () => {
     const nav = wrapper.find('.site-nav')
     const socials = nav.find('.site-nav__socials')
     expect(socials.exists()).toBe(true)
-    expect(nav.findAll('.site-nav__social')).toHaveLength(3)
+    expect(nav.findAll('.site-nav__social')).toHaveLength(1)
 
     await wrapper.find('.site-header__toggle').trigger('click')
     expect(wrapper.find('.site-nav--open .site-nav__socials').exists()).toBe(true)
@@ -90,7 +84,7 @@ describe('SiteHeader', () => {
     const cv = wrapper.find('.site-header__cv')
 
     expect(cv.exists()).toBe(true)
-    expect(cv.attributes('href')).toBe('/images/uploads/max-rivera-cv.pdf')
+    expect(cv.attributes('href')).toBe('/images/uploads/max-young-cv-2026.pdf')
     expect(cv.attributes('download')).toBeDefined()
     expect(cv.text()).toContain('Download CV')
 

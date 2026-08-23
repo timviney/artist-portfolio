@@ -28,8 +28,8 @@ beforeEach(() => {
 describe('HomeView', () => {
   it('renders the artist name and tagline from site settings', async () => {
     const wrapper = await mountHome()
-    expect(wrapper.find('.home__name').text()).toBe('Max Rivera')
-    expect(wrapper.find('.home__tagline').text()).toBe('Actor and musician for stage and screen.')
+    expect(wrapper.find('.home__name').text()).toBe('Max Young')
+    expect(wrapper.find('.home__tagline').text()).toBe('Actor and musician.')
   })
 
   it('renders two headshot tiles linking to the actor and musician pages', async () => {

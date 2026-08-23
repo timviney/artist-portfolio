@@ -1,19 +1,11 @@
 {
-  "name": "Max Rivera",
-  "tagline": "Actor and musician for stage and screen.",
+  "name": "Max Young",
+  "tagline": "Actor and musician.",
   "socialLinks": [
     {
       "label": "Instagram",
-      "url": "https://www.instagram.com/"
-    },
-    {
-      "label": "YouTube",
-      "url": "https://www.youtube.com/"
-    },
-    {
-      "label": "Spotlight",
-      "url": "https://www.spotlight.com/"
+      "url": "https://www.instagram.com/maxyoungacts/"
     }
   ],
-  "cv": "/images/uploads/max-rivera-cv.pdf"
+  "cv": "/images/uploads/max-young-cv-2026.pdf"
 }

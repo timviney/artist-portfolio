@@ -26,19 +26,28 @@ describe('AboutView', () => {
   it('renders the heading and portrait photo from the CMS', async () => {
     const wrapper = mount(AboutView)
 
-    expect(wrapper.find('.about-title').text()).toBe('About Me')
-    expect(wrapper.find('.about-portrait img').attributes('src')).toBe('/images/uploads/portrait.svg')
+    expect(wrapper.find('.about-title').text()).toBe('Who Am I?')
+    expect(wrapper.find('.about-portrait img').attributes('src')).toBe(
+      '/images/uploads/about-portrait.jpg',
+    )
   })
 
   it('renders every bio paragraph in order', async () => {
     const wrapper = mount(AboutView)
     const paragraphs = wrapper.findAll('.about-bio p')
 
-    expect(paragraphs.length).toBeGreaterThan(2)
-    expect(paragraphs[0].text()).toContain('Guildford School of Acting')
+    expect(paragraphs).toHaveLength(5)
+    expect(paragraphs[0].text()).toContain('Bromley, South London')
+    expect(paragraphs[1].text()).toContain('Middleweek Newton')
   })
 
-  it('renders the optional statement as a quote block', async () => {
+  it('renders a mocked statement as a quote block when the CMS provides one', async () => {
+    mockedPage.mockReturnValue({
+      aboutHeading: 'About Me',
+      bioParagraphs: ['One paragraph.'],
+      statement: 'stories told quietly but honestly',
+    } satisfies AboutPageContent)
+
     const wrapper = mount(AboutView)
     const statement = wrapper.find('.about-statement')
 

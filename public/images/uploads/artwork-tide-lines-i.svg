@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-label="Placeholder artwork: Tide Lines I">
-  <rect width="1200" height="900" fill="#e3ddd2"/>
-  <path d="M 0 300 Q 300 260 600 300 T 1200 300 V 900 H 0 Z" fill="#c9b8a3"/>
-  <path d="M 0 480 Q 300 440 600 480 T 1200 480 V 900 H 0 Z" fill="#a58f79"/>
-  <path d="M 0 660 Q 300 620 600 660 T 1200 660 V 900 H 0 Z" fill="#7a6653"/>
-  <text x="60" y="820" font-family="Georgia, serif" font-size="44" fill="#fbf9f6">Tide Lines I</text>
-</svg>

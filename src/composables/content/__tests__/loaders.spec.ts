@@ -247,9 +247,12 @@ describe('normalizeContactPage', () => {
 describe('seeded content loaders', () => {
   it('loads the seeded site settings', () => {
     const settings = useSiteSettings()
-    expect(settings.name).toBe('Max Rivera')
+    expect(settings.name).toBe('Max Young')
     expect(settings.tagline).toContain('Actor')
-    expect(settings.socialLinks.length).toBeGreaterThan(0)
+    expect(settings.socialLinks).toEqual([
+      { label: 'Instagram', url: 'https://www.instagram.com/maxyoungacts/' },
+    ])
+    expect(settings.cv).toBe('/images/uploads/max-young-cv-2026.pdf')
   })
 
   it('loads the seeded theme selection as a known preset', () => {
@@ -261,85 +264,93 @@ describe('seeded content loaders', () => {
 
   it('loads the seeded home page with both headshot slots filled', () => {
     const home = useHomePage()
-    expect(home.actorHeadshot).toBeDefined()
-    expect(home.musicianHeadshot).toBeDefined()
+    expect(home.actorHeadshot).toBe('/images/uploads/maxyoung-headshot-1b.jpg')
+    expect(home.musicianHeadshot).toBe('/images/uploads/maxyoung-musician-tile.jpg')
   })
 
   it('loads the seeded actor page with hero and headings', () => {
     const actor = useActorPage()
-    expect(actor.heroImage).toBe('/images/uploads/hero.svg')
+    expect(actor.heroImage).toBe('/images/uploads/maxyoung-actor-hero.jpg')
     expect(actor.actorHeading).toBe('Actor')
     expect(actor.galleryHeading).toBe('Gallery')
   })
 
-  it('loads seeded actor videos sorted by order, all with urls', () => {
+  it('loads seeded actor videos newest-first, all with urls', () => {
     const videos = useActorVideos()
-    expect(videos.map((v) => v.slug)).toEqual(['reel-drama', 'reel-comedy'])
+    expect(videos.map((v) => v.slug)).toEqual(['the-eulogy', 'hospital-lights'])
     expect(videos.every((v) => v.videoUrl?.startsWith('https://www.youtube.com/'))).toBe(true)
   })
 
-  it('loads the seeded headshots carousel entry', () => {
+  it('loads the seeded headshots carousel, newest first', () => {
     const headshots = useHeadshots()
-    expect(headshots.length).toBeGreaterThan(0)
-    expect(headshots[0].slug).toBe('main-headshot')
-    expect(headshots[0].image).toBe('/images/uploads/portrait.svg')
-    expect(headshots[0].alt).toContain('headshot')
+    expect(headshots.length).toBe(7)
+    expect(headshots[0].slug).toBe('maxyoung-headshot-1b')
+    expect(headshots[0].image).toBe('/images/uploads/maxyoung-headshot-1b.jpg')
+    expect(headshots[0].alt).toBe('Headshots by Yellowbelly')
   })
 
-  it('loads the seeded actor gallery sorted by explicit order', () => {
+  it('loads the seeded actor gallery sorted newest first', () => {
     const gallery = useActorGallery()
-    expect(gallery.map((g) => g.slug)).toEqual([
-      'tempest-prospero',
-      'tempest-rehearsal',
-      'backstage-harbour',
-    ])
+    expect(gallery.map((g) => g.slug)[0]).toBe('eternal-hourglass-1')
+    expect(gallery[gallery.length - 1].slug).toBe('dreamland')
     expect(gallery.every((g) => g.title.length > 0 && g.image !== undefined)).toBe(true)
   })
 
   it('loads the seeded musician page with intro and hero', () => {
     const musician = useMusicianPage()
-    expect(musician.heroImage).toBe('/images/uploads/artwork-harbour-late-summer.svg')
-    expect(musician.intro).toContain('cellist')
+    expect(musician.heroImage).toBe('/images/uploads/maxyoung-musician-hero.jpg')
+    expect(musician.intro).toContain('self-taught musician')
     expect(musician.projectsHeading).toBe('Original Projects')
   })
 
   it('loads the seeded musician awards text with both picture slots filled', () => {
     const musician = useMusicianPage()
     expect(musician.awardsHeading).toBe('Awards')
-    expect(musician.awardsText).toContain('OffCommendation')
-    expect(musician.awardsFirstImage).toBe('/images/uploads/artwork-tide-lines-i.svg')
-    expect(musician.awardsSecondImage).toBe('/images/uploads/artwork-tide-lines-ii.svg')
+    expect(musician.awardsText).toContain("People's Choice award")
+    expect(musician.awardsFirstImage).toBe('/images/uploads/awards-photo-1.jpg')
+    expect(musician.awardsSecondImage).toBe('/images/uploads/awards-48hfp.jpg')
   })
 
-  it('loads seeded highlights and projects as ordered video lists', () => {
+  it('loads seeded projects as an ordered video list and leaves highlights empty', () => {
     const highlights = useHighlights()
     const projects = useProjects()
-    expect(highlights.map((v) => v.slug)).toEqual(['harbour-sessions-live', 'score-excerpt'])
-    expect(projects.map((v) => v.slug)).toEqual(['field-notes-album', 'the-long-shore'])
-    expect([...highlights, ...projects].every((v) => v.description !== undefined)).toBe(true)
+    expect(highlights).toEqual([])
+    expect(projects.map((v) => v.slug)).toEqual([
+      'where-did-you-go',
+      'what-do-you-do',
+      'time-spent',
+      'press-start',
+      'southbank',
+      'strange-dreams',
+      'young-and-furey-1',
+      'into-the-blue',
+      'young-and-furey-2',
+    ])
+    expect(projects[0].videoUrl).toBe('https://www.youtube.com/watch?v=A4rlwpi5Z0w')
   })
 
-  it('loads the seeded about page with bio paragraphs and a statement', () => {
+  it('loads the seeded about page with bio paragraphs', () => {
     const about = useAboutPage()
-    expect(about.bioParagraphs.length).toBeGreaterThan(1)
-    expect(typeof about.statement).toBe('string')
+    expect(about.aboutHeading).toBe('Who Am I?')
+    expect(about.portraitImage).toBe('/images/uploads/about-portrait.jpg')
+    expect(about.bioParagraphs[0]).toContain('Bromley, South London')
+    expect(about.bioParagraphs).toHaveLength(5)
   })
 
   it('loads the seeded contact page email', () => {
     const contact = useContactPage()
-    expect(contact.email).toMatch(/@/)
+    expect(contact.email).toBe('agents@mntalent.co.uk')
     expect(contact.phone).toBeDefined()
   })
 
   it('loads the seeded musician gallery with descriptions, newest first', () => {
     const gallery = useMusicianGallery()
-    expect(gallery).toHaveLength(2)
-    expect(gallery[0].slug).toBe('field-notes-artwork')
-    expect(gallery[0].image).toBe('/images/uploads/artwork-sea-glass-notes.svg')
-    expect(gallery[0].description).toContain('Field Notes')
-    expect(gallery[1].slug).toBe('making-sounds')
+    expect(gallery).toHaveLength(8)
+    expect(gallery[0].slug).toBe('derksen-3054')
+    expect(gallery[0].description).toBe('By Annika Derksen')
+    expect(gallery[gallery.length - 1].slug).toBe('hamlet')
     expect(new Date(gallery[0].dateAdded ?? '').getTime()).toBeGreaterThan(
-      new Date(gallery[1].dateAdded ?? '').getTime(),
+      new Date(gallery[gallery.length - 1].dateAdded ?? '').getTime(),
     )
   })
 })

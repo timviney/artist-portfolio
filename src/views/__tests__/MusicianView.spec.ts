@@ -53,7 +53,7 @@ describe('MusicianView', () => {
   it('renders the fullscreen hero image from the CMS', async () => {
     const wrapper = await mountMusician()
     expect(wrapper.find('.musician-hero img').attributes('src')).toBe(
-      '/images/uploads/artwork-harbour-late-summer.svg',
+      '/images/uploads/maxyoung-musician-hero.jpg',
     )
   })
 
@@ -61,7 +61,7 @@ describe('MusicianView', () => {
     const wrapper = await mountMusician()
 
     expect(wrapper.find('.musician-hero__title').text()).toBe('Musician')
-    expect(wrapper.find('.musician-intro__text').text()).toContain('cellist, guitarist and composer')
+    expect(wrapper.find('.musician-intro__text').text()).toContain('self-taught musician')
   })
 
   it('renders all section titles from the CMS headings', async () => {
@@ -76,11 +76,11 @@ describe('MusicianView', () => {
     const awards = wrapper.find('.musician-awards')
 
     expect(awards.find('.musician-section-title').text()).toBe('Awards')
-    expect(awards.find('.musician-awards__text').text()).toContain('OffCommendation')
+    expect(awards.find('.musician-awards__text').text()).toContain("People's Choice award")
     const pictures = awards.findAll('.musician-awards__picture')
     expect(pictures).toHaveLength(2)
-    expect(pictures[0].attributes('src')).toBe('/images/uploads/artwork-tide-lines-i.svg')
-    expect(pictures[1].attributes('src')).toBe('/images/uploads/artwork-tide-lines-ii.svg')
+    expect(pictures[0].attributes('src')).toBe('/images/uploads/awards-photo-1.jpg')
+    expect(pictures[1].attributes('src')).toBe('/images/uploads/awards-48hfp.jpg')
   })
 
   it('renders a fallback block when only one award picture slot is filled', async () => {
@@ -118,36 +118,36 @@ describe('MusicianView', () => {
     expect(wrapper.find('.musician-awards__pictures').exists()).toBe(false)
   })
 
-  it('renders highlight videos with descriptions below and no top titles', async () => {
+  it('renders no highlight articles while the highlights list is empty', async () => {
     const wrapper = await mountMusician()
-    const videos = wrapper.findAll('.musician-highlights .musician-video')
 
-    expect(videos).toHaveLength(2)
-    expect(videos[0].find('iframe').attributes('src')).toBe(
-      'https://www.youtube-nocookie.com/embed/L_LUpnjgPso',
-    )
-    expect(videos[0].find('.musician-video__description').text()).toContain('Harbour Sessions')
+    expect(wrapper.find('.musician-highlights .musician-section-title').text()).toBe('Highlights')
+    expect(wrapper.findAll('.musician-highlights .musician-video')).toHaveLength(0)
   })
 
-  it('renders original project videos with descriptions', async () => {
+  it('renders original project videos with descriptions only where present', async () => {
     const wrapper = await mountMusician()
     const videos = wrapper.findAll('.musician-projects .musician-video')
 
-    expect(videos).toHaveLength(2)
-    expect(videos[1].find('.musician-video__description').text()).toContain('second record')
+    expect(videos).toHaveLength(9)
+    expect(videos[0].find('iframe').attributes('src')).toBe(
+      'https://www.youtube-nocookie.com/embed/A4rlwpi5Z0w',
+    )
+    expect(videos[0].find('.musician-video__description').exists()).toBe(false)
+    expect(videos[6].find('.musician-video__description').text()).toContain('Vianne Furey')
   })
 
   it('renders gallery images with descriptions below each image', async () => {
     const wrapper = await mountMusician()
     const items = wrapper.findAll('.gallery-grid__item')
 
-    expect(items).toHaveLength(2)
+    expect(items).toHaveLength(8)
     expect(items[0].find('img').attributes('src')).toBe(
-      '/images/uploads/artwork-sea-glass-notes.svg',
+      '/images/uploads/musician-gallery-derksen-3054.jpg',
     )
-    expect(items[0].find('img').attributes('alt')).toContain('Colour studies')
-    expect(items[0].find('.gallery-grid__description').text()).toContain('Colour studies')
-    expect(items[1].find('.gallery-grid__description').text()).toContain('Making sounds')
+    expect(items[0].find('img').attributes('alt')).toContain('Annika Derksen')
+    expect(items[0].find('.gallery-grid__description').text()).toBe('By Annika Derksen')
+    expect(items[items.length - 1].find('.gallery-grid__description').text()).toContain('Hamlet')
   })
 
   it('opens the lightbox showing the clicked gallery image', async () => {
@@ -157,10 +157,10 @@ describe('MusicianView', () => {
 
     expect(document.body.querySelector('.image-lightbox')).not.toBeNull()
     expect(document.body.querySelector('.image-lightbox__figure img')?.getAttribute('src')).toBe(
-      '/images/uploads/artwork-sea-glass-notes.svg',
+      '/images/uploads/musician-gallery-derksen-3054.jpg',
     )
     expect(document.body.querySelector('.image-lightbox__caption')?.textContent).toContain(
-      'Colour studies',
+      'By Annika Derksen',
     )
   })
 

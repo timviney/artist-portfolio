@@ -8,12 +8,8 @@ describe('SiteFooter', () => {
     const wrapper = mount(SiteFooter)
     const links = wrapper.findAll('.site-footer__social a')
 
-    expect(links.map((link) => link.attributes('aria-label'))).toEqual([
-      'Instagram',
-      'YouTube',
-      'Spotlight',
-    ])
-    expect(links[0].attributes('href')).toBe('https://www.instagram.com/')
+    expect(links.map((link) => link.attributes('aria-label'))).toEqual(['Instagram'])
+    expect(links[0].attributes('href')).toBe('https://www.instagram.com/maxyoungacts/')
     for (const link of links) {
       expect(link.find('svg').exists()).toBe(true)
     }
@@ -22,7 +18,7 @@ describe('SiteFooter', () => {
   it('renders the copyright line with the artist name and current year', () => {
     const wrapper = mount(SiteFooter)
     expect(wrapper.find('.site-footer__copyright').text()).toBe(
-      `© ${new Date().getFullYear()} Max Rivera`,
+      `© ${new Date().getFullYear()} Max Young`,
     )
   })
 })

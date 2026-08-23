@@ -56,7 +56,9 @@ beforeEach(() => {
 describe('ActorView', () => {
   it('renders the fullscreen hero image from the CMS', async () => {
     const wrapper = await mountActor()
-    expect(wrapper.find('.actor-hero img').attributes('src')).toBe('/images/uploads/hero.svg')
+    expect(wrapper.find('.actor-hero img').attributes('src')).toBe(
+      '/images/uploads/maxyoung-actor-hero.jpg',
+    )
   })
 
   it('renders central section titles from the CMS headings', async () => {
@@ -67,28 +69,28 @@ describe('ActorView', () => {
     expect(wrapper.find('.headshot-swiper').attributes('aria-label')).toBe('Headshots')
   })
 
-  it('renders video embeds with descriptions below and no top titles', async () => {
+  it('renders video embeds without top titles and only renders descriptions when present', async () => {
     const wrapper = await mountActor()
     const videos = wrapper.findAll('.actor-video')
 
     expect(videos).toHaveLength(2)
     expect(videos[0].find('iframe').attributes('src')).toBe(
-      'https://www.youtube-nocookie.com/embed/L_LUpnjgPso',
+      'https://www.youtube-nocookie.com/embed/K8fzMtCdVQE',
     )
     expect(videos[0].find('.actor-video__title').exists()).toBe(false)
-    expect(videos[0].find('.actor-video__description').text()).toContain('dramatic work')
+    expect(videos[0].find('.actor-video__description').exists()).toBe(false)
   })
 
   it('renders gallery grid titles below each image', async () => {
     const wrapper = await mountActor()
     const items = wrapper.findAll('.gallery-grid__item')
+    const firstTitle = "'Eternal Hourglass' 2022 directed by Joanna Vymeris. Photography by Jia Lang"
 
-    expect(items.map((item) => item.find('.gallery-grid__title').text())).toEqual([
-      'As Prospero - The Tempest',
-      'In Rehearsal - The Tempest',
-      'Backstage - Harbour Sessions',
-    ])
-    expect(items[0].find('img').attributes('alt')).toBe('As Prospero - The Tempest')
+    expect(items[0].find('.gallery-grid__title').text()).toBe(firstTitle)
+    expect(items[items.length - 1].find('.gallery-grid__title').text()).toBe(
+      "'Dreamland' at The Corbett Theatre. Photography by Lidia Crisafulli",
+    )
+    expect(items[0].find('img').attributes('alt')).toBe(firstTitle)
   })
 
   it('renders all seeded headshots as swiper slides', async () => {
@@ -96,7 +98,7 @@ describe('ActorView', () => {
 
     expect(wrapper.findAll('.headshot-slide')).toHaveLength(useHeadshots().length)
     expect(wrapper.find('.headshot-slide img').attributes('src')).toBe(
-      '/images/uploads/portrait.svg',
+      '/images/uploads/maxyoung-headshot-1b.jpg',
     )
   })
 
@@ -144,7 +146,7 @@ describe('ActorView', () => {
       expectedSrc,
     )
     expect(document.body.querySelector('.image-lightbox__caption')?.textContent).toContain(
-      'As Prospero - The Tempest',
+      "'Eternal Hourglass' 2022 directed by Joanna Vymeris. Photography by Jia Lang",
     )
   })
 

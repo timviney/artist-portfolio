@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000" role="img" aria-label="Placeholder portrait photo">
-  <rect width="800" height="1000" fill="#d8cfc2"/>
-  <rect x="60" y="60" width="680" height="880" fill="#c2b6a5"/>
-  <circle cx="400" cy="400" r="150" fill="#9c6644"/>
-  <path d="M 180 940 Q 400 620 620 940 Z" fill="#3a5a40"/>
-  <text x="400" y="80" text-anchor="middle" font-family="Georgia, serif" font-size="34" fill="#fbf9f6">Portrait</text>
-</svg>

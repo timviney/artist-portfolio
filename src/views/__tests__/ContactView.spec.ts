@@ -41,16 +41,16 @@ describe('ContactView', () => {
 
     expect(wrapper.find('.contact-title').text()).toBe('Contact')
     expect(wrapper.find('.contact-button').attributes('href')).toBe(
-      'mailto:hello@maxrivera.example',
+      'mailto:agents@mntalent.co.uk',
     )
-    expect(wrapper.find('.contact-email').text()).toBe('hello@maxrivera.example')
+    expect(wrapper.find('.contact-email').text()).toBe('agents@mntalent.co.uk')
   })
 
   it('renders the contact image from the CMS', () => {
     const wrapper = mountContact()
 
     expect(wrapper.find('.contact-portrait img').attributes('src')).toBe(
-      '/images/uploads/portrait.svg',
+      '/images/uploads/contact-hospital-lights.jpg',
     )
   })
 
@@ -69,8 +69,8 @@ describe('ContactView', () => {
     const wrapper = mountContact()
 
     expect(wrapper.find('.contact-phone').exists()).toBe(true)
-    expect(wrapper.find('.contact-phone').text()).toBe('+44 7700 900123')
-    expect(wrapper.find('.contact-phone').attributes('href')).toBe('tel:+447700900123')
+    expect(wrapper.find('.contact-phone').text()).toBe('02033940079')
+    expect(wrapper.find('.contact-phone').attributes('href')).toBe('tel:02033940079')
   })
 
   it('omits the phone link when no number is set', () => {
@@ -87,7 +87,7 @@ describe('ContactView', () => {
   it('renders the CMS note when present', () => {
     const wrapper = mountContact()
 
-    expect(wrapper.find('.contact-note').text()).toContain('reply within two working days')
+    expect(wrapper.find('.contact-note').text()).toContain('Middleweek Newton Talent Management')
   })
 
   it('falls back to the reply copy when no note is set', () => {
@@ -119,7 +119,7 @@ describe('ContactView', () => {
       email: 'me@example.com',
       note: 'Note.',
     } satisfies ContactPageContent)
-    mockedSettings.mockReturnValue({ name: 'Max Rivera', tagline: '', socialLinks: [] })
+    mockedSettings.mockReturnValue({ name: 'Max Young', tagline: '', socialLinks: [] })
 
     const wrapper = mountContact()
 
