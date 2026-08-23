@@ -1,0 +1,337 @@
+backend:
+  name: github
+  repo: timviney/artist-portfolio
+  branch: main
+
+# Images the artist uploads land here and are served from /images/uploads
+media_folder: public/images/uploads
+public_folder: /images/uploads
+
+collections:
+  # ---------------------------------------------------------------- settings
+  - name: settings
+    label: Settings
+    files:
+      - name: site
+        label: Site settings
+        file: content/settings/site.json
+        fields:
+          - name: name
+            label: Artist name
+            widget: string
+          - name: tagline
+            label: Tagline
+            widget: string
+            required: false
+          - name: socialLinks
+            label: Social links
+            widget: list
+            required: false
+            fields:
+              - name: label
+                label: Label
+                widget: string
+              - name: url
+                label: URL
+                widget: string
+
+      - name: theme
+        label: Theme
+        file: content/settings/theme.json
+        fields:
+          - name: preset
+            label: Theme preset
+            widget: select
+            options:
+              - chocolate truffle
+            default: chocolate truffle
+            hint: Named colour/font themes; more presets may appear later.
+
+  # ------------------------------------------------------------------- pages
+  - name: pages
+    label: Pages
+    files:
+      - name: home
+        label: Home
+        file: content/pages/home.json
+        fields:
+          - name: actorHeadshot
+            label: Actor tile image
+            widget: image
+            required: false
+          - name: musicianHeadshot
+            label: Musician tile image
+            widget: image
+            required: false
+
+      - name: about
+        label: About Me
+        file: content/pages/about.json
+        fields:
+          - name: aboutHeading
+            label: Page title
+            widget: string
+            default: About Me
+          - name: portraitImage
+            label: Portrait photo
+            widget: image
+            required: false
+          - name: bioParagraphs
+            label: Bio paragraphs
+            widget: list
+            required: false
+          - name: statement
+            label: Personal statement
+            widget: text
+            required: false
+
+      - name: contact
+        label: Contact
+        file: content/pages/contact.json
+        fields:
+          - name: contactHeading
+            label: Page title
+            widget: string
+            default: Contact
+          - name: contactImage
+            label: Photo
+            widget: image
+            required: false
+          - name: email
+            label: Email address
+            widget: string
+          - name: phone
+            label: Phone number
+            widget: string
+            required: false
+            hint: Shown as a tappable link; leave blank to hide.
+          - name: note
+            label: Note
+            widget: text
+            required: false
+            hint: Overrides the default "replies go to my email" line.
+
+      - name: actor
+        label: Actor page
+        file: content/pages/actor.json
+        fields:
+          - name: heroImage
+            label: Hero image
+            widget: image
+            required: false
+          - name: actorHeading
+            label: Hero title
+            widget: string
+            default: Actor
+          - name: galleryHeading
+            label: Gallery title
+            widget: string
+            default: Gallery
+
+      - name: musician
+        label: Musician page
+        file: content/pages/musician.json
+        fields:
+          - name: heroImage
+            label: Hero image
+            widget: image
+            required: false
+          - name: intro
+            label: Intro
+            widget: text
+          - name: musicianHeading
+            label: Hero title
+            widget: string
+            default: Musician
+          - name: awardsHeading
+            label: Awards title
+            widget: string
+            default: Awards
+          - name: awardsText
+            label: Awards text
+            widget: text
+            required: false
+          - name: awardsFirstImage
+            label: Awards photo 1
+            widget: image
+            required: false
+          - name: awardsSecondImage
+            label: Awards photo 2
+            widget: image
+            required: false
+          - name: highlightsHeading
+            label: Highlights title
+            widget: string
+            default: Highlights
+          - name: projectsHeading
+            label: Original projects title
+            widget: string
+            default: Original Projects
+          - name: galleryHeading
+            label: Gallery title
+            widget: string
+            default: Gallery
+
+  # ------------------------------------------------------------ actor: media
+  - name: actor-videos
+    label: Actor · Showreel videos
+    folder: content/actor/videos
+    format: json
+    create: true
+    identifier_field: title
+    summary: '#{{order}} {{title}}'
+    sortable_fields:
+      - order
+      - title
+    fields:
+      - name: title
+        label: Title
+        widget: string
+      - name: videoUrl
+        label: Video URL
+        widget: string
+        required: false
+        hint: Paste a YouTube or Vimeo page link; it is embedded on the site.
+      - name: description
+        label: Description
+        widget: text
+        required: false
+      - name: order
+        label: Display order
+        widget: number
+        default: 1
+        hint: Lower numbers appear first.
+
+  - name: actor-headshots
+    label: Actor · Headshots
+    folder: content/actor/headshots
+    format: json
+    create: true
+    identifier_field: alt
+    summary: '{{alt}}'
+    sortable_fields:
+      - order
+      - alt
+    fields:
+      - name: image
+        label: Photo
+        widget: image
+        required: false
+      - name: alt
+        label: Alt text
+        widget: string
+        required: false
+        hint: Describe the photo for screen readers.
+      - name: order
+        label: Display order
+        widget: number
+        default: 1
+        hint: Lower numbers appear first in the carousel.
+
+  - name: actor-gallery
+    label: Actor · Production gallery
+    folder: content/actor/gallery
+    format: json
+    create: true
+    identifier_field: title
+    summary: '{{title}}'
+    sortable_fields:
+      - order
+      - title
+    fields:
+      - name: image
+        label: Photo
+        widget: image
+        required: false
+      - name: title
+        label: Caption title
+        widget: string
+      - name: order
+        label: Display order
+        widget: number
+        default: 1
+        hint: Lower numbers appear first.
+
+  # --------------------------------------------------------- musician: media
+  - name: musician-highlights
+    label: Musician · Highlights
+    folder: content/musician/highlights
+    format: json
+    create: true
+    identifier_field: title
+    summary: '#{{order}} {{title}}'
+    sortable_fields:
+      - order
+      - title
+    fields:
+      - name: title
+        label: Title
+        widget: string
+      - name: videoUrl
+        label: Video URL
+        widget: string
+        required: false
+        hint: Paste a YouTube or Vimeo page link; it is embedded on the site.
+      - name: description
+        label: Description
+        widget: text
+        required: false
+      - name: order
+        label: Display order
+        widget: number
+        default: 1
+        hint: Lower numbers appear first.
+
+  - name: musician-projects
+    label: Musician · Original projects
+    folder: content/musician/projects
+    format: json
+    create: true
+    identifier_field: title
+    summary: '#{{order}} {{title}}'
+    sortable_fields:
+      - order
+      - title
+    fields:
+      - name: title
+        label: Title
+        widget: string
+      - name: videoUrl
+        label: Video URL
+        widget: string
+        required: false
+        hint: Paste a YouTube or Vimeo page link; it is embedded on the site.
+      - name: description
+        label: Description
+        widget: text
+        required: false
+      - name: order
+        label: Display order
+        widget: number
+        default: 1
+        hint: Lower numbers appear first.
+
+  - name: musician-gallery
+    label: Musician · Gallery
+    folder: content/musician/gallery
+    format: json
+    create: true
+    identifier_field: description
+    summary: '{{description}}'
+    sortable_fields:
+      - order
+      - description
+    fields:
+      - name: image
+        label: Photo
+        widget: image
+        required: false
+      - name: description
+        label: Description
+        widget: text
+        required: false
+      - name: order
+        label: Display order
+        widget: number
+        default: 1
+        hint: Lower numbers appear first.
