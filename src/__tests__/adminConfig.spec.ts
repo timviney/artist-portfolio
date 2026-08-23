@@ -111,24 +111,24 @@ describe('Sveltia admin config', () => {
   })
 
   it.each([
-    ['actor-videos', 'content/actor/videos', ['title', 'videoUrl', 'description', 'order']],
+    ['actor-videos', 'content/actor/videos', ['title', 'videoUrl', 'description', 'dateAdded']],
     [
       'actor-headshots',
       'content/actor/headshots',
-      ['image', 'alt', 'order'],
+      ['image', 'alt', 'dateAdded'],
     ],
-    ['actor-gallery', 'content/actor/gallery', ['image', 'title', 'order']],
+    ['actor-gallery', 'content/actor/gallery', ['image', 'title', 'dateAdded']],
     [
       'musician-highlights',
       'content/musician/highlights',
-      ['title', 'videoUrl', 'description', 'order'],
+      ['title', 'videoUrl', 'description', 'dateAdded'],
     ],
     [
       'musician-projects',
       'content/musician/projects',
-      ['title', 'videoUrl', 'description', 'order'],
+      ['title', 'videoUrl', 'description', 'dateAdded'],
     ],
-    ['musician-gallery', 'content/musician/gallery', ['image', 'description', 'order']],
+    ['musician-gallery', 'content/musician/gallery', ['image', 'description', 'dateAdded']],
   ])(
     'maps folder collection %s to %s with the right fields',
     (name, folder, expectedFields) => {

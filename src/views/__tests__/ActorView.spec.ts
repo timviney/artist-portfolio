@@ -102,7 +102,7 @@ describe('ActorView', () => {
 
   it('hides navigation arrows when there is only one headshot', async () => {
     mockedHeadshots.mockReturnValue([
-      { slug: 'only', image: '/images/uploads/portrait.svg', alt: 'Only headshot', order: 1 },
+      { slug: 'only', image: '/images/uploads/portrait.svg', alt: 'Only headshot', dateAdded: '2026-05-01T09:00:00Z' },
     ])
 
     const wrapper = await mountActor()
@@ -114,9 +114,9 @@ describe('ActorView', () => {
 
   it('enables navigation arrows when there are multiple headshots', async () => {
     mockedHeadshots.mockReturnValue([
-      { slug: 'one', image: '/images/a.svg', alt: 'First', order: 1 },
-      { slug: 'two', image: '/images/b.svg', alt: 'Second', order: 2 },
-      { slug: 'three', image: undefined, alt: undefined, order: 3 },
+      { slug: 'one', image: '/images/a.svg', alt: 'First', dateAdded: '2026-05-01T09:00:00Z' },
+      { slug: 'two', image: '/images/b.svg', alt: 'Second', dateAdded: '2026-04-01T09:00:00Z' },
+      { slug: 'three', image: undefined, alt: undefined, dateAdded: '2026-03-01T09:00:00Z' },
     ])
 
     const wrapper = await mountActor()
@@ -150,8 +150,8 @@ describe('ActorView', () => {
 
   it('does not render lightbox triggers for entries without an image', async () => {
     mockedGallery.mockReturnValue([
-      { slug: 'with', image: '/images/a.svg', title: 'With image', order: 1 },
-      { slug: 'without', image: undefined, title: 'Without image', order: 2 },
+      { slug: 'with', image: '/images/a.svg', title: 'With image', dateAdded: '2026-05-01T09:00:00Z' },
+      { slug: 'without', image: undefined, title: 'Without image', dateAdded: '2026-04-01T09:00:00Z' },
     ])
 
     const wrapper = await mountActor()

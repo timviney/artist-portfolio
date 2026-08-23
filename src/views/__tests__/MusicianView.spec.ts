@@ -141,10 +141,13 @@ describe('MusicianView', () => {
     const wrapper = await mountMusician()
     const items = wrapper.findAll('.gallery-grid__item')
 
-    expect(items).toHaveLength(1)
-    expect(items[0].find('img').attributes('src')).toBe('/images/uploads/artwork-sea-glass-notes.svg')
+    expect(items).toHaveLength(2)
+    expect(items[0].find('img').attributes('src')).toBe(
+      '/images/uploads/artwork-sea-glass-notes.svg',
+    )
     expect(items[0].find('img').attributes('alt')).toContain('Colour studies')
     expect(items[0].find('.gallery-grid__description').text()).toContain('Colour studies')
+    expect(items[1].find('.gallery-grid__description').text()).toContain('Making sounds')
   })
 
   it('opens the lightbox showing the clicked gallery image', async () => {
@@ -175,8 +178,8 @@ describe('MusicianView', () => {
 
   it('does not render lightbox triggers for gallery entries without an image', async () => {
     mockedGallery.mockReturnValue([
-      { slug: 'with', image: '/images/a.svg', description: 'With image', order: 1 },
-      { slug: 'without', image: undefined, description: undefined, order: 2 },
+      { slug: 'with', image: '/images/a.svg', description: 'With image', dateAdded: '2026-05-01T09:00:00Z' },
+      { slug: 'without', image: undefined, description: undefined, dateAdded: '2026-04-01T09:00:00Z' },
     ] satisfies MusicianGalleryImage[])
 
     const wrapper = await mountMusician()

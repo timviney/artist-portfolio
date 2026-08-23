@@ -57,26 +57,30 @@ export interface VideoEntry {
   title: string
   videoUrl?: string
   description?: string
-  order: number
+  /** ISO datetime; newer entries display first. */
+  dateAdded?: string
 }
 
 export interface HeadshotEntry {
   slug: string
   image?: string
   alt?: string
-  order: number
+  /** ISO datetime; newer entries display first. */
+  dateAdded?: string
 }
 
 export interface ActorGalleryImage {
   slug: string
   image?: string
   title: string
-  order: number
+  /** ISO datetime; newer entries display first. */
+  dateAdded?: string
 }
 
 export interface MusicianGalleryImage {
   slug: string
   image?: string
   description?: string
-  order: number
+  /** ISO datetime; newer entries display first. */
+  dateAdded?: string
 }

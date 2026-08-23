@@ -51,5 +51,3 @@ export const DEFAULT_MUSICIAN_PAGE: MusicianPageContent = {
   projectsHeading: 'Original Projects',
   galleryHeading: 'Gallery',
 }
-
-export const DEFAULT_ENTRY_ORDER = Number.MAX_SAFE_INTEGER

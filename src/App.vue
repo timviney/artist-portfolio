@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { AnimatePresence, motion, MotionConfig } from 'motion-v'
-import ScrollTop from 'primevue/scrolltop'
 import { useRoute } from 'vue-router'
 
 import SiteFooter from '@/components/SiteFooter.vue'
@@ -34,8 +33,6 @@ const easeSoft = [0.22, 1, 0.36, 1] as const
       </main>
 
       <SiteFooter />
-
-      <ScrollTop :threshold="600" />
     </div>
   </MotionConfig>
 </template>

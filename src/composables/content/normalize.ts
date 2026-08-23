@@ -2,7 +2,6 @@ import {
   DEFAULT_ABOUT_PAGE,
   DEFAULT_ACTOR_PAGE,
   DEFAULT_CONTACT_PAGE,
-  DEFAULT_ENTRY_ORDER,
   DEFAULT_MUSICIAN_PAGE,
   DEFAULT_SITE_SETTINGS,
 } from './defaults'
@@ -61,20 +60,8 @@ export function prettifySlug(slug: string): string {
     .join(' ')
 }
 
-interface EntryBase {
-  slug: string
-  order: number
-}
-
-function entryBase(source: Record<string, unknown>, slug: string): EntryBase {
-  const safeSlug = slug.trim()
-  return {
-    slug: safeSlug,
-    order:
-      typeof source.order === 'number' && Number.isFinite(source.order)
-        ? source.order
-        : DEFAULT_ENTRY_ORDER,
-  }
+function entryDate(source: Record<string, unknown>): string | undefined {
+  return asOptionalTrimmedString(source.dateAdded)
 }
 
 function titleFrom(source: Record<string, unknown>, slug: string): string {
@@ -161,7 +148,7 @@ export function normalizeMusicianPage(raw: unknown): MusicianPageContent {
 export function normalizeVideoEntry(raw: unknown, slug: string): VideoEntry {
   const source = isRecord(raw) ? raw : {}
   return {
-    ...entryBase(source, slug),
+    ...{ slug: slug.trim(), dateAdded: entryDate(source) },
     title: titleFrom(source, slug.trim()),
     videoUrl: asOptionalTrimmedString(source.videoUrl),
     description: asOptionalTrimmedString(source.description),
@@ -171,7 +158,7 @@ export function normalizeVideoEntry(raw: unknown, slug: string): VideoEntry {
 export function normalizeHeadshot(raw: unknown, slug: string): HeadshotEntry {
   const source = isRecord(raw) ? raw : {}
   return {
-    ...entryBase(source, slug),
+    ...{ slug: slug.trim(), dateAdded: entryDate(source) },
     image: asOptionalTrimmedString(source.image),
     alt: asOptionalTrimmedString(source.alt),
   }
@@ -180,7 +167,7 @@ export function normalizeHeadshot(raw: unknown, slug: string): HeadshotEntry {
 export function normalizeActorGalleryImage(raw: unknown, slug: string): ActorGalleryImage {
   const source = isRecord(raw) ? raw : {}
   return {
-    ...entryBase(source, slug),
+    ...{ slug: slug.trim(), dateAdded: entryDate(source) },
     image: asOptionalTrimmedString(source.image),
     title: titleFrom(source, slug.trim()),
   }
@@ -189,7 +176,7 @@ export function normalizeActorGalleryImage(raw: unknown, slug: string): ActorGal
 export function normalizeMusicianGalleryImage(raw: unknown, slug: string): MusicianGalleryImage {
   const source = isRecord(raw) ? raw : {}
   return {
-    ...entryBase(source, slug),
+    ...{ slug: slug.trim(), dateAdded: entryDate(source) },
     image: asOptionalTrimmedString(source.image),
     description: asOptionalTrimmedString(source.description),
   }

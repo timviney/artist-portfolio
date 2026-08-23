@@ -17,7 +17,7 @@
   --surface-veil: color-mix(in oklab, var(--color-surface), var(--color-primary) 4%);
   --surface-deep: color-mix(in oklab, var(--color-surface), var(--color-primary) 9%);
   --ink-band: color-mix(in oklab, var(--color-ink), black 18%);
-  --accent-wash: color-mix(in oklab, transparent, var(--color-secondary) 12%);
+  --accent-wash: color-mix(in oklab, var(--color-surface), var(--color-secondary) 16%);
   --shadow-lift: 0 1px 2px color-mix(in oklab, var(--color-ink) 22%, transparent),
     0 12px 32px -12px color-mix(in oklab, var(--color-ink) 38%, transparent);
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
@@ -152,6 +152,18 @@ img {
   font-size: 1.15rem;
   font-style: italic;
   color: color-mix(in oklab, var(--color-text), transparent 14%);
+}
+
+/* Full-bleed tinted band: the gradient spans the viewport edge to edge while
+   the content inside stays within the normal .page measure. */
+.band {
+  background-image: linear-gradient(
+    to bottom,
+    transparent,
+    var(--accent-wash) 14%,
+    var(--accent-wash) 86%,
+    transparent
+  );
 }
 
 /* ---- staggered entrance for elements tagged on load ---- */

@@ -96,22 +96,26 @@ function openLightbox(slug: string) {
       </article>
     </section>
 
-    <section class="page musician-gallery">
-      <h2 class="musician-section-title">{{ page.galleryHeading }}</h2>
-      <ul v-if="gallery.length > 0" class="gallery-grid">
-        <li v-for="image in gallery" :key="image.slug" class="gallery-grid__item">
-          <button
-            v-if="image.image"
-            type="button"
-            class="gallery-grid__trigger"
-            @click="openLightbox(image.slug)"
-          >
-            <img :src="image.image" :alt="image.description ?? ''" />
-          </button>
-          <div v-else class="gallery-grid__fallback" aria-hidden="true"></div>
-          <p v-if="image.description" class="gallery-grid__description">{{ image.description }}</p>
-        </li>
-      </ul>
+    <section class="band">
+      <div class="page musician-gallery">
+        <h2 class="musician-section-title">{{ page.galleryHeading }}</h2>
+        <ul v-if="gallery.length > 0" class="gallery-grid">
+          <li v-for="image in gallery" :key="image.slug" class="gallery-grid__item">
+            <button
+              v-if="image.image"
+              type="button"
+              class="gallery-grid__trigger"
+              @click="openLightbox(image.slug)"
+            >
+              <img :src="image.image" :alt="image.description ?? ''" />
+            </button>
+            <div v-else class="gallery-grid__fallback" aria-hidden="true"></div>
+            <p v-if="image.description" class="gallery-grid__description">
+              {{ image.description }}
+            </p>
+          </li>
+        </ul>
+      </div>
     </section>
 
     <section class="page musician-next">
@@ -231,13 +235,7 @@ function openLightbox(slug: string) {
 }
 
 .musician-gallery {
-  background-image: linear-gradient(
-    to bottom,
-    transparent,
-    var(--accent-wash) 18%,
-    var(--accent-wash) 82%,
-    transparent
-  );
+  padding-block: 4.5rem;
 }
 
 .musician-awards__text {

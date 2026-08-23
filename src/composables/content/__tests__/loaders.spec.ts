@@ -4,7 +4,6 @@ import {
   DEFAULT_ABOUT_PAGE,
   DEFAULT_ACTOR_PAGE,
   DEFAULT_CONTACT_PAGE,
-  DEFAULT_ENTRY_ORDER,
   DEFAULT_HOME_PAGE,
   DEFAULT_MUSICIAN_PAGE,
   DEFAULT_SITE_SETTINGS,
@@ -147,10 +146,15 @@ describe('entry normalizers', () => {
     const video = normalizeVideoEntry(undefined, 'drama-reel')
     expect(video.title).toBe('Drama Reel')
     expect(video.videoUrl).toBeUndefined()
-    expect(video.order).toBe(DEFAULT_ENTRY_ORDER)
+    expect(video.dateAdded).toBeUndefined()
 
     const full = normalizeVideoEntry(
-      { title: ' Reel ', videoUrl: ' https://youtu.be/x ', description: ' Clips ', order: 3 },
+      {
+      title: ' Reel ',
+      videoUrl: ' https://youtu.be/x ',
+      description: ' Clips ',
+      dateAdded: ' 2026-02-01T10:00:00Z ',
+    },
       'reel',
     )
     expect(full.title).toBe('Reel')
@@ -163,10 +167,13 @@ describe('entry normalizers', () => {
     expect(headshot.image).toBeUndefined()
     expect(headshot.alt).toBeUndefined()
 
-    const full = normalizeHeadshot({ image: ' /a.jpg ', alt: ' Max smiling ', order: -2 }, 'main')
+    const full = normalizeHeadshot(
+      { image: ' /a.jpg ', alt: ' Max smiling ', dateAdded: ' 2026-03-01T08:00:00Z ' },
+      'main',
+    )
     expect(full.image).toBe('/a.jpg')
     expect(full.alt).toBe('Max smiling')
-    expect(full.order).toBe(-2)
+    expect(full.dateAdded).toBe('2026-03-01T08:00:00Z')
   })
 
   it('actor gallery images fall back to a slug-derived title', () => {
@@ -310,10 +317,15 @@ describe('seeded content loaders', () => {
     expect(contact.phone).toBeDefined()
   })
 
-  it('loads the seeded musician gallery with descriptions', () => {
+  it('loads the seeded musician gallery with descriptions, newest first', () => {
     const gallery = useMusicianGallery()
-    expect(gallery).toHaveLength(1)
+    expect(gallery).toHaveLength(2)
+    expect(gallery[0].slug).toBe('field-notes-artwork')
     expect(gallery[0].image).toBe('/images/uploads/artwork-sea-glass-notes.svg')
     expect(gallery[0].description).toContain('Field Notes')
+    expect(gallery[1].slug).toBe('making-sounds')
+    expect(new Date(gallery[0].dateAdded ?? '').getTime()).toBeGreaterThan(
+      new Date(gallery[1].dateAdded ?? '').getTime(),
+    )
   })
 })

@@ -56,8 +56,9 @@ function openLightbox(slug: string) {
       </article>
     </section>
 
-    <section class="page actor-gallery">
-      <h2 class="actor-section-title">{{ page.galleryHeading }}</h2>
+    <section class="band">
+      <div class="page actor-gallery">
+        <h2 class="actor-section-title">{{ page.galleryHeading }}</h2>
 
       <Swiper
         v-if="headshots.length > 0"
@@ -88,6 +89,7 @@ function openLightbox(slug: string) {
           <p class="gallery-grid__title">{{ image.title }}</p>
         </li>
       </ul>
+      </div>
     </section>
 
     <section class="page actor-next">
@@ -235,13 +237,6 @@ function openLightbox(slug: string) {
   flex-direction: column;
   gap: 3rem;
   padding-block: 5rem;
-  background-image: linear-gradient(
-    to bottom,
-    transparent,
-    var(--accent-wash) 18%,
-    var(--accent-wash) 82%,
-    transparent
-  );
 }
 
 .gallery-grid {
@@ -295,8 +290,10 @@ function openLightbox(slug: string) {
   max-width: 30rem;
   margin: 0 auto;
   padding: 0.6rem;
-  border: 1px solid var(--color-border);
-  background-color: var(--surface-deep);
+
+  /* Transparent mat with no border: the carousel sits on a full-bleed
+     gradient band, so nothing here should paint its own fill or edge - the
+     band shows through and stays matched at every position. */
 }
 
 .headshot-slide img,

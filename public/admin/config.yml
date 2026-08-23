@@ -179,9 +179,9 @@ collections:
     format: json
     create: true
     identifier_field: title
-    summary: '#{{order}} {{title}}'
+    summary: '{{title}}'
     sortable_fields:
-      - order
+      - dateAdded
       - title
     fields:
       - name: title
@@ -196,11 +196,11 @@ collections:
         label: Description
         widget: text
         required: false
-      - name: order
-        label: Display order
-        widget: number
-        default: 1
-        hint: Lower numbers appear first.
+      - name: dateAdded
+        label: Date added
+        widget: datetime
+        required: false
+        hint: Newest entries show first. New entries are dated now; tweak a date to re-order.
 
   - name: actor-headshots
     label: Actor · Headshots
@@ -210,7 +210,7 @@ collections:
     identifier_field: alt
     summary: '{{alt}}'
     sortable_fields:
-      - order
+      - dateAdded
       - alt
     fields:
       - name: image
@@ -222,11 +222,11 @@ collections:
         widget: string
         required: false
         hint: Describe the photo for screen readers.
-      - name: order
-        label: Display order
-        widget: number
-        default: 1
-        hint: Lower numbers appear first in the carousel.
+      - name: dateAdded
+        label: Date added
+        widget: datetime
+        required: false
+        hint: Newest entries show first. New entries are dated now; tweak a date to re-order.
 
   - name: actor-gallery
     label: Actor · Production gallery
@@ -236,7 +236,7 @@ collections:
     identifier_field: title
     summary: '{{title}}'
     sortable_fields:
-      - order
+      - dateAdded
       - title
     fields:
       - name: image
@@ -246,11 +246,11 @@ collections:
       - name: title
         label: Caption title
         widget: string
-      - name: order
-        label: Display order
-        widget: number
-        default: 1
-        hint: Lower numbers appear first.
+      - name: dateAdded
+        label: Date added
+        widget: datetime
+        required: false
+        hint: Newest entries show first. New entries are dated now; tweak a date to re-order.
 
   # --------------------------------------------------------- musician: media
   - name: musician-highlights
@@ -259,9 +259,9 @@ collections:
     format: json
     create: true
     identifier_field: title
-    summary: '#{{order}} {{title}}'
+    summary: '{{title}}'
     sortable_fields:
-      - order
+      - dateAdded
       - title
     fields:
       - name: title
@@ -276,11 +276,11 @@ collections:
         label: Description
         widget: text
         required: false
-      - name: order
-        label: Display order
-        widget: number
-        default: 1
-        hint: Lower numbers appear first.
+      - name: dateAdded
+        label: Date added
+        widget: datetime
+        required: false
+        hint: Newest entries show first. New entries are dated now; tweak a date to re-order.
 
   - name: musician-projects
     label: Musician · Original projects
@@ -288,9 +288,9 @@ collections:
     format: json
     create: true
     identifier_field: title
-    summary: '#{{order}} {{title}}'
+    summary: '{{title}}'
     sortable_fields:
-      - order
+      - dateAdded
       - title
     fields:
       - name: title
@@ -305,11 +305,11 @@ collections:
         label: Description
         widget: text
         required: false
-      - name: order
-        label: Display order
-        widget: number
-        default: 1
-        hint: Lower numbers appear first.
+      - name: dateAdded
+        label: Date added
+        widget: datetime
+        required: false
+        hint: Newest entries show first. New entries are dated now; tweak a date to re-order.
 
   - name: musician-gallery
     label: Musician · Gallery
@@ -319,7 +319,7 @@ collections:
     identifier_field: description
     summary: '{{description}}'
     sortable_fields:
-      - order
+      - dateAdded
       - description
     fields:
       - name: image
@@ -330,8 +330,8 @@ collections:
         label: Description
         widget: text
         required: false
-      - name: order
-        label: Display order
-        widget: number
-        default: 1
-        hint: Lower numbers appear first.
+      - name: dateAdded
+        label: Date added
+        widget: datetime
+        required: false
+        hint: Newest entries show first. New entries are dated now; tweak a date to re-order.

@@ -56,7 +56,9 @@ Keep the token private like a password: anyone holding it can edit the site.
 | Actor · Showreel videos / Headshots / Production gallery | The Actor page sections |
 | Musician · Highlights / Original projects / Gallery | The Musician page sections |
 
-Every list has a **Display order** number — lower numbers come first.
+Lists (videos, photos) show **newest first** automatically. Each entry gets a
+**Date added** timestamp when you create it; edit a date if you want to
+reshuffle - later dates float to the top.
 
 ## Editing locally (optional)
 

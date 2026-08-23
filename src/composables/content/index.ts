@@ -50,9 +50,17 @@ function readJson(path: string): unknown {
 
 interface OrderedEntry {
   slug: string
-  order: number
+  dateAdded?: string
 }
 
+function recency(entry: OrderedEntry): string {
+  return entry.dateAdded ?? ''
+}
+
+/**
+ * Newest entries first; ties fall back to alphabetical slugs so the order is
+ * stable. Entries without a date sort last.
+ */
 function loadEntries<T extends OrderedEntry>(
   dir: string,
   normalize: (raw: unknown, slug: string) => T,
@@ -60,7 +68,11 @@ function loadEntries<T extends OrderedEntry>(
   return Object.entries(contentModules)
     .filter(([path]) => path.startsWith(dir) && path.endsWith('.json'))
     .map(([path, mod]) => normalize(mod?.default, path.slice(dir.length).replace(/\.json$/, '')))
-    .sort((a, b) => a.order - b.order || a.slug.localeCompare(b.slug))
+    .sort(
+      (a, b) =>
+        recency(b).localeCompare(recency(a)) ||
+        (recency(a) ? a.slug.localeCompare(b.slug) : a.slug.localeCompare(b.slug)),
+    )
 }
 
 export function useSiteSettings(): SiteSettings {
