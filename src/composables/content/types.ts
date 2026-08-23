@@ -20,6 +20,7 @@ export interface HomePageContent {
 }
 
 export interface AboutPageContent {
+  aboutEyebrow: string
   aboutHeading: string
   portraitImage?: string
   bioParagraphs: string[]
@@ -27,7 +28,9 @@ export interface AboutPageContent {
 }
 
 export interface ContactPageContent {
+  contactEyebrow: string
   contactHeading: string
+  enquiryButtonLabel: string
   contactImage?: string
   email: string
   phone?: string
@@ -37,6 +40,7 @@ export interface ContactPageContent {
 export interface ActorPageContent {
   heroImage?: string
   actorHeading: string
+  heroCaption: string
   galleryHeading: string
 }
 
@@ -44,6 +48,7 @@ export interface MusicianPageContent {
   heroImage?: string
   intro: string
   musicianHeading: string
+  heroCaption: string
   awardsHeading: string
   awardsText?: string
   awardsFirstImage?: string

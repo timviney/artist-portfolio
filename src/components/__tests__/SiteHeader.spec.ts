@@ -32,7 +32,7 @@ beforeEach(() => {
 describe('SiteHeader', () => {
   it('renders the artist name from site settings', async () => {
     const { wrapper } = await mountHeader()
-    expect(wrapper.find('.site-header__name').text()).toBe('Max Young')
+    expect(wrapper.find('.site-header__name').text()).toBe('Max Pavlovsky')
   })
 
   it('renders only the three nav links', async () => {
@@ -84,7 +84,7 @@ describe('SiteHeader', () => {
     const cv = wrapper.find('.site-header__cv')
 
     expect(cv.exists()).toBe(true)
-    expect(cv.attributes('href')).toBe('/images/uploads/max-young-cv-2026.pdf')
+    expect(cv.attributes('href')).toBe('/images/uploads/max-pavlovsky-cv-2026.pdf')
     expect(cv.attributes('download')).toBeDefined()
     expect(cv.text()).toContain('Download CV')
 

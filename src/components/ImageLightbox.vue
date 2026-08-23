@@ -9,6 +9,9 @@ export interface LightboxImage {
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
+import RichText from '@/components/RichText.vue'
+import { stripInlineLinks } from '@/composables/richText'
+
 const props = defineProps<{
   images: LightboxImage[]
   initialIndex: number
@@ -89,11 +92,11 @@ onBeforeUnmount(() => {
           v-if="current?.image"
           :key="current.slug"
           :src="current.image"
-          :alt="current.caption ?? ''"
+          :alt="stripInlineLinks(current.caption ?? '')"
         />
         <div v-else class="image-lightbox__fallback" aria-hidden="true"></div>
         <figcaption class="image-lightbox__caption">
-          <span v-if="current?.caption">{{ current.caption }}</span>
+          <RichText v-if="current?.caption" :text="current.caption" class="image-lightbox__text" />
           <span v-if="images.length > 1" class="image-lightbox__counter" aria-live="polite">
             {{ index + 1 }} / {{ images.length }}
           </span>

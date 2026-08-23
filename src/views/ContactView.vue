@@ -18,7 +18,7 @@ function telHref(phone: string): string {
 <template>
   <section class="page contact">
     <header class="contact-head">
-      <p class="eyebrow">Bookings &amp; enquiries</p>
+      <p class="eyebrow">{{ page.contactEyebrow }}</p>
       <h1 class="contact-title">{{ page.contactHeading }}</h1>
     </header>
 
@@ -31,7 +31,7 @@ function telHref(phone: string): string {
         <Button
           as="a"
           :href="`mailto:${page.email}`"
-          label="Enquire by email"
+          :label="page.enquiryButtonLabel"
           class="contact-button"
         />
         <a :href="`mailto:${page.email}`" class="contact-email">{{ page.email }}</a>

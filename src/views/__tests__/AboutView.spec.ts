@@ -27,6 +27,7 @@ describe('AboutView', () => {
     const wrapper = mount(AboutView)
 
     expect(wrapper.find('.about-title').text()).toBe('Who Am I?')
+    expect(wrapper.find('.eyebrow').text()).toBe('The person behind the work')
     expect(wrapper.find('.about-portrait img').attributes('src')).toBe(
       '/images/uploads/about-portrait.jpg',
     )
@@ -43,6 +44,7 @@ describe('AboutView', () => {
 
   it('renders a mocked statement as a quote block when the CMS provides one', async () => {
     mockedPage.mockReturnValue({
+      aboutEyebrow: 'The person behind the work',
       aboutHeading: 'About Me',
       bioParagraphs: ['One paragraph.'],
       statement: 'stories told quietly but honestly',
@@ -57,6 +59,7 @@ describe('AboutView', () => {
 
   it('omits the statement block when the CMS has none', async () => {
     mockedPage.mockReturnValue({
+      aboutEyebrow: 'The person behind the work',
       aboutHeading: 'About Me',
       bioParagraphs: ['One paragraph.'],
     } satisfies AboutPageContent)
@@ -68,6 +71,7 @@ describe('AboutView', () => {
 
   it('renders a fallback block when the portrait is missing', async () => {
     mockedPage.mockReturnValue({
+      aboutEyebrow: 'The person behind the work',
       aboutHeading: 'All About Me',
       bioParagraphs: ['First.', 'Second.'],
     } satisfies AboutPageContent)

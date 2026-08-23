@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 
 import ImageLightbox from '@/components/ImageLightbox.vue'
 import type { LightboxImage } from '@/components/ImageLightbox.vue'
+import RichText from '@/components/RichText.vue'
 import VideoEmbed from '@/components/VideoEmbed.vue'
 import {
   useHighlights,
@@ -10,6 +11,7 @@ import {
   useMusicianPage,
   useProjects,
 } from '@/composables/content'
+import { stripInlineLinks } from '@/composables/richText'
 
 const page = useMusicianPage()
 const highlights = useHighlights()
@@ -38,7 +40,7 @@ function openLightbox(slug: string) {
       <div class="musician-hero__scrim" aria-hidden="true"></div>
       <div class="musician-hero__content">
         <h2 class="musician-section-title musician-hero__title">{{ page.musicianHeading }}</h2>
-        <p class="musician-hero__caption">Cello · Guitar · Song</p>
+        <p class="musician-hero__caption">{{ page.heroCaption }}</p>
       </div>
     </section>
 
@@ -79,7 +81,9 @@ function openLightbox(slug: string) {
         :class="{ 'musician-video--ruled': index > 0 }"
       >
         <VideoEmbed :video-url="video.videoUrl" :title="video.title" />
-        <p v-if="video.description" class="musician-video__description">{{ video.description }}</p>
+        <p v-if="video.description" class="musician-video__description">
+          <RichText :text="video.description" />
+        </p>
       </article>
     </section>
 
@@ -92,7 +96,9 @@ function openLightbox(slug: string) {
         :class="{ 'musician-video--ruled': index > 0 }"
       >
         <VideoEmbed :video-url="video.videoUrl" :title="video.title" />
-        <p v-if="video.description" class="musician-video__description">{{ video.description }}</p>
+        <p v-if="video.description" class="musician-video__description">
+          <RichText :text="video.description" />
+        </p>
       </article>
     </section>
 
@@ -107,11 +113,11 @@ function openLightbox(slug: string) {
               class="gallery-grid__trigger"
               @click="openLightbox(image.slug)"
             >
-              <img :src="image.image" :alt="image.description ?? ''" />
+              <img :src="image.image" :alt="stripInlineLinks(image.description ?? '')" />
             </button>
             <div v-else class="gallery-grid__fallback" aria-hidden="true"></div>
             <p v-if="image.description" class="gallery-grid__description">
-              {{ image.description }}
+              <RichText :text="image.description" />
             </p>
           </li>
         </ul>

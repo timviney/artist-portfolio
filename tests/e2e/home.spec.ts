@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 test('home page loads', async ({ page }) => {
   await page.goto('/')
   await expect(page).toHaveTitle(/Artist Portfolio/)
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Max Young')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Max Pavlovsky')
 })
 
 test('navigation reaches all placeholder pages', async ({ page }) => {

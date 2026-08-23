@@ -111,12 +111,18 @@ describe('normalizeActorPage', () => {
   it('falls back to hardcoded headings when fields are missing', () => {
     expect(normalizeActorPage(undefined)).toEqual(DEFAULT_ACTOR_PAGE)
     expect(DEFAULT_ACTOR_PAGE.actorHeading).toBe('Actor')
+    expect(DEFAULT_ACTOR_PAGE.heroCaption).toBe('Stage & screen')
     expect(DEFAULT_ACTOR_PAGE.galleryHeading).toBe('Gallery')
   })
 
-  it('lets the artist override section headings', () => {
-    const actor = normalizeActorPage({ actorHeading: ' On Stage ', heroImage: '/hero.jpg' })
+  it('lets the artist override section headings and hero caption', () => {
+    const actor = normalizeActorPage({
+      actorHeading: ' On Stage ',
+      heroCaption: ' Theatre & film ',
+      heroImage: '/hero.jpg',
+    })
     expect(actor.actorHeading).toBe('On Stage')
+    expect(actor.heroCaption).toBe('Theatre & film')
     expect(actor.heroImage).toBe('/hero.jpg')
     expect(actor.galleryHeading).toBe('Gallery')
   })
@@ -125,13 +131,19 @@ describe('normalizeActorPage', () => {
 describe('normalizeMusicianPage', () => {
   it('falls back to hardcoded headings and empty intro', () => {
     expect(normalizeMusicianPage(undefined)).toEqual(DEFAULT_MUSICIAN_PAGE)
+    expect(DEFAULT_MUSICIAN_PAGE.heroCaption).toBe('Cello · Guitar · Song')
     expect(DEFAULT_MUSICIAN_PAGE.projectsHeading).toBe('Original Projects')
   })
 
-  it('keeps a provided intro and heading overrides', () => {
-    const musician = normalizeMusicianPage({ intro: ' Hello world. ', awardsHeading: 'Prizes' })
+  it('keeps a provided intro, heading and hero caption overrides', () => {
+    const musician = normalizeMusicianPage({
+      intro: ' Hello world. ',
+      awardsHeading: 'Prizes',
+      heroCaption: ' Strings & songs ',
+    })
     expect(musician.intro).toBe('Hello world.')
     expect(musician.awardsHeading).toBe('Prizes')
+    expect(musician.heroCaption).toBe('Strings & songs')
     expect(musician.highlightsHeading).toBe('Highlights')
   })
 
@@ -209,6 +221,7 @@ describe('entry normalizers', () => {
 describe('normalizeAboutPage', () => {
   it('falls back to defaults when the file is missing', () => {
     expect(normalizeAboutPage(undefined)).toEqual(DEFAULT_ABOUT_PAGE)
+    expect(DEFAULT_ABOUT_PAGE.aboutEyebrow).toBe('The person behind the work')
   })
 
   it('keeps only non-empty string paragraphs', () => {
@@ -224,6 +237,17 @@ describe('normalizeAboutPage', () => {
 describe('normalizeContactPage', () => {
   it('falls back to defaults when the file is missing', () => {
     expect(normalizeContactPage(undefined)).toEqual(DEFAULT_CONTACT_PAGE)
+    expect(DEFAULT_CONTACT_PAGE.contactEyebrow).toBe('Bookings & enquiries')
+    expect(DEFAULT_CONTACT_PAGE.enquiryButtonLabel).toBe('Enquire by email')
+  })
+
+  it('keeps eyebrow and button-label overrides', () => {
+    const contact = normalizeContactPage({
+      contactEyebrow: ' Get in touch ',
+      enquiryButtonLabel: ' Email me ',
+    })
+    expect(contact.contactEyebrow).toBe('Get in touch')
+    expect(contact.enquiryButtonLabel).toBe('Email me')
   })
 
   it('trims the email, keeps an optional phone and note', () => {
@@ -247,12 +271,12 @@ describe('normalizeContactPage', () => {
 describe('seeded content loaders', () => {
   it('loads the seeded site settings', () => {
     const settings = useSiteSettings()
-    expect(settings.name).toBe('Max Young')
+    expect(settings.name).toBe('Max Pavlovsky')
     expect(settings.tagline).toContain('Actor')
     expect(settings.socialLinks).toEqual([
       { label: 'Instagram', url: 'https://www.instagram.com/maxyoungacts/' },
     ])
-    expect(settings.cv).toBe('/images/uploads/max-young-cv-2026.pdf')
+    expect(settings.cv).toBe('/images/uploads/max-pavlovsky-cv-2026.pdf')
   })
 
   it('loads the seeded theme selection as a known preset', () => {
@@ -264,13 +288,13 @@ describe('seeded content loaders', () => {
 
   it('loads the seeded home page with both headshot slots filled', () => {
     const home = useHomePage()
-    expect(home.actorHeadshot).toBe('/images/uploads/maxyoung-headshot-1b.jpg')
-    expect(home.musicianHeadshot).toBe('/images/uploads/maxyoung-musician-tile.jpg')
+    expect(home.actorHeadshot).toBe('/images/uploads/maxpavlovsky-headshot-1b.jpg')
+    expect(home.musicianHeadshot).toBe('/images/uploads/maxpavlovsky-musician-tile.jpg')
   })
 
   it('loads the seeded actor page with hero and headings', () => {
     const actor = useActorPage()
-    expect(actor.heroImage).toBe('/images/uploads/maxyoung-actor-hero.jpg')
+    expect(actor.heroImage).toBe('/images/uploads/maxpavlovsky-actor-hero.jpg')
     expect(actor.actorHeading).toBe('Actor')
     expect(actor.galleryHeading).toBe('Gallery')
   })
@@ -284,8 +308,8 @@ describe('seeded content loaders', () => {
   it('loads the seeded headshots carousel, newest first', () => {
     const headshots = useHeadshots()
     expect(headshots.length).toBe(7)
-    expect(headshots[0].slug).toBe('maxyoung-headshot-1b')
-    expect(headshots[0].image).toBe('/images/uploads/maxyoung-headshot-1b.jpg')
+    expect(headshots[0].slug).toBe('maxpavlovsky-headshot-1b')
+    expect(headshots[0].image).toBe('/images/uploads/maxpavlovsky-headshot-1b.jpg')
     expect(headshots[0].alt).toBe('Headshots by Yellowbelly')
   })
 
@@ -298,7 +322,7 @@ describe('seeded content loaders', () => {
 
   it('loads the seeded musician page with intro and hero', () => {
     const musician = useMusicianPage()
-    expect(musician.heroImage).toBe('/images/uploads/maxyoung-musician-hero.jpg')
+    expect(musician.heroImage).toBe('/images/uploads/maxpavlovsky-musician-hero.jpg')
     expect(musician.intro).toContain('self-taught musician')
     expect(musician.projectsHeading).toBe('Original Projects')
   })

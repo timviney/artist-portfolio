@@ -84,13 +84,16 @@ describe('Sveltia admin config', () => {
 
     expect(fieldNames(byName('home')?.fields)).toEqual(['actorHeadshot', 'musicianHeadshot'])
     expect(fieldNames(byName('about')?.fields)).toEqual([
+      'aboutEyebrow',
       'aboutHeading',
       'portraitImage',
       'bioParagraphs',
       'statement',
     ])
     expect(fieldNames(byName('contact')?.fields)).toEqual([
+      'contactEyebrow',
       'contactHeading',
+      'enquiryButtonLabel',
       'contactImage',
       'email',
       'phone',
@@ -99,12 +102,14 @@ describe('Sveltia admin config', () => {
     expect(fieldNames(byName('actor')?.fields)).toEqual([
       'heroImage',
       'actorHeading',
+      'heroCaption',
       'galleryHeading',
     ])
     expect(fieldNames(byName('musician')?.fields)).toEqual([
       'heroImage',
       'intro',
       'musicianHeading',
+      'heroCaption',
       'awardsHeading',
       'awardsText',
       'awardsFirstImage',
@@ -153,5 +158,24 @@ describe('Sveltia admin config', () => {
 
     expect(folders).toHaveLength(6)
     expect(folders.join('\n')).not.toContain('/awards')
+  })
+
+  it('uses markdown widgets for every link-enabled caption/title/description field', () => {
+    const markdownFields: string[] = []
+    for (const collection of config.collections) {
+      for (const field of collection.fields ?? []) {
+        if (field.widget === 'markdown') {
+          markdownFields.push(`${collection.name}.${field.name}`)
+        }
+      }
+    }
+
+    expect(markdownFields).toEqual([
+      'actor-videos.description',
+      'actor-gallery.title',
+      'musician-highlights.description',
+      'musician-projects.description',
+      'musician-gallery.description',
+    ])
   })
 })

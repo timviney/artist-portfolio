@@ -18,7 +18,7 @@ describe('SiteFooter', () => {
   it('renders the copyright line with the artist name and current year', () => {
     const wrapper = mount(SiteFooter)
     expect(wrapper.find('.site-footer__copyright').text()).toBe(
-      `© ${new Date().getFullYear()} Max Young`,
+      `© ${new Date().getFullYear()} Max Pavlovsky`,
     )
   })
 })

@@ -39,10 +39,12 @@ describe('ContactView', () => {
   it('renders the heading and a mailto enquiry button for the CMS email', () => {
     const wrapper = mountContact()
 
+    expect(wrapper.find('.eyebrow').text()).toBe('Bookings & enquiries')
     expect(wrapper.find('.contact-title').text()).toBe('Contact')
     expect(wrapper.find('.contact-button').attributes('href')).toBe(
       'mailto:agents@mntalent.co.uk',
     )
+    expect(wrapper.find('.contact-button').text()).toContain('Enquire by email')
     expect(wrapper.find('.contact-email').text()).toBe('agents@mntalent.co.uk')
   })
 
@@ -56,7 +58,9 @@ describe('ContactView', () => {
 
   it('omits the portrait block when no contact image is set', () => {
     mockedPage.mockReturnValue({
+      contactEyebrow: 'Bookings & enquiries',
       contactHeading: 'Contact',
+      enquiryButtonLabel: 'Enquire by email',
       email: 'me@example.com',
     } satisfies ContactPageContent)
 
@@ -75,7 +79,9 @@ describe('ContactView', () => {
 
   it('omits the phone link when no number is set', () => {
     mockedPage.mockReturnValue({
+      contactEyebrow: 'Bookings & enquiries',
       contactHeading: 'Contact',
+      enquiryButtonLabel: 'Enquire by email',
       email: 'me@example.com',
     } satisfies ContactPageContent)
 
@@ -92,7 +98,9 @@ describe('ContactView', () => {
 
   it('falls back to the reply copy when no note is set', () => {
     mockedPage.mockReturnValue({
+      contactEyebrow: 'Bookings & enquiries',
       contactHeading: 'Contact',
+      enquiryButtonLabel: 'Enquire by email',
       email: 'me@example.com',
     } satisfies ContactPageContent)
 
@@ -115,11 +123,13 @@ describe('ContactView', () => {
 
   it('renders no social list when the artist has no links', () => {
     mockedPage.mockReturnValue({
+      contactEyebrow: 'Bookings & enquiries',
       contactHeading: 'Say Hello',
+      enquiryButtonLabel: 'Enquire by email',
       email: 'me@example.com',
       note: 'Note.',
     } satisfies ContactPageContent)
-    mockedSettings.mockReturnValue({ name: 'Max Young', tagline: '', socialLinks: [] })
+    mockedSettings.mockReturnValue({ name: 'Max Pavlovsky', tagline: '', socialLinks: [] })
 
     const wrapper = mountContact()
 

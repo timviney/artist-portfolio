@@ -53,7 +53,7 @@ describe('MusicianView', () => {
   it('renders the fullscreen hero image from the CMS', async () => {
     const wrapper = await mountMusician()
     expect(wrapper.find('.musician-hero img').attributes('src')).toBe(
-      '/images/uploads/maxyoung-musician-hero.jpg',
+      '/images/uploads/maxpavlovsky-musician-hero.jpg',
     )
   })
 
@@ -61,6 +61,7 @@ describe('MusicianView', () => {
     const wrapper = await mountMusician()
 
     expect(wrapper.find('.musician-hero__title').text()).toBe('Musician')
+    expect(wrapper.find('.musician-hero__caption').text()).toBe('Cello · Guitar · Song')
     expect(wrapper.find('.musician-intro__text').text()).toContain('self-taught musician')
   })
 
@@ -87,6 +88,7 @@ describe('MusicianView', () => {
     mockedPage.mockReturnValue({
       intro: '',
       musicianHeading: 'Musician',
+      heroCaption: 'Cello · Guitar · Song',
       awardsHeading: 'Awards',
       awardsText: 'One photo only.',
       awardsFirstImage: '/images/uploads/first.jpg',
@@ -105,6 +107,7 @@ describe('MusicianView', () => {
     mockedPage.mockReturnValue({
       intro: '',
       musicianHeading: 'Musician',
+      heroCaption: 'Cello · Guitar · Song',
       awardsHeading: 'Awards',
       highlightsHeading: 'Highlights',
       projectsHeading: 'Original Projects',
@@ -148,6 +151,24 @@ describe('MusicianView', () => {
     expect(items[0].find('img').attributes('alt')).toContain('Annika Derksen')
     expect(items[0].find('.gallery-grid__description').text()).toBe('By Annika Derksen')
     expect(items[items.length - 1].find('.gallery-grid__description').text()).toContain('Hamlet')
+  })
+
+  it('renders photographer-credit links inside gallery descriptions', async () => {
+    mockedGallery.mockReturnValue([
+      {
+        slug: 'credited',
+        image: '/images/uploads/musician-gallery-hamlet.jpg',
+        description: 'Photo by [Ana Silva](https://example.com)',
+        dateAdded: '2026-05-01T09:00:00Z',
+      },
+    ] as MusicianGalleryImage[])
+
+    const wrapper = await mountMusician()
+    const anchor = wrapper.find('.gallery-grid__description a')
+
+    expect(anchor.attributes('href')).toBe('https://example.com')
+    expect(anchor.attributes('target')).toBe('_blank')
+    expect(anchor.text()).toBe('Ana Silva')
   })
 
   it('opens the lightbox showing the clicked gallery image', async () => {
@@ -201,6 +222,7 @@ describe('MusicianView', () => {
     mockedPage.mockReturnValue({
       intro: '',
       musicianHeading: 'Musician',
+      heroCaption: 'Cello · Guitar · Song',
       awardsHeading: 'Awards',
       highlightsHeading: 'Highlights',
       projectsHeading: 'Original Projects',

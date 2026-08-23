@@ -97,6 +97,7 @@ export function normalizeHomePage(raw: unknown): HomePageContent {
 export function normalizeAboutPage(raw: unknown): AboutPageContent {
   const source = isRecord(raw) ? raw : {}
   return {
+    aboutEyebrow: asTrimmedString(source.aboutEyebrow, DEFAULT_ABOUT_PAGE.aboutEyebrow),
     aboutHeading: asTrimmedString(source.aboutHeading, DEFAULT_ABOUT_PAGE.aboutHeading),
     portraitImage: asOptionalTrimmedString(source.portraitImage),
     bioParagraphs:
@@ -110,7 +111,12 @@ export function normalizeAboutPage(raw: unknown): AboutPageContent {
 export function normalizeContactPage(raw: unknown): ContactPageContent {
   const source = isRecord(raw) ? raw : {}
   return {
+    contactEyebrow: asTrimmedString(source.contactEyebrow, DEFAULT_CONTACT_PAGE.contactEyebrow),
     contactHeading: asTrimmedString(source.contactHeading, DEFAULT_CONTACT_PAGE.contactHeading),
+    enquiryButtonLabel: asTrimmedString(
+      source.enquiryButtonLabel,
+      DEFAULT_CONTACT_PAGE.enquiryButtonLabel,
+    ),
     contactImage: asOptionalTrimmedString(source.contactImage),
     email: typeof source.email === 'string' ? source.email.trim() : DEFAULT_CONTACT_PAGE.email,
     phone: asOptionalTrimmedString(source.phone),
@@ -123,6 +129,7 @@ export function normalizeActorPage(raw: unknown): ActorPageContent {
   return {
     heroImage: asOptionalTrimmedString(source.heroImage),
     actorHeading: asTrimmedString(source.actorHeading, DEFAULT_ACTOR_PAGE.actorHeading),
+    heroCaption: asTrimmedString(source.heroCaption, DEFAULT_ACTOR_PAGE.heroCaption),
     galleryHeading: asTrimmedString(source.galleryHeading, DEFAULT_ACTOR_PAGE.galleryHeading),
   }
 }
@@ -133,6 +140,7 @@ export function normalizeMusicianPage(raw: unknown): MusicianPageContent {
     heroImage: asOptionalTrimmedString(source.heroImage),
     intro: typeof source.intro === 'string' ? source.intro.trim() : DEFAULT_MUSICIAN_PAGE.intro,
     musicianHeading: asTrimmedString(source.musicianHeading, DEFAULT_MUSICIAN_PAGE.musicianHeading),
+    heroCaption: asTrimmedString(source.heroCaption, DEFAULT_MUSICIAN_PAGE.heroCaption),
     awardsHeading: asTrimmedString(source.awardsHeading, DEFAULT_MUSICIAN_PAGE.awardsHeading),
     awardsText: asOptionalTrimmedString(source.awardsText),
     awardsFirstImage: asOptionalTrimmedString(source.awardsFirstImage),

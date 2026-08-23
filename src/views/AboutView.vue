@@ -7,7 +7,7 @@ const page = useAboutPage()
 <template>
   <section class="page about">
     <header class="about-head">
-      <p class="eyebrow">The person behind the work</p>
+      <p class="eyebrow">{{ page.aboutEyebrow }}</p>
       <h1 class="about-title">{{ page.aboutHeading }}</h1>
     </header>
 

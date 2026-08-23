@@ -77,6 +77,10 @@ collections:
         label: About Me
         file: content/pages/about.json
         fields:
+          - name: aboutEyebrow
+            label: Small line above the title
+            widget: string
+            default: The person behind the work
           - name: aboutHeading
             label: Page title
             widget: string
@@ -98,10 +102,18 @@ collections:
         label: Contact
         file: content/pages/contact.json
         fields:
+          - name: contactEyebrow
+            label: Small line above the title
+            widget: string
+            default: Bookings & enquiries
           - name: contactHeading
             label: Page title
             widget: string
             default: Contact
+          - name: enquiryButtonLabel
+            label: Enquiry button text
+            widget: string
+            default: Enquire by email
           - name: contactImage
             label: Photo
             widget: image
@@ -132,6 +144,11 @@ collections:
             label: Hero title
             widget: string
             default: Actor
+          - name: heroCaption
+            label: Hero caption
+            widget: string
+            default: Stage & screen
+            hint: Small letterspaced line under the big hero title.
           - name: galleryHeading
             label: Gallery title
             widget: string
@@ -152,6 +169,11 @@ collections:
             label: Hero title
             widget: string
             default: Musician
+          - name: heroCaption
+            label: Hero caption
+            widget: string
+            default: Cello · Guitar · Song
+            hint: Small letterspaced line under the big hero title.
           - name: awardsHeading
             label: Awards title
             widget: string
@@ -203,8 +225,9 @@ collections:
         hint: Paste a YouTube or Vimeo page link; it is embedded on the site.
       - name: description
         label: Description
-        widget: text
+        widget: markdown
         required: false
+        hint: Use the link button for credits, e.g. [Photographer](https://example.com).
       - name: dateAdded
         label: Date added
         widget: datetime
@@ -254,7 +277,8 @@ collections:
         required: false
       - name: title
         label: Caption title
-        widget: string
+        widget: markdown
+        hint: Use the link button for credits, e.g. [Photographer](https://example.com).
       - name: dateAdded
         label: Date added
         widget: datetime
@@ -283,8 +307,9 @@ collections:
         hint: Paste a YouTube or Vimeo page link; it is embedded on the site.
       - name: description
         label: Description
-        widget: text
+        widget: markdown
         required: false
+        hint: Use the link button for credits, e.g. [Photographer](https://example.com).
       - name: dateAdded
         label: Date added
         widget: datetime
@@ -312,8 +337,9 @@ collections:
         hint: Paste a YouTube or Vimeo page link; it is embedded on the site.
       - name: description
         label: Description
-        widget: text
+        widget: markdown
         required: false
+        hint: Use the link button for credits, e.g. [Photographer](https://example.com).
       - name: dateAdded
         label: Date added
         widget: datetime
@@ -337,8 +363,9 @@ collections:
         required: false
       - name: description
         label: Description
-        widget: text
+        widget: markdown
         required: false
+        hint: Use the link button for credits, e.g. [Photographer](https://example.com).
       - name: dateAdded
         label: Date added
         widget: datetime

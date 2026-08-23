@@ -5,8 +5,10 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
 
 import ImageLightbox from '@/components/ImageLightbox.vue'
 import type { LightboxImage } from '@/components/ImageLightbox.vue'
+import RichText from '@/components/RichText.vue'
 import VideoEmbed from '@/components/VideoEmbed.vue'
 import { useActorGallery, useActorPage, useActorVideos, useHeadshots } from '@/composables/content'
+import { stripInlineLinks } from '@/composables/richText'
 
 import 'swiper/css'
 import 'swiper/css/navigation'
@@ -38,7 +40,7 @@ function openLightbox(slug: string) {
       <div class="actor-hero__scrim" aria-hidden="true"></div>
       <div class="actor-hero__content">
         <h2 class="actor-section-title actor-hero__title">{{ page.actorHeading }}</h2>
-        <p class="actor-hero__caption">Stage &amp; screen</p>
+        <p class="actor-hero__caption">{{ page.heroCaption }}</p>
       </div>
     </section>
 
@@ -51,7 +53,7 @@ function openLightbox(slug: string) {
       >
         <VideoEmbed :video-url="video.videoUrl" :title="video.title" />
         <p v-if="video.description" class="actor-video__description">
-          {{ video.description }}
+          <RichText :text="video.description" />
         </p>
       </article>
     </section>
@@ -83,10 +85,12 @@ function openLightbox(slug: string) {
             class="gallery-grid__trigger"
             @click="openLightbox(image.slug)"
           >
-            <img :src="image.image" :alt="image.title" />
+            <img :src="image.image" :alt="stripInlineLinks(image.title)" />
           </button>
           <div v-else class="gallery-grid__fallback" aria-hidden="true"></div>
-          <p class="gallery-grid__title">{{ image.title }}</p>
+          <p class="gallery-grid__title">
+            <RichText :text="image.title" />
+          </p>
         </li>
       </ul>
       </div>

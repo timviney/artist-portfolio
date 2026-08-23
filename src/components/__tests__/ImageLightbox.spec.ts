@@ -62,6 +62,24 @@ describe('ImageLightbox', () => {
     expect(query('.image-lightbox__caption')?.textContent?.trim()).toBe('3 / 3')
   })
 
+  it('renders links inside captions and keeps the alt attribute plain', async () => {
+    await mountLightbox({
+      items: [
+        {
+          slug: 'credit',
+          image: '/images/uploads/gallery-prospero.svg',
+          caption: 'Photo by [Ana Silva](https://example.com)',
+        },
+      ],
+    })
+
+    const anchor = query('.image-lightbox__caption a')
+    expect(anchor?.getAttribute('href')).toBe('https://example.com')
+    expect(anchor?.getAttribute('target')).toBe('_blank')
+    expect(anchor?.getAttribute('rel')).toBe('noopener noreferrer')
+    expect(query('.image-lightbox__figure img')?.getAttribute('alt')).toBe('Photo by Ana Silva')
+  })
+
   it('navigates forwards and backwards with wrap-around via buttons', async () => {
     await mountLightbox()
     const src = () => query('.image-lightbox__figure img')?.getAttribute('src')

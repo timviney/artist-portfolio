@@ -57,8 +57,9 @@ describe('ActorView', () => {
   it('renders the fullscreen hero image from the CMS', async () => {
     const wrapper = await mountActor()
     expect(wrapper.find('.actor-hero img').attributes('src')).toBe(
-      '/images/uploads/maxyoung-actor-hero.jpg',
+      '/images/uploads/maxpavlovsky-actor-hero.jpg',
     )
+    expect(wrapper.find('.actor-hero__caption').text()).toBe('Stage & screen')
   })
 
   it('renders central section titles from the CMS headings', async () => {
@@ -93,12 +94,31 @@ describe('ActorView', () => {
     expect(items[0].find('img').attributes('alt')).toBe(firstTitle)
   })
 
+  it('renders photographer-credit links inside gallery titles and keeps alt plain', async () => {
+    mockedGallery.mockReturnValue([
+      {
+        slug: 'credited',
+        image: '/images/uploads/hamlet-laertes.jpg',
+        title: "Photo by [Ana Silva](https://example.com)",
+        dateAdded: '2026-05-01T09:00:00Z',
+      },
+    ] as ActorGalleryImage[])
+
+    const wrapper = await mountActor()
+    const anchor = wrapper.find('.gallery-grid__title a')
+
+    expect(anchor.attributes('href')).toBe('https://example.com')
+    expect(anchor.attributes('rel')).toBe('noopener noreferrer')
+    expect(anchor.text()).toBe('Ana Silva')
+    expect(wrapper.find('.gallery-grid__item img').attributes('alt')).toBe('Photo by Ana Silva')
+  })
+
   it('renders all seeded headshots as swiper slides', async () => {
     const wrapper = await mountActor()
 
     expect(wrapper.findAll('.headshot-slide')).toHaveLength(useHeadshots().length)
     expect(wrapper.find('.headshot-slide img').attributes('src')).toBe(
-      '/images/uploads/maxyoung-headshot-1b.jpg',
+      '/images/uploads/maxpavlovsky-headshot-1b.jpg',
     )
   })
 
@@ -180,6 +200,7 @@ describe('ActorView', () => {
   it('handles missing hero image, videos and galleries gracefully', async () => {
     mockedPage.mockReturnValue({
       actorHeading: 'Actor',
+      heroCaption: 'Stage & screen',
       galleryHeading: 'Gallery',
     } satisfies ActorPageContent)
     mockedVideos.mockReturnValue([] as VideoEntry[])
