@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
+import { THEME_PRESETS } from '@/composables/theme/presets'
+
 import {
   DEFAULT_ABOUT_PAGE,
   DEFAULT_ACTOR_PAGE,
@@ -241,8 +243,11 @@ describe('seeded content loaders', () => {
     expect(settings.socialLinks.length).toBeGreaterThan(0)
   })
 
-  it('loads the seeded theme selection', () => {
-    expect(useTheme()).toEqual({ preset: 'chocolate truffle' })
+  it('loads the seeded theme selection as a known preset', () => {
+    const selection = useTheme()
+    expect(Object.keys(selection)).toEqual(['preset'])
+    const preset = selection.preset ?? ''
+    expect(THEME_PRESETS[preset.trim().toLowerCase()]).toBeDefined()
   })
 
   it('loads the seeded home page with both headshot slots filled', () => {

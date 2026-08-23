@@ -4,9 +4,7 @@ import { useRoute } from 'vue-router'
 
 import SiteFooter from '@/components/SiteFooter.vue'
 import SiteHeader from '@/components/SiteHeader.vue'
-import { themeToCssVariables, useActiveTheme } from '@/composables/theme'
 
-const themeStyle = themeToCssVariables(useActiveTheme())
 const route = useRoute()
 
 const easeSoft = [0.22, 1, 0.36, 1] as const
@@ -14,7 +12,7 @@ const easeSoft = [0.22, 1, 0.36, 1] as const
 
 <template>
   <MotionConfig reduced-motion="user">
-    <div class="app-shell" :style="themeStyle">
+    <div class="app-shell">
       <SiteHeader />
 
       <main class="site-main">

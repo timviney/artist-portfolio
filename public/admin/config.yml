@@ -44,8 +44,13 @@ collections:
             widget: select
             options:
               - chocolate truffle
+              - salt and pepper
+              - tropical punch
+              - yacht club
+              - lavender fields
+              - stormy morning
             default: chocolate truffle
-            hint: Named colour/font themes; more presets may appear later.
+            hint: Named colour/font themes.
 
   # ------------------------------------------------------------------- pages
   - name: pages

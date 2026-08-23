@@ -45,6 +45,13 @@ export function useActiveTheme(): ResolvedTheme {
   return resolveTheme(useTheme())
 }
 
+export function applyThemeToDocument(theme: ResolvedTheme): void {
+  const style = document.documentElement.style
+  for (const [property, value] of Object.entries(themeToCssVariables(theme))) {
+    style.setProperty(property, value)
+  }
+}
+
 const HEX_PATTERN = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i
 
 function hexChannels(hex: string): [number, number, number] {

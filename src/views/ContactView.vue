@@ -123,6 +123,20 @@ function telHref(phone: string): string {
 }
 
 .contact-button {
+  /* Bridge PrimeVue's design tokens onto the active site theme: the plugin's
+     own palette is generated once from a static preset and cannot follow the
+     CMS-selected theme, but these custom properties resolve at paint time. */
+  --p-button-primary-background: var(--color-primary);
+  --p-button-primary-border-color: var(--color-primary);
+  --p-button-primary-color: var(--color-on-primary);
+  --p-button-primary-hover-background: var(--color-secondary);
+  --p-button-primary-hover-border-color: var(--color-secondary);
+  --p-button-primary-hover-color: var(--color-on-secondary);
+  --p-button-primary-active-background: var(--color-secondary);
+  --p-button-primary-active-border-color: var(--color-secondary);
+  --p-button-primary-active-color: var(--color-on-secondary);
+  --p-button-primary-focus-ring-color: var(--color-secondary);
+
   margin-bottom: 0.4rem;
   border-radius: 9999px;
   font-family: var(--font-heading) !important;

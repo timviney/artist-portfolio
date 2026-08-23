@@ -5,10 +5,13 @@ import { resolve } from 'node:path'
 import { load } from 'js-yaml'
 import { describe, expect, it } from 'vitest'
 
+import { THEME_PRESETS } from '@/composables/theme/presets'
+
 interface ConfigField {
   name: string
   widget?: string
   required?: boolean
+  default?: string
   options?: string[]
   fields?: ConfigField[]
 }
@@ -62,7 +65,8 @@ describe('Sveltia admin config', () => {
 
     const theme = settings.files?.find((file) => file.name === 'theme')
     expect(theme?.file).toBe('content/settings/theme.json')
-    expect(theme?.fields?.[0].options).toContain('chocolate truffle')
+    expect(theme?.fields?.[0].options).toEqual(Object.keys(THEME_PRESETS))
+    expect(theme?.fields?.[0].default).toBe('chocolate truffle')
   })
 
   it('exposes all five page files with fields matching their content types', () => {

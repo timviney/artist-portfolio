@@ -1,7 +1,8 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { DEFAULT_THEME_PRESET, FONT_PAIRINGS, THEME_PRESETS } from '../presets'
 import {
+  applyThemeToDocument,
   contrastRatio,
   relativeLuminance,
   resolveOnColors,
@@ -29,6 +30,64 @@ describe('theme presets', () => {
     expect(THEME_PRESETS[DEFAULT_THEME_PRESET]).toBeDefined()
     expect(FONT_PAIRINGS.classic.heading.length).toBeGreaterThan(0)
     expect(FONT_PAIRINGS.classic.body.length).toBeGreaterThan(0)
+  })
+
+  it.each([
+    [
+      'salt and pepper',
+      'Salt and Pepper',
+      { primary: '#B3B3B3', secondary: '#D4D4D4', surface: '#FFFFFF', ink: '#2B2B2B' },
+      'modern',
+    ],
+    [
+      'tropical punch',
+      'Tropical Punch',
+      { primary: '#FF8243', secondary: '#FCE883', surface: '#FFC0CB', ink: '#069494' },
+      'playful',
+    ],
+    [
+      'yacht club',
+      'Yacht Club',
+      { primary: '#245F73', secondary: '#BBBDBC', surface: '#F2F0EF', ink: '#733E24' },
+      'classic',
+    ],
+    [
+      'lavender fields',
+      'Lavender Fields',
+      { primary: '#C1BFFF', secondary: '#BDB96A', surface: '#FDFBD4', ink: '#CF6DFC' },
+      'editorial',
+    ],
+    [
+      'stormy morning',
+      'Stormy Morning',
+      { primary: '#6A89A7', secondary: '#88BDF2', surface: '#BDDDFC', ink: '#384959' },
+      'modern',
+    ],
+  ])('exposes the %s preset with its four category colours', (key, label, palette, fontPairing) => {
+    const preset = THEME_PRESETS[key]
+    expect(preset).toBeDefined()
+    expect(preset.label).toBe(label)
+    expect(preset.palette).toEqual(palette)
+    expect(preset.fontPairing).toBe(fontPairing)
+    expect(FONT_PAIRINGS[preset.fontPairing]).toBeDefined()
+  })
+
+  it('resolves accessible on-colours for every category of every preset', () => {
+    for (const [key, preset] of Object.entries(THEME_PRESETS)) {
+      const onColors = resolveOnColors(preset.palette)
+      for (const category of ['primary', 'secondary', 'surface', 'ink'] as const) {
+        const ratio = contrastRatio(onColors[category], preset.palette[category])
+        expect(ratio, `${key} on-${category}`).toBeGreaterThanOrEqual(4.5)
+      }
+    }
+  })
+
+  it('uses well-formed six-digit hex colours in every preset', () => {
+    for (const preset of Object.values(THEME_PRESETS)) {
+      for (const value of Object.values(preset.palette)) {
+        expect(value).toMatch(/^#[0-9A-F]{6}$/)
+      }
+    }
   })
 })
 
@@ -96,6 +155,21 @@ describe('contrast utilities', () => {
   it('is symmetric and bounded below by 1', () => {
     expect(contrastRatio('#713600', '#FDFBD4')).toBeCloseTo(contrastRatio('#FDFBD4', '#713600'), 10)
     expect(contrastRatio('#38240D', '#FDFBD4')).toBeGreaterThanOrEqual(1)
+  })
+})
+
+describe('applyThemeToDocument', () => {
+  it('sets every theme variable on the document root element, not the app shell', () => {
+    const setProperty = vi.spyOn(document.documentElement.style, 'setProperty')
+    const expected = themeToCssVariables(resolveTheme({ preset: 'stormy morning' }))
+
+    applyThemeToDocument(resolveTheme({ preset: 'stormy morning' }))
+
+    expect(setProperty).toHaveBeenCalledTimes(Object.keys(expected).length)
+    for (const [property, value] of Object.entries(expected)) {
+      expect(setProperty).toHaveBeenCalledWith(property, value)
+    }
+    setProperty.mockRestore()
   })
 })
 
