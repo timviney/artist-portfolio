@@ -153,6 +153,10 @@ onBeforeUnmount(() => {
 .image-lightbox__button:hover,
 .image-lightbox__button:focus-visible {
   border-color: #fffdf2;
+}
+
+.image-lightbox__button:not(.image-lightbox__nav):hover,
+.image-lightbox__button:not(.image-lightbox__nav):focus-visible {
   transform: scale(1.06);
 }
 
