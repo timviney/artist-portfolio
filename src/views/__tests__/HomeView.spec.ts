@@ -46,9 +46,9 @@ beforeEach(() => {
 })
 
 describe('HomeView', () => {
-  it('renders the artist name and tagline from site settings', async () => {
+  it('renders the tagline from site settings', async () => {
     const wrapper = await mountHome()
-    expect(wrapper.find('.home__name').text()).toBe('Test Artist')
+    expect(wrapper.find('.home__name').exists()).toBe(false)
     expect(wrapper.find('.home__tagline').text()).toBe('A tagline')
   })
 

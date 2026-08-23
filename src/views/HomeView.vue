@@ -36,8 +36,6 @@ const easeSoft = [0.22, 1, 0.36, 1] as const
       :transition="{ duration: 0.8, ease: easeSoft }"
     >
       <p v-if="settings.tagline" class="home__tagline">{{ settings.tagline }}</p>
-      <h1 class="home__name">{{ settings.name }}</h1>
-      <span class="home__ornament" aria-hidden="true"></span>
     </motion.header>
 
     <div class="home__tiles">
@@ -77,9 +75,6 @@ const easeSoft = [0.22, 1, 0.36, 1] as const
 .home {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
-  padding-top: 4.5rem;
-  padding-bottom: 5rem;
 }
 
 .home__intro {
@@ -90,7 +85,7 @@ const easeSoft = [0.22, 1, 0.36, 1] as const
   margin: 0 0 1.1rem;
   color: var(--color-secondary);
   font-family: var(--font-heading);
-  font-size: 0.78rem;
+  font-size: 0.58rem;
   font-weight: 500;
   letter-spacing: 0.34em;
   text-transform: uppercase;
@@ -99,7 +94,7 @@ const easeSoft = [0.22, 1, 0.36, 1] as const
 .home__name {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(3.2rem, 9vw, 7rem);
+  font-size: clamp(1.2rem, 3vw, 3rem);
   font-weight: 360;
   line-height: 0.98;
   letter-spacing: -0.02em;
@@ -112,7 +107,6 @@ const easeSoft = [0.22, 1, 0.36, 1] as const
   margin: 1.9rem auto 0;
   border-top: 1px solid var(--color-secondary);
   border-bottom: 1px solid var(--color-secondary);
-  padding-block: 2px;
 }
 
 .home__tiles {
@@ -211,6 +205,28 @@ const easeSoft = [0.22, 1, 0.36, 1] as const
 .home__tile:hover .home__tile-arrow,
 .home__tile:focus-visible .home__tile-arrow {
   transform: translateX(0.45em);
+}
+
+/* Desktop: size tiles from the viewport height so they fill the screen
+   without scrolling. Tile width derives from the height budget
+   (aspect-ratio 3/4 => width = available height * 0.75), floored for
+   readability and capped so two tiles always fit side by side. */
+@media (min-width: 641px) {
+  .home {
+    min-height: calc(100svh - 9.5rem);
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .home__tiles {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .home__tile {
+    width: clamp(10rem, calc((100svh - 13.5rem) * 0.75), 47%);
+  }
 }
 
 @media (max-width: 640px) {
