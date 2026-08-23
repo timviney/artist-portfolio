@@ -1,5 +1,9 @@
 {
   "image": "/images/uploads/haymarket-3.jpg",
+  "focus": {
+    "x": 20,
+    "y": null
+  },
   "title": "'Haymarket: A New Folk Musical' / Rehearsal photography by Michael Lynch",
   "dateAdded": "2026-08-19T21:00:00Z"
 }

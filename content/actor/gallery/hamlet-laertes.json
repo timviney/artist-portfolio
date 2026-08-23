@@ -1,5 +1,9 @@
 {
   "image": "/images/uploads/hamlet-laertes.jpg",
+  "focus": {
+    "x": 30,
+    "y": null
+  },
   "title": "As Laertes in 'Hamlet' / St Mary Magdalenes Church London",
   "dateAdded": "2026-08-20T03:00:00Z"
 }
