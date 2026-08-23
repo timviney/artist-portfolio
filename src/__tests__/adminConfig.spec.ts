@@ -60,8 +60,9 @@ describe('Sveltia admin config', () => {
     const site = settings.files?.find((file) => file.name === 'site')
 
     expect(site?.file).toBe('content/settings/site.json')
-    expect(fieldNames(site?.fields)).toEqual(['name', 'tagline', 'socialLinks'])
+    expect(fieldNames(site?.fields)).toEqual(['name', 'tagline', 'socialLinks', 'cv'])
     expect(fieldNames(site?.fields?.[2].fields)).toEqual(['label', 'url'])
+    expect(site?.fields?.[3]).toMatchObject({ widget: 'file', required: false })
 
     const theme = settings.files?.find((file) => file.name === 'theme')
     expect(theme?.file).toBe('content/settings/theme.json')

@@ -1,13 +1,13 @@
 :root {
   --color-primary: #713600;
   --color-secondary: #c05800;
-  --color-surface: #fdfbd4;
+  --color-surface: #fefde9;
   --color-ink: #38240d;
-  --color-on-primary: #fdfbd4;
+  --color-on-primary: #fefde9;
   --color-on-secondary: #000000;
   --color-on-surface: #38240d;
-  --color-on-ink: #fdfbd4;
-  --color-bg: #fdfbd4;
+  --color-on-ink: #fefde9;
+  --color-bg: #fefde9;
   --color-text: #38240d;
   --color-border: rgba(56, 36, 13, 0.15);
   --font-heading: 'Fraunces', Georgia, Cambria, 'Times New Roman', serif;

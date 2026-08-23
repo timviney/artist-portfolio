@@ -124,19 +124,25 @@ onUnmounted(() => {
           </RouterLink>
         </div>
 
-        <ul v-if="settings.socialLinks.length > 0" class="site-nav__socials">
-          <li v-for="social in settings.socialLinks" :key="social.url">
-            <a
-              :href="social.url"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="site-nav__social"
-              :aria-label="social.label"
-            >
-              <SocialIcon :url="social.url" />
-            </a>
-          </li>
-        </ul>
+        <div class="site-nav__actions">
+          <a v-if="settings.cv" :href="settings.cv" download class="site-header__cv">
+            Download CV
+          </a>
+
+          <ul v-if="settings.socialLinks.length > 0" class="site-nav__socials">
+            <li v-for="social in settings.socialLinks" :key="social.url">
+              <a
+                :href="social.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="site-nav__social"
+                :aria-label="social.label"
+              >
+                <SocialIcon :url="social.url" />
+              </a>
+            </li>
+          </ul>
+        </div>
       </nav>
     </div>
   </header>
@@ -298,11 +304,40 @@ onUnmounted(() => {
   transform: scaleX(1);
 }
 
-.site-nav__socials {
+.site-nav__actions {
   position: absolute;
   top: 50%;
   right: 1.5rem;
   transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.site-header__cv {
+  padding: 0.55em 1.25em;
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease;
+}
+
+.site-header__cv:hover,
+.site-header__cv:focus-visible {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.site-nav__socials {
   display: flex;
   gap: 1.1rem;
   margin: 0;
@@ -373,11 +408,21 @@ onUnmounted(() => {
     animation-delay: calc(90ms * var(--stagger));
   }
 
-  .site-nav--open .site-nav__socials {
+  .site-nav--open .site-nav__actions {
     position: static;
     transform: none;
-    gap: 1.9rem;
+    flex-direction: column;
+    gap: 2.25rem;
     margin-top: auto;
+  }
+
+  .site-header__cv {
+    font-size: 0.8rem;
+  }
+
+  .site-nav--open .site-nav__socials {
+    gap: 1.9rem;
+    margin-top: 0;
   }
 
   .site-nav--open .site-nav__social svg {

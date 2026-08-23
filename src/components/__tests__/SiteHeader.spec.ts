@@ -1,10 +1,21 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
+import { useSiteSettings } from '@/composables/content'
 import { routes } from '@/router'
 
 import SiteHeader from '../SiteHeader.vue'
+
+vi.mock('@/composables/content', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/composables/content')>()
+  return {
+    ...actual,
+    useSiteSettings: vi.fn(actual.useSiteSettings),
+  }
+})
+
+const mockedSettings = vi.mocked(useSiteSettings)
 
 async function mountHeader(initialPath = '/') {
   const router = createRouter({ history: createMemoryHistory(), routes })
@@ -13,6 +24,10 @@ async function mountHeader(initialPath = '/') {
   const wrapper = mount(SiteHeader, { global: { plugins: [router] } })
   return { wrapper, router }
 }
+
+beforeEach(() => {
+  mockedSettings.mockReset()
+})
 
 describe('SiteHeader', () => {
   it('renders the artist name from site settings', async () => {
@@ -60,6 +75,28 @@ describe('SiteHeader', () => {
 
     await wrapper.find('.site-header__toggle').trigger('click')
     expect(wrapper.find('.site-nav--open .site-nav__socials').exists()).toBe(true)
+  })
+
+  it('hides the CV download button when no CV is set in settings', async () => {
+    mockedSettings.mockReturnValue({ name: 'Max Rivera', tagline: '', socialLinks: [] })
+
+    const { wrapper } = await mountHeader()
+
+    expect(wrapper.find('.site-header__cv').exists()).toBe(false)
+  })
+
+  it('renders the seeded CV as a download button inside the nav', async () => {
+    const { wrapper } = await mountHeader()
+    const cv = wrapper.find('.site-header__cv')
+
+    expect(cv.exists()).toBe(true)
+    expect(cv.attributes('href')).toBe('/images/uploads/max-rivera-cv.pdf')
+    expect(cv.attributes('download')).toBeDefined()
+    expect(cv.text()).toContain('Download CV')
+
+    const actions = wrapper.find('.site-nav .site-nav__actions')
+    expect(actions.exists()).toBe(true)
+    expect(actions.find('.site-header__cv').exists()).toBe(true)
   })
 
   it('marks only the active route as active', async () => {

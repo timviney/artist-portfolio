@@ -75,6 +75,7 @@ export function normalizeSettings(raw: unknown): SiteSettings {
     tagline:
       typeof source.tagline === 'string' ? source.tagline.trim() : DEFAULT_SITE_SETTINGS.tagline,
     socialLinks: normalizeSocialLinks(source.socialLinks),
+    cv: asOptionalTrimmedString(source.cv),
   }
 }
 

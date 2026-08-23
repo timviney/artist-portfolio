@@ -64,6 +64,15 @@ describe('normalizeSettings', () => {
     })
     expect(settings.socialLinks).toEqual([{ label: 'Instagram', url: 'https://instagram.example' }])
   })
+
+  it('keeps an optional trimmed CV path and omits anything else', () => {
+    expect(normalizeSettings({ cv: ' /images/uploads/cv.pdf ' }).cv).toBe(
+      '/images/uploads/cv.pdf',
+    )
+    expect(normalizeSettings({}).cv).toBeUndefined()
+    expect(normalizeSettings({ cv: 42 }).cv).toBeUndefined()
+    expect(normalizeSettings({ cv: '   ' }).cv).toBeUndefined()
+  })
 })
 
 describe('normalizeThemeSelection', () => {

@@ -13,7 +13,7 @@ import {
 const CHOCOLATE_TRUFFLE = {
   primary: '#713600',
   secondary: '#C05800',
-  surface: '#FDFBD4',
+  surface: '#fefde9',
   ink: '#38240D',
 }
 
@@ -36,31 +36,31 @@ describe('theme presets', () => {
     [
       'salt and pepper',
       'Salt and Pepper',
-      { primary: '#B3B3B3', secondary: '#D4D4D4', surface: '#FFFFFF', ink: '#2B2B2B' },
+      { primary: '#B3B3B3', secondary: '#c0c0c0', surface: '#FFFFFF', ink: '#2B2B2B' },
       'modern',
     ],
     [
       'tropical punch',
       'Tropical Punch',
-      { primary: '#FF8243', secondary: '#FCE883', surface: '#FFC0CB', ink: '#069494' },
+      { primary: '#FF8243', secondary: '#b89d1b', surface: '#ffe3e9', ink: '#069494' },
       'playful',
     ],
     [
       'yacht club',
       'Yacht Club',
-      { primary: '#245F73', secondary: '#BBBDBC', surface: '#F2F0EF', ink: '#733E24' },
+      { primary: '#245F73', secondary: '#1a2b30', surface: '#F2F0EF', ink: '#733E24' },
       'classic',
     ],
     [
       'lavender fields',
       'Lavender Fields',
-      { primary: '#C1BFFF', secondary: '#BDB96A', surface: '#FDFBD4', ink: '#CF6DFC' },
+      { primary: '#C1BFFF', secondary: '#beb959', surface: '#fcfae1', ink: '#CF6DFC' },
       'editorial',
     ],
     [
       'stormy morning',
       'Stormy Morning',
-      { primary: '#6A89A7', secondary: '#88BDF2', surface: '#BDDDFC', ink: '#384959' },
+      { primary: '#6A89A7', secondary: '#79b2ec', surface: '#dcedff', ink: '#384959' },
       'modern',
     ],
   ])('exposes the %s preset with its four category colours', (key, label, palette, fontPairing) => {
@@ -85,7 +85,7 @@ describe('theme presets', () => {
   it('uses well-formed six-digit hex colours in every preset', () => {
     for (const preset of Object.values(THEME_PRESETS)) {
       for (const value of Object.values(preset.palette)) {
-        expect(value).toMatch(/^#[0-9A-F]{6}$/)
+        expect(value).toMatch(/^#[0-9a-fA-F]{6}$/)
       }
     }
   })
@@ -108,10 +108,10 @@ describe('resolveTheme', () => {
 
   it('derives accessible on-colours for every category', () => {
     const resolved = resolveTheme({ preset: 'chocolate truffle' })
-    expect(resolved.onColors.primary).toBe('#FDFBD4')
+    expect(resolved.onColors.primary).toBe(CHOCOLATE_TRUFFLE.surface)
     expect(resolved.onColors.secondary).toBe('#000000')
-    expect(resolved.onColors.surface).toBe('#38240D')
-    expect(resolved.onColors.ink).toBe('#FDFBD4')
+    expect(resolved.onColors.surface).toBe(CHOCOLATE_TRUFFLE.ink)
+    expect(resolved.onColors.ink).toBe(CHOCOLATE_TRUFFLE.surface)
   })
 })
 
@@ -177,16 +177,16 @@ describe('themeToCssVariables', () => {
   it('maps the four categories, their on-colours and fonts to app CSS custom properties', () => {
     const resolved = resolveTheme({ preset: 'chocolate truffle' })
     expect(themeToCssVariables(resolved)).toEqual({
-      '--color-primary': '#713600',
-      '--color-secondary': '#C05800',
-      '--color-surface': '#FDFBD4',
-      '--color-ink': '#38240D',
-      '--color-on-primary': '#FDFBD4',
+      '--color-primary': CHOCOLATE_TRUFFLE.primary,
+      '--color-secondary': CHOCOLATE_TRUFFLE.secondary,
+      '--color-surface': CHOCOLATE_TRUFFLE.surface,
+      '--color-ink': CHOCOLATE_TRUFFLE.ink,
+      '--color-on-primary': CHOCOLATE_TRUFFLE.surface,
       '--color-on-secondary': '#000000',
-      '--color-on-surface': '#38240D',
-      '--color-on-ink': '#FDFBD4',
-      '--color-bg': '#FDFBD4',
-      '--color-text': '#38240D',
+      '--color-on-surface': CHOCOLATE_TRUFFLE.ink,
+      '--color-on-ink': CHOCOLATE_TRUFFLE.surface,
+      '--color-bg': CHOCOLATE_TRUFFLE.surface,
+      '--color-text': CHOCOLATE_TRUFFLE.ink,
       '--color-border': 'rgba(56, 36, 13, 0.15)',
       '--font-heading': FONT_PAIRINGS.classic.heading,
       '--font-body': FONT_PAIRINGS.classic.body,

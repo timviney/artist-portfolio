@@ -34,6 +34,10 @@ collections:
               - name: url
                 label: URL
                 widget: string
+          - name: cv
+            label: CV (PDF download shown in the header)
+            widget: file
+            required: false
 
       - name: theme
         label: Theme

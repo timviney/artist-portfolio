@@ -7,6 +7,7 @@ export interface SiteSettings {
   name: string
   tagline: string
   socialLinks: SocialLink[]
+  cv?: string
 }
 
 export interface ThemeSelection {
