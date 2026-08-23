@@ -149,6 +149,17 @@ onUnmounted(() => {
   z-index: 60;
   border-bottom: 1px solid var(--color-border);
   align-items: center;
+
+  /* Blur lives on a pseudo-element, NOT the header itself: backdrop-filter
+     would turn this sticky element into the containing block for the fixed
+     fullscreen mobile menu and trap it inside the bar. */
+}
+
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background-color: color-mix(in oklab, var(--color-surface) 86%, transparent);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -157,7 +168,7 @@ onUnmounted(() => {
     background-color 320ms var(--ease-out-soft);
 }
 
-.site-header--scrolled {
+.site-header--scrolled::before {
   background-color: color-mix(in oklab, var(--color-surface) 94%, transparent);
   box-shadow: 0 1px 0 var(--color-border), var(--shadow-lift);
 }

@@ -8,6 +8,15 @@ and publishes the site (expect roughly a 1–2 minute delay before edits appear)
 
 There is no server and no database: everything lives in this repo.
 
+## How it works
+
+`/admin/` is a plain static page that loads the Sveltia CMS app from a CDN.
+When you open it you will see Sveltia's own login screen; nothing shows until
+you sign in. After signing in, Sveltia reads `config.yml`, lists your content
+sections in a sidebar, and edits the JSON files in this repo through GitHub's
+API. Saving + publishing creates commits on `main`, which triggers the deploy
+workflow.
+
 ## One-time setup: create a GitHub token
 
 The CMS signs you in with a **GitHub fine-grained personal access token** that
@@ -59,9 +68,14 @@ ordinary file edits — commit them yourself when happy.
 
 ## Troubleshooting
 
-- **401/403 after saving** — the token expired or lacks *Contents: Read and
+- **Blank page at `/admin`** - always use the trailing slash: `/admin/`. The
+  site redirects the slashless spelling automatically, but if a cached page
+  misbehaves, type `/admin/` directly.
+- **Login screen never appears** - the CMS script loads from unpkg.com; check
+  network blockers/adblockers for `sveltia-cms.js`.
+- **401/403 after saving** - the token expired or lacks *Contents: Read and
   write*. Create a fresh one (steps above) and sign in again.
-- **Edits not appearing live** — check the Actions tab of the repo; deploys run
+- **Edits not appearing live** - check the Actions tab of the repo; deploys run
   on every push to `main` and take 1–2 minutes.
-- **Wrong repo / branch errors** — `public/admin/config.yml` points at
+- **Wrong repo / branch errors** - `public/admin/config.yml` points at
   `timviney/artist-portfolio` branch `main`; update it if the repo moves.

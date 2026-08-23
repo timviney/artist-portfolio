@@ -19,4 +19,10 @@ describe('router', () => {
     await router.isReady()
     expect(router.currentRoute.value.name).toBe('home')
   })
+
+  it('catches unknown paths with the not-found view', async () => {
+    await router.push('/nowhere/at/all')
+    await router.isReady()
+    expect(router.currentRoute.value.name).toBe('not-found')
+  })
 })
