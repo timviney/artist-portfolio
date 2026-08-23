@@ -7,8 +7,8 @@ const settings = useSiteSettings()
 const home = useHomePage()
 
 const tiles = [
-  { to: '/actor', label: 'Actor', image: home.actorHeadshot },
-  { to: '/musician', label: 'Musician', image: home.musicianHeadshot },
+  { to: '/actor', kind: 'actor', label: 'Actor', image: home.actorHeadshot },
+  { to: '/musician', kind: 'musician', label: 'Musician', image: home.musicianHeadshot },
 ]
 
 const easeSoft = [0.22, 1, 0.36, 1] as const
@@ -32,7 +32,7 @@ const easeSoft = [0.22, 1, 0.36, 1] as const
         v-for="(tile, index) in tiles"
         :key="tile.to"
         :to="tile.to"
-        class="home__tile"
+        :class="['home__tile', `home__tile--${tile.kind}`]"
         tabindex="0"
       >
         <motion.span
@@ -118,7 +118,7 @@ const easeSoft = [0.22, 1, 0.36, 1] as const
   position: relative;
   display: block;
   overflow: hidden;
-  height: clamp(26rem, 74vh, 46rem);
+  aspect-ratio: 3 / 4;
 }
 
 .home__tile-image,
@@ -149,7 +149,7 @@ const easeSoft = [0.22, 1, 0.36, 1] as const
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgb(24 14 4 / 0.68), rgb(24 14 4 / 0.08) 52%);
+  background: linear-gradient(to bottom, rgb(24 14 4 / 0.68), rgb(24 14 4 / 0.08) 52%);
 }
 
 .home__tile-inner-frame {
@@ -168,17 +168,23 @@ const easeSoft = [0.22, 1, 0.36, 1] as const
 
 .home__tile-label {
   position: absolute;
-  right: 2rem;
-  bottom: 1.7rem;
-  left: 2rem;
+  top: 1.7rem;
   z-index: 1;
   display: flex;
+  gap: 0.45em;
   align-items: baseline;
-  justify-content: space-between;
   font-family: var(--font-heading);
   font-size: clamp(2rem, 3.6vw, 3rem);
   font-weight: 400;
   color: #fffdf2;
+}
+
+.home__tile--actor .home__tile-label {
+  left: 2rem;
+}
+
+.home__tile--musician .home__tile-label {
+  right: 2rem;
 }
 
 .home__tile-arrow {
@@ -199,8 +205,12 @@ const easeSoft = [0.22, 1, 0.36, 1] as const
     gap: 1rem;
   }
 
-  .home__tile-frame {
-    height: clamp(22rem, 68vh, 34rem);
+  .home__tile--actor .home__tile-label {
+    left: 1.25rem;
+  }
+
+  .home__tile--musician .home__tile-label {
+    right: 1.25rem;
   }
 }
 </style>

@@ -37,6 +37,8 @@ describe('HomeView', () => {
     const tiles = wrapper.findAll('.home__tile')
 
     expect(tiles.map((tile) => tile.attributes('href'))).toEqual(['/actor', '/musician'])
+    expect(tiles[0].classes()).toContain('home__tile--actor')
+    expect(tiles[1].classes()).toContain('home__tile--musician')
     expect(tiles.map((tile) => tile.find('.home__tile-label').text()).map((text) => text.trim().split(' ')[0])).toEqual([
       'Actor',
       'Musician',

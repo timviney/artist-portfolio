@@ -194,8 +194,7 @@ onUnmounted(() => {
   transform: translateX(-50%);
   color: var(--color-text);
   font-family: var(--font-heading);
-  font-size: 1.35rem;
-  font-style: italic;
+  font-size: 1.5rem;
   font-weight: 480;
   text-decoration: none;
   white-space: nowrap;
