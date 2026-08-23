@@ -293,7 +293,6 @@ function openLightbox(slug: string) {
   width: 100%;
   max-width: 30rem;
   margin: 0 auto;
-  padding: 0.6rem;
 
   /* Transparent mat with no border: the carousel sits on a full-bleed
      gradient band, so nothing here should paint its own fill or edge - the

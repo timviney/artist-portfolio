@@ -107,7 +107,7 @@ function telHref(phone: string): string {
   z-index: 1;
   display: block;
   width: 100%;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 4;
   object-fit: cover;
   border: 1px solid var(--color-border);
   background-color: var(--surface-deep);
