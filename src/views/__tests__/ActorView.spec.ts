@@ -27,10 +27,10 @@ vi.mock('@/composables/content', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/composables/content')>()
   return {
     ...actual,
-    useActorPage: vi.fn(actual.useActorPage),
-    useActorVideos: vi.fn(actual.useActorVideos),
-    useHeadshots: vi.fn(actual.useHeadshots),
-    useActorGallery: vi.fn(actual.useActorGallery),
+    useActorPage: vi.fn(),
+    useActorVideos: vi.fn(),
+    useHeadshots: vi.fn(),
+    useActorGallery: vi.fn(),
   }
 })
 
@@ -38,6 +38,47 @@ const mockedPage = vi.mocked(useActorPage)
 const mockedVideos = vi.mocked(useActorVideos)
 const mockedHeadshots = vi.mocked(useHeadshots)
 const mockedGallery = vi.mocked(useActorGallery)
+
+function pageFixture(overrides: Partial<ActorPageContent> = {}): ActorPageContent {
+  return {
+    heroImage: '/images/uploads/hero.jpg',
+    heroFocus: undefined,
+    actorHeading: 'Actor',
+    heroCaption: 'Stage & screen',
+    galleryHeading: 'Gallery',
+    ...overrides,
+  }
+}
+
+function videosFixture(entries: Partial<VideoEntry>[] = [{}]): VideoEntry[] {
+  return entries.map((entry, index) => ({
+    slug: `video-${index + 1}`,
+    title: `Video ${index + 1}`,
+    videoUrl: 'https://www.youtube.com/watch?v=abc123',
+    description: undefined,
+    dateAdded: `2026-05-0${index + 1}T09:00:00Z`,
+    ...entry,
+  }))
+}
+
+function headshotsFixture(count = 3): HeadshotEntry[] {
+  return Array.from({ length: count }, (_, index) => ({
+    slug: `headshot-${index + 1}`,
+    image: `/images/uploads/headshot-${index + 1}.jpg`,
+    alt: `Headshot ${index + 1}`,
+    dateAdded: `2026-05-0${index + 1}T09:00:00Z`,
+  }))
+}
+
+function galleryFixture(overrides: Partial<ActorGalleryImage>[] = [{}]): ActorGalleryImage[] {
+  return overrides.map((override, index) => ({
+    slug: override.slug ?? `gallery-${index + 1}`,
+    image: '/images/uploads/gallery.jpg',
+    title: `Production ${index + 1}`,
+    dateAdded: `2026-05-0${index + 1}T09:00:00Z`,
+    ...override,
+  }))
+}
 
 async function mountActor() {
   const router = createRouter({ history: createMemoryHistory(), routes })
@@ -47,19 +88,27 @@ async function mountActor() {
 }
 
 beforeEach(() => {
-  mockedPage.mockReset()
-  mockedVideos.mockReset()
-  mockedHeadshots.mockReset()
-  mockedGallery.mockReset()
+  mockedPage.mockReturnValue(pageFixture())
+  mockedVideos.mockReturnValue(videosFixture([{}, {}]))
+  mockedHeadshots.mockReturnValue(headshotsFixture())
+  mockedGallery.mockReturnValue(galleryFixture([{}, {}, {}]))
 })
 
 describe('ActorView', () => {
-  it('renders the fullscreen hero image from the CMS', async () => {
+  it('renders the fullscreen hero image and caption from the CMS', async () => {
     const wrapper = await mountActor()
-    expect(wrapper.find('.actor-hero img').attributes('src')).toBe(
-      '/images/uploads/maxpavlovsky-actor-hero.jpg',
-    )
+    expect(wrapper.find('.actor-hero img').attributes('src')).toBe('/images/uploads/hero.jpg')
     expect(wrapper.find('.actor-hero__caption').text()).toBe('Stage & screen')
+  })
+
+  it('applies hero crop focus as object-position when set', async () => {
+    mockedPage.mockReturnValue(pageFixture({ heroFocus: { x: 20, y: 80 } }))
+
+    const wrapper = await mountActor()
+
+    expect(wrapper.find('.actor-hero img').attributes('style')).toContain(
+      'object-position: 20% 80%',
+    )
   })
 
   it('renders central section titles from the CMS headings', async () => {
@@ -76,33 +125,34 @@ describe('ActorView', () => {
 
     expect(videos).toHaveLength(2)
     expect(videos[0].find('iframe').attributes('src')).toBe(
-      'https://www.youtube-nocookie.com/embed/K8fzMtCdVQE',
+      'https://www.youtube-nocookie.com/embed/abc123',
     )
     expect(videos[0].find('.actor-video__title').exists()).toBe(false)
     expect(videos[0].find('.actor-video__description').exists()).toBe(false)
   })
 
+  it('renders video descriptions when the CMS provides them', async () => {
+    mockedVideos.mockReturnValue(videosFixture([{ description: 'A credit. [Photographer](https://example.com)' }]))
+
+    const wrapper = await mountActor()
+    const description = wrapper.find('.actor-video__description')
+
+    expect(description.text()).toContain('A credit.')
+    expect(description.find('a').attributes('href')).toBe('https://example.com')
+  })
+
   it('renders gallery grid titles below each image', async () => {
     const wrapper = await mountActor()
     const items = wrapper.findAll('.gallery-grid__item')
-    const firstTitle = "'Eternal Hourglass' 2022 directed by Joanna Vymeris. Photography by Jia Lang"
 
-    expect(items[0].find('.gallery-grid__title').text()).toBe(firstTitle)
-    expect(items[items.length - 1].find('.gallery-grid__title').text()).toBe(
-      "'Dreamland' at The Corbett Theatre. Photography by Lidia Crisafulli",
-    )
-    expect(items[0].find('img').attributes('alt')).toBe(firstTitle)
+    expect(items[0].find('.gallery-grid__title').text()).toBe('Production 1')
+    expect(items[0].find('img').attributes('alt')).toBe('Production 1')
   })
 
   it('renders photographer-credit links inside gallery titles and keeps alt plain', async () => {
-    mockedGallery.mockReturnValue([
-      {
-        slug: 'credited',
-        image: '/images/uploads/hamlet-laertes.jpg',
-        title: "Photo by [Ana Silva](https://example.com)",
-        dateAdded: '2026-05-01T09:00:00Z',
-      },
-    ] as ActorGalleryImage[])
+    mockedGallery.mockReturnValue(galleryFixture([
+      { slug: 'credited', image: '/images/uploads/hamlet-laertes.jpg', title: "Photo by [Ana Silva](https://example.com)" },
+    ]))
 
     const wrapper = await mountActor()
     const anchor = wrapper.find('.gallery-grid__title a')
@@ -113,19 +163,30 @@ describe('ActorView', () => {
     expect(wrapper.find('.gallery-grid__item img').attributes('alt')).toBe('Photo by Ana Silva')
   })
 
-  it('renders all seeded headshots as swiper slides', async () => {
+  it('applies entry crop focus as object-position on gallery images', async () => {
+    mockedGallery.mockReturnValue(galleryFixture([
+      { slug: 'focused', image: '/images/uploads/hamlet-laertes.jpg', focus: { x: 35, y: 25 }, title: 'Focused' },
+      { slug: 'centred', image: '/images/uploads/hamlet-laertes.jpg', title: 'Centred' },
+    ]))
+
+    const wrapper = await mountActor()
+    const images = wrapper.findAll('.gallery-grid__item img')
+
+    expect(images[0].attributes('style')).toContain('object-position: 35% 25%')
+    expect((images[1].attributes('style') ?? '')).not.toContain('object-position')
+  })
+
+  it('renders all configured headshots as swiper slides', async () => {
     const wrapper = await mountActor()
 
-    expect(wrapper.findAll('.headshot-slide')).toHaveLength(useHeadshots().length)
+    expect(wrapper.findAll('.headshot-slide')).toHaveLength(3)
     expect(wrapper.find('.headshot-slide img').attributes('src')).toBe(
-      '/images/uploads/maxpavlovsky-headshot-1b.jpg',
+      '/images/uploads/headshot-1.jpg',
     )
   })
 
   it('hides navigation arrows when there is only one headshot', async () => {
-    mockedHeadshots.mockReturnValue([
-      { slug: 'only', image: '/images/uploads/portrait.svg', alt: 'Only headshot', dateAdded: '2026-05-01T09:00:00Z' },
-    ])
+    mockedHeadshots.mockReturnValue(headshotsFixture(1))
 
     const wrapper = await mountActor()
 
@@ -166,15 +227,15 @@ describe('ActorView', () => {
       expectedSrc,
     )
     expect(document.body.querySelector('.image-lightbox__caption')?.textContent).toContain(
-      "'Eternal Hourglass' 2022 directed by Joanna Vymeris. Photography by Jia Lang",
+      'Production 1',
     )
   })
 
   it('does not render lightbox triggers for entries without an image', async () => {
-    mockedGallery.mockReturnValue([
-      { slug: 'with', image: '/images/a.svg', title: 'With image', dateAdded: '2026-05-01T09:00:00Z' },
-      { slug: 'without', image: undefined, title: 'Without image', dateAdded: '2026-04-01T09:00:00Z' },
-    ])
+    mockedGallery.mockReturnValue(galleryFixture([
+      { slug: 'with', image: '/images/a.svg', title: 'With image' },
+      { slug: 'without', image: undefined, title: 'Without image' },
+    ]))
 
     const wrapper = await mountActor()
     const items = wrapper.findAll('.gallery-grid__item')
@@ -198,21 +259,21 @@ describe('ActorView', () => {
   })
 
   it('handles missing hero image, videos and galleries gracefully', async () => {
-    mockedPage.mockReturnValue({
-      actorHeading: 'Actor',
-      heroCaption: 'Stage & screen',
-      galleryHeading: 'Gallery',
-    } satisfies ActorPageContent)
-    mockedVideos.mockReturnValue([] as VideoEntry[])
-    mockedHeadshots.mockReturnValue([] as HeadshotEntry[])
-    mockedGallery.mockReturnValue([] as ActorGalleryImage[])
+    mockedPage.mockReturnValue(pageFixture({
+      heroImage: undefined,
+      actorHeading: 'Performing',
+      galleryHeading: 'Pictures',
+    }))
+    mockedVideos.mockReturnValue([])
+    mockedHeadshots.mockReturnValue([])
+    mockedGallery.mockReturnValue([])
 
     const wrapper = await mountActor()
     const text = () => wrapper.text()
 
     expect(wrapper.find('.actor-hero img').exists()).toBe(false)
-    expect(text()).toContain('Actor')
-    expect(text()).toContain('Gallery')
+    expect(text()).toContain('Performing')
+    expect(text()).toContain('Pictures')
     expect(wrapper.findAll('.actor-video')).toHaveLength(0)
     expect(wrapper.find('.headshot-swiper').exists()).toBe(false)
     expect(wrapper.find('.gallery-grid').exists()).toBe(false)

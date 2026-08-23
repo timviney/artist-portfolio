@@ -2,13 +2,26 @@
 import { motion } from 'motion-v'
 
 import { useHomePage, useSiteSettings } from '@/composables/content'
+import { objectPositionStyle } from '@/composables/imageFocus'
 
 const settings = useSiteSettings()
 const home = useHomePage()
 
 const tiles = [
-  { to: '/actor', kind: 'actor', label: 'Actor', image: home.actorHeadshot },
-  { to: '/musician', kind: 'musician', label: 'Musician', image: home.musicianHeadshot },
+  {
+    to: '/actor',
+    kind: 'actor',
+    label: 'Actor',
+    image: home.actorHeadshot,
+    focus: home.actorHeadshotFocus,
+  },
+  {
+    to: '/musician',
+    kind: 'musician',
+    label: 'Musician',
+    image: home.musicianHeadshot,
+    focus: home.musicianHeadshotFocus,
+  },
 ]
 
 const easeSoft = [0.22, 1, 0.36, 1] as const
@@ -44,6 +57,7 @@ const easeSoft = [0.22, 1, 0.36, 1] as const
           <img
             v-if="tile.image"
             class="home__tile-image"
+            :style="objectPositionStyle(tile.focus)"
             :src="tile.image"
             :alt="`${tile.label} headshot`"
           />

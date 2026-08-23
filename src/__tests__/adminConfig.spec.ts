@@ -13,6 +13,8 @@ interface ConfigField {
   required?: boolean
   default?: string
   options?: string[]
+  min?: number
+  max?: number
   fields?: ConfigField[]
 }
 
@@ -82,11 +84,17 @@ describe('Sveltia admin config', () => {
       'content/pages/musician.json',
     ])
 
-    expect(fieldNames(byName('home')?.fields)).toEqual(['actorHeadshot', 'musicianHeadshot'])
+    expect(fieldNames(byName('home')?.fields)).toEqual([
+      'actorHeadshot',
+      'actorHeadshotFocus',
+      'musicianHeadshot',
+      'musicianHeadshotFocus',
+    ])
     expect(fieldNames(byName('about')?.fields)).toEqual([
       'aboutEyebrow',
       'aboutHeading',
       'portraitImage',
+      'portraitFocus',
       'bioParagraphs',
       'statement',
     ])
@@ -95,25 +103,30 @@ describe('Sveltia admin config', () => {
       'contactHeading',
       'enquiryButtonLabel',
       'contactImage',
+      'contactImageFocus',
       'email',
       'phone',
       'note',
     ])
     expect(fieldNames(byName('actor')?.fields)).toEqual([
       'heroImage',
+      'heroFocus',
       'actorHeading',
       'heroCaption',
       'galleryHeading',
     ])
     expect(fieldNames(byName('musician')?.fields)).toEqual([
       'heroImage',
+      'heroFocus',
       'intro',
       'musicianHeading',
       'heroCaption',
       'awardsHeading',
       'awardsText',
       'awardsFirstImage',
+      'awardsFirstImageFocus',
       'awardsSecondImage',
+      'awardsSecondImageFocus',
       'highlightsHeading',
       'projectsHeading',
       'galleryHeading',
@@ -125,9 +138,9 @@ describe('Sveltia admin config', () => {
     [
       'actor-headshots',
       'content/actor/headshots',
-      ['image', 'alt', 'dateAdded'],
+      ['image', 'focus', 'alt', 'dateAdded'],
     ],
-    ['actor-gallery', 'content/actor/gallery', ['image', 'title', 'dateAdded']],
+    ['actor-gallery', 'content/actor/gallery', ['image', 'focus', 'title', 'dateAdded']],
     [
       'musician-highlights',
       'content/musician/highlights',
@@ -138,7 +151,11 @@ describe('Sveltia admin config', () => {
       'content/musician/projects',
       ['title', 'videoUrl', 'description', 'dateAdded'],
     ],
-    ['musician-gallery', 'content/musician/gallery', ['image', 'description', 'dateAdded']],
+    [
+      'musician-gallery',
+      'content/musician/gallery',
+      ['image', 'focus', 'description', 'dateAdded'],
+    ],
   ])(
     'maps folder collection %s to %s with the right fields',
     (name, folder, expectedFields) => {
@@ -158,6 +175,50 @@ describe('Sveltia admin config', () => {
 
     expect(folders).toHaveLength(6)
     expect(folders.join('\n')).not.toContain('/awards')
+  })
+
+  it('gives every image slot an optional crop-focus object with clamped x/y number axes', () => {
+    const focusFields: Array<{ where: string; field: ConfigField }> = []
+    const walk = (where: string, fields: ConfigField[] | undefined) => {
+      for (const field of fields ?? []) {
+        if (field.name === 'focus' || field.name.endsWith('Focus')) {
+          focusFields.push({ where, field })
+        }
+        walk(`${where}.${field.name}`, field.fields)
+      }
+    }
+    for (const collection of config.collections) {
+      for (const file of collection.files ?? []) {
+        walk(`${collection.name}.${file.name}`, file.fields)
+      }
+      walk(collection.name, collection.fields)
+    }
+
+    expect(focusFields.map(({ where }) => where)).toEqual([
+      'pages.home',
+      'pages.home',
+      'pages.about',
+      'pages.contact',
+      'pages.actor',
+      'pages.musician',
+      'pages.musician',
+      'pages.musician',
+      'actor-headshots',
+      'actor-gallery',
+      'musician-gallery',
+    ])
+
+    for (const { where, field } of focusFields) {
+      expect(field.widget, where).toBe('object')
+      expect(field.required, where).toBe(false)
+      expect(fieldNames(field.fields), where).toEqual(['x', 'y'])
+      for (const axis of field.fields ?? []) {
+        expect(axis.widget, `${where}.${axis.name}`).toBe('number')
+        expect(axis.required, `${where}.${axis.name}`).toBe(false)
+        expect(axis.min, `${where}.${axis.name}`).toBe(0)
+        expect(axis.max, `${where}.${axis.name}`).toBe(100)
+      }
+    }
   })
 
   it('uses markdown widgets for every link-enabled caption/title/description field', () => {

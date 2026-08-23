@@ -2,6 +2,7 @@
 import Button from 'primevue/button'
 
 import { useContactPage, useSiteSettings } from '@/composables/content'
+import { objectPositionStyle } from '@/composables/imageFocus'
 
 import SocialIcon from '@/components/SocialIcon.vue'
 
@@ -24,7 +25,7 @@ function telHref(phone: string): string {
 
     <div class="contact-body">
       <div v-if="page.contactImage" class="contact-portrait">
-        <img :src="page.contactImage" alt="" />
+        <img :style="objectPositionStyle(page.contactImageFocus)" :src="page.contactImage" alt="" />
       </div>
 
       <div class="contact-panel">

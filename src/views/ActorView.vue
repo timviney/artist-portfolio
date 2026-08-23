@@ -8,6 +8,7 @@ import type { LightboxImage } from '@/components/ImageLightbox.vue'
 import RichText from '@/components/RichText.vue'
 import VideoEmbed from '@/components/VideoEmbed.vue'
 import { useActorGallery, useActorPage, useActorVideos, useHeadshots } from '@/composables/content'
+import { objectPositionStyle } from '@/composables/imageFocus'
 import { stripInlineLinks } from '@/composables/richText'
 
 import 'swiper/css'
@@ -35,7 +36,12 @@ function openLightbox(slug: string) {
 <template>
   <div class="actor">
     <section class="actor-hero" aria-label="Actor hero image">
-      <img v-if="page.heroImage" :src="page.heroImage" alt="" />
+      <img
+        v-if="page.heroImage"
+        :style="objectPositionStyle(page.heroFocus)"
+        :src="page.heroImage"
+        alt=""
+      />
       <div v-else class="actor-hero__fallback" aria-hidden="true"></div>
       <div class="actor-hero__scrim" aria-hidden="true"></div>
       <div class="actor-hero__content">
@@ -72,7 +78,12 @@ function openLightbox(slug: string) {
         aria-label="Headshots"
       >
         <SwiperSlide v-for="headshot in headshots" :key="headshot.slug" class="headshot-slide">
-          <img v-if="headshot.image" :src="headshot.image" :alt="headshot.alt ?? ''" />
+          <img
+            v-if="headshot.image"
+            :style="objectPositionStyle(headshot.focus)"
+            :src="headshot.image"
+            :alt="headshot.alt ?? ''"
+          />
           <div v-else class="headshot-slide__fallback" aria-hidden="true"></div>
         </SwiperSlide>
       </Swiper>
@@ -85,7 +96,11 @@ function openLightbox(slug: string) {
             class="gallery-grid__trigger"
             @click="openLightbox(image.slug)"
           >
-            <img :src="image.image" :alt="stripInlineLinks(image.title)" />
+            <img
+              :style="objectPositionStyle(image.focus)"
+              :src="image.image"
+              :alt="stripInlineLinks(image.title)"
+            />
           </button>
           <div v-else class="gallery-grid__fallback" aria-hidden="true"></div>
           <p class="gallery-grid__title">

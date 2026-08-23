@@ -1,7 +1,5 @@
 import { describe, expect, it } from 'vitest'
 
-import { THEME_PRESETS } from '@/composables/theme/presets'
-
 import {
   DEFAULT_ABOUT_PAGE,
   DEFAULT_ACTOR_PAGE,
@@ -17,6 +15,7 @@ import {
   normalizeContactPage,
   normalizeHeadshot,
   normalizeHomePage,
+  normalizeImageFocus,
   normalizeMusicianGalleryImage,
   normalizeMusicianPage,
   normalizeSettings,
@@ -36,7 +35,6 @@ import {
   useMusicianPage,
   useProjects,
   useSiteSettings,
-  useTheme,
 } from '../index'
 
 describe('normalizeSettings', () => {
@@ -164,8 +162,39 @@ describe('normalizeMusicianPage', () => {
   })
 })
 
-describe('entry normalizers', () => {
-  it('video entries derive their title from the slug and allow a missing url', () => {
+describe('normalizeImageFocus', () => {
+  it('returns undefined for missing, empty or non-object focus data', () => {
+    expect(normalizeImageFocus(undefined)).toBeUndefined()
+    expect(normalizeImageFocus({})).toBeUndefined()
+    expect(normalizeImageFocus('centre')).toBeUndefined()
+    expect(normalizeImageFocus({ x: 'left', y: null })).toBeUndefined()
+  })
+
+  it('keeps valid percentages, rounds fractions and clamps to 0-100', () => {
+    expect(normalizeImageFocus({ x: 42, y: 7 })).toEqual({ x: 42, y: 7 })
+    expect(normalizeImageFocus({ x: 33.6 })).toEqual({ x: 34 })
+    expect(normalizeImageFocus({ x: 250, y: -40 })).toEqual({ x: 100, y: 0 })
+    expect(normalizeImageFocus({ y: 85 })).toEqual({ y: 85 })
+  })
+
+  it('flows through page and entry image slots via the same shape', () => {
+    const actor = normalizeActorPage({ heroFocus: { x: 20, y: 80 } })
+    expect(actor.heroFocus).toEqual({ x: 20, y: 80 })
+    expect(normalizeActorPage({}).heroFocus).toBeUndefined()
+
+    const home = normalizeHomePage({
+      actorHeadshotFocus: { x: 10 },
+      musicianHeadshotFocus: 'nope',
+    })
+    expect(home.actorHeadshotFocus).toEqual({ x: 10 })
+    expect(home.musicianHeadshotFocus).toBeUndefined()
+
+    const headshot = normalizeHeadshot({ focus: { y: 12 } }, 'main')
+    expect(headshot.focus).toEqual({ y: 12 })
+  })
+})
+
+describe('entry normalizers', () => {  it('video entries derive their title from the slug and allow a missing url', () => {
     const video = normalizeVideoEntry(undefined, 'drama-reel')
     expect(video.title).toBe('Drama Reel')
     expect(video.videoUrl).toBeUndefined()
@@ -269,112 +298,60 @@ describe('normalizeContactPage', () => {
 })
 
 describe('seeded content loaders', () => {
-  it('loads the seeded site settings', () => {
+  it('loads every content document through the build-time glob as well-formed shapes', () => {
     const settings = useSiteSettings()
-    expect(settings.name).toBe('Max Pavlovsky')
-    expect(settings.tagline).toContain('Actor')
-    expect(settings.socialLinks).toEqual([
-      { label: 'Instagram', url: 'https://www.instagram.com/maxyoungacts/' },
-    ])
-    expect(settings.cv).toBe('/images/uploads/max-pavlovsky-cv-2026.pdf')
+    expect(typeof settings.name).toBe('string')
+    expect(Array.isArray(settings.socialLinks)).toBe(true)
+    for (const link of settings.socialLinks) {
+      expect(typeof link.label).toBe('string')
+      expect(typeof link.url).toBe('string')
+    }
+
+    for (const page of [useHomePage(), useAboutPage(), useContactPage(), useActorPage(), useMusicianPage()]) {
+      expect(page).toBeTypeOf('object')
+    }
+    expect(Array.isArray(useAboutPage().bioParagraphs)).toBe(true)
+
+    for (const video of [...useActorVideos(), ...useHighlights(), ...useProjects()]) {
+      expect(typeof video.slug).toBe('string')
+      expect(typeof video.title).toBe('string')
+    }
+    for (const entry of [...useHeadshots(), ...useActorGallery(), ...useMusicianGallery()]) {
+      expect(typeof entry.slug).toBe('string')
+    }
   })
 
-  it('loads the seeded theme selection as a known preset', () => {
-    const selection = useTheme()
-    expect(Object.keys(selection)).toEqual(['preset'])
-    const preset = selection.preset ?? ''
-    expect(THEME_PRESETS[preset.trim().toLowerCase()]).toBeDefined()
-  })
+  it('returns every entry collection newest-first regardless of what the artist stores', () => {
+    function expectNewestFirst(entries: { slug: string; dateAdded?: string }[]) {
+      for (let index = 1; index < entries.length; index += 1) {
+        const previous = entries[index - 1]!
+        const current = entries[index]!
 
-  it('loads the seeded home page with both headshot slots filled', () => {
-    const home = useHomePage()
-    expect(home.actorHeadshot).toBe('/images/uploads/maxpavlovsky-headshot-1b.jpg')
-    expect(home.musicianHeadshot).toBe('/images/uploads/maxpavlovsky-musician-tile.jpg')
-  })
+        if (current.dateAdded === undefined) {
+          if (previous.dateAdded === undefined) {
+            expect(previous.slug <= current.slug, `${previous.slug} before ${current.slug}`).toBe(true)
+          }
+          continue
+        }
 
-  it('loads the seeded actor page with hero and headings', () => {
-    const actor = useActorPage()
-    expect(actor.heroImage).toBe('/images/uploads/maxpavlovsky-actor-hero.jpg')
-    expect(actor.actorHeading).toBe('Actor')
-    expect(actor.galleryHeading).toBe('Gallery')
-  })
+        expect(previous.dateAdded, `${current.slug} is dated but ${previous.slug} is not`).toBeDefined()
+        if (previous.dateAdded === current.dateAdded) {
+          expect(previous.slug <= current.slug, `tie ${previous.slug} before ${current.slug}`).toBe(true)
+        } else {
+          expect(previous.dateAdded! >= current.dateAdded, `${previous.slug} before ${current.slug}`).toBe(true)
+        }
+      }
+    }
 
-  it('loads seeded actor videos newest-first, all with urls', () => {
-    const videos = useActorVideos()
-    expect(videos.map((v) => v.slug)).toEqual(['the-eulogy', 'hospital-lights'])
-    expect(videos.every((v) => v.videoUrl?.startsWith('https://www.youtube.com/'))).toBe(true)
-  })
-
-  it('loads the seeded headshots carousel, newest first', () => {
-    const headshots = useHeadshots()
-    expect(headshots.length).toBe(7)
-    expect(headshots[0].slug).toBe('maxpavlovsky-headshot-1b')
-    expect(headshots[0].image).toBe('/images/uploads/maxpavlovsky-headshot-1b.jpg')
-    expect(headshots[0].alt).toBe('Headshots by Yellowbelly')
-  })
-
-  it('loads the seeded actor gallery sorted newest first', () => {
-    const gallery = useActorGallery()
-    expect(gallery.map((g) => g.slug)[0]).toBe('eternal-hourglass-1')
-    expect(gallery[gallery.length - 1].slug).toBe('dreamland')
-    expect(gallery.every((g) => g.title.length > 0 && g.image !== undefined)).toBe(true)
-  })
-
-  it('loads the seeded musician page with intro and hero', () => {
-    const musician = useMusicianPage()
-    expect(musician.heroImage).toBe('/images/uploads/maxpavlovsky-musician-hero.jpg')
-    expect(musician.intro).toContain('self-taught musician')
-    expect(musician.projectsHeading).toBe('Original Projects')
-  })
-
-  it('loads the seeded musician awards text with both picture slots filled', () => {
-    const musician = useMusicianPage()
-    expect(musician.awardsHeading).toBe('Awards')
-    expect(musician.awardsText).toContain("People's Choice award")
-    expect(musician.awardsFirstImage).toBe('/images/uploads/awards-photo-1.jpg')
-    expect(musician.awardsSecondImage).toBe('/images/uploads/awards-48hfp.jpg')
-  })
-
-  it('loads seeded projects as an ordered video list and leaves highlights empty', () => {
-    const highlights = useHighlights()
-    const projects = useProjects()
-    expect(highlights).toEqual([])
-    expect(projects.map((v) => v.slug)).toEqual([
-      'where-did-you-go',
-      'what-do-you-do',
-      'time-spent',
-      'press-start',
-      'southbank',
-      'strange-dreams',
-      'young-and-furey-1',
-      'into-the-blue',
-      'young-and-furey-2',
-    ])
-    expect(projects[0].videoUrl).toBe('https://www.youtube.com/watch?v=A4rlwpi5Z0w')
-  })
-
-  it('loads the seeded about page with bio paragraphs', () => {
-    const about = useAboutPage()
-    expect(about.aboutHeading).toBe('Who Am I?')
-    expect(about.portraitImage).toBe('/images/uploads/about-portrait.jpg')
-    expect(about.bioParagraphs[0]).toContain('Bromley, South London')
-    expect(about.bioParagraphs).toHaveLength(5)
-  })
-
-  it('loads the seeded contact page email', () => {
-    const contact = useContactPage()
-    expect(contact.email).toBe('agents@mntalent.co.uk')
-    expect(contact.phone).toBeDefined()
-  })
-
-  it('loads the seeded musician gallery with descriptions, newest first', () => {
-    const gallery = useMusicianGallery()
-    expect(gallery).toHaveLength(8)
-    expect(gallery[0].slug).toBe('derksen-3054')
-    expect(gallery[0].description).toBe('By Annika Derksen')
-    expect(gallery[gallery.length - 1].slug).toBe('hamlet')
-    expect(new Date(gallery[0].dateAdded ?? '').getTime()).toBeGreaterThan(
-      new Date(gallery[gallery.length - 1].dateAdded ?? '').getTime(),
-    )
+    for (const entries of [
+      useActorVideos(),
+      useHeadshots(),
+      useActorGallery(),
+      useHighlights(),
+      useProjects(),
+      useMusicianGallery(),
+    ]) {
+      expectNewestFirst(entries)
+    }
   })
 })

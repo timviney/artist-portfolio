@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
 import { useSiteSettings } from '@/composables/content'
+import type { SiteSettings } from '@/composables/content/types'
 import { routes } from '@/router'
 
 import SiteHeader from '../SiteHeader.vue'
@@ -17,6 +18,16 @@ vi.mock('@/composables/content', async (importOriginal) => {
 
 const mockedSettings = vi.mocked(useSiteSettings)
 
+function fixture(overrides: Partial<SiteSettings> = {}): SiteSettings {
+  return {
+    name: 'Test Artist',
+    tagline: 'A tagline',
+    socialLinks: [{ label: 'Instagram', url: 'https://www.instagram.com/testartist/' }],
+    cv: undefined,
+    ...overrides,
+  }
+}
+
 async function mountHeader(initialPath = '/') {
   const router = createRouter({ history: createMemoryHistory(), routes })
   await router.push(initialPath)
@@ -26,13 +37,13 @@ async function mountHeader(initialPath = '/') {
 }
 
 beforeEach(() => {
-  mockedSettings.mockReset()
+  mockedSettings.mockReturnValue(fixture())
 })
 
 describe('SiteHeader', () => {
   it('renders the artist name from site settings', async () => {
     const { wrapper } = await mountHeader()
-    expect(wrapper.find('.site-header__name').text()).toBe('Max Pavlovsky')
+    expect(wrapper.find('.site-header__name').text()).toBe('Test Artist')
   })
 
   it('renders only the three nav links', async () => {
@@ -44,13 +55,25 @@ describe('SiteHeader', () => {
     expect(wrapper.text()).not.toContain('Musician')
   })
 
-  it('renders an icon link for each seeded social profile', async () => {
+  it('renders an icon link for each configured social profile', async () => {
+    mockedSettings.mockReturnValue(
+      fixture({
+        socialLinks: [
+          { label: 'Instagram', url: 'https://www.instagram.com/testartist/' },
+          { label: 'YouTube', url: 'https://www.youtube.com/@testartist' },
+        ],
+      }),
+    )
     const { wrapper } = await mountHeader()
     const socials = wrapper.findAll('.site-nav__social')
 
-    expect(socials.map((social) => social.attributes('aria-label'))).toEqual(['Instagram'])
+    expect(socials.map((social) => social.attributes('aria-label'))).toEqual([
+      'Instagram',
+      'YouTube',
+    ])
     expect(socials.map((social) => social.attributes('href'))).toEqual([
-      'https://www.instagram.com/maxyoungacts/',
+      'https://www.instagram.com/testartist/',
+      'https://www.youtube.com/@testartist',
     ])
     for (const social of socials) {
       expect(social.attributes('target')).toBe('_blank')
@@ -72,19 +95,18 @@ describe('SiteHeader', () => {
   })
 
   it('hides the CV download button when no CV is set in settings', async () => {
-    mockedSettings.mockReturnValue({ name: 'Max Rivera', tagline: '', socialLinks: [] })
-
     const { wrapper } = await mountHeader()
 
     expect(wrapper.find('.site-header__cv').exists()).toBe(false)
   })
 
-  it('renders the seeded CV as a download button inside the nav', async () => {
+  it('renders the configured CV as a download button inside the nav', async () => {
+    mockedSettings.mockReturnValue(fixture({ cv: '/images/uploads/test-cv.pdf' }))
     const { wrapper } = await mountHeader()
     const cv = wrapper.find('.site-header__cv')
 
     expect(cv.exists()).toBe(true)
-    expect(cv.attributes('href')).toBe('/images/uploads/max-pavlovsky-cv-2026.pdf')
+    expect(cv.attributes('href')).toBe('/images/uploads/test-cv.pdf')
     expect(cv.attributes('download')).toBeDefined()
     expect(cv.text()).toContain('Download CV')
 

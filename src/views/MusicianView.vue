@@ -11,6 +11,7 @@ import {
   useMusicianPage,
   useProjects,
 } from '@/composables/content'
+import { objectPositionStyle } from '@/composables/imageFocus'
 import { stripInlineLinks } from '@/composables/richText'
 
 const page = useMusicianPage()
@@ -35,7 +36,12 @@ function openLightbox(slug: string) {
 <template>
   <div class="musician">
     <section class="musician-hero" aria-label="Musician hero image">
-      <img v-if="page.heroImage" :src="page.heroImage" alt="" />
+      <img
+        v-if="page.heroImage"
+        :style="objectPositionStyle(page.heroFocus)"
+        :src="page.heroImage"
+        alt=""
+      />
       <div v-else class="musician-hero__fallback" aria-hidden="true"></div>
       <div class="musician-hero__scrim" aria-hidden="true"></div>
       <div class="musician-hero__content">
@@ -57,6 +63,7 @@ function openLightbox(slug: string) {
       >
         <img
           v-if="page.awardsFirstImage"
+          :style="objectPositionStyle(page.awardsFirstImageFocus)"
           :src="page.awardsFirstImage"
           alt=""
           class="musician-awards__picture"
@@ -64,6 +71,7 @@ function openLightbox(slug: string) {
         <div v-else class="musician-awards__fallback" aria-hidden="true"></div>
         <img
           v-if="page.awardsSecondImage"
+          :style="objectPositionStyle(page.awardsSecondImageFocus)"
           :src="page.awardsSecondImage"
           alt=""
           class="musician-awards__picture"
@@ -113,7 +121,11 @@ function openLightbox(slug: string) {
               class="gallery-grid__trigger"
               @click="openLightbox(image.slug)"
             >
-              <img :src="image.image" :alt="stripInlineLinks(image.description ?? '')" />
+              <img
+                :style="objectPositionStyle(image.focus)"
+                :src="image.image"
+                :alt="stripInlineLinks(image.description ?? '')"
+              />
             </button>
             <div v-else class="gallery-grid__fallback" aria-hidden="true"></div>
             <p v-if="image.description" class="gallery-grid__description">

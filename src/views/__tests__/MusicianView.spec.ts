@@ -23,10 +23,10 @@ vi.mock('@/composables/content', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/composables/content')>()
   return {
     ...actual,
-    useMusicianPage: vi.fn(actual.useMusicianPage),
-    useHighlights: vi.fn(actual.useHighlights),
-    useProjects: vi.fn(actual.useProjects),
-    useMusicianGallery: vi.fn(actual.useMusicianGallery),
+    useMusicianPage: vi.fn(),
+    useHighlights: vi.fn(),
+    useProjects: vi.fn(),
+    useMusicianGallery: vi.fn(),
   }
 })
 
@@ -34,6 +34,49 @@ const mockedPage = vi.mocked(useMusicianPage)
 const mockedHighlights = vi.mocked(useHighlights)
 const mockedProjects = vi.mocked(useProjects)
 const mockedGallery = vi.mocked(useMusicianGallery)
+
+function pageFixture(overrides: Partial<MusicianPageContent> = {}): MusicianPageContent {
+  return {
+    heroImage: '/images/uploads/hero.jpg',
+    heroFocus: undefined,
+    intro: 'A self-made intro paragraph.',
+    musicianHeading: 'Musician',
+    heroCaption: 'Cello · Guitar · Song',
+    awardsHeading: 'Awards',
+    awardsText: 'Won a fictional award.',
+    awardsFirstImage: '/images/uploads/awards-1.jpg',
+    awardsFirstImageFocus: undefined,
+    awardsSecondImage: '/images/uploads/awards-2.jpg',
+    awardsSecondImageFocus: undefined,
+    highlightsHeading: 'Highlights',
+    projectsHeading: 'Original Projects',
+    galleryHeading: 'Gallery',
+    ...overrides,
+  }
+}
+
+function videosFixture(count: number, overrides: Partial<VideoEntry>[] = []): VideoEntry[] {
+  return Array.from({ length: count }, (_, index) => ({
+    slug: `video-${index + 1}`,
+    title: `Video ${index + 1}`,
+    videoUrl: 'https://www.youtube.com/watch?v=abc123',
+    description: undefined,
+    dateAdded: `2026-05-01T09:00:0${index}Z`,
+    ...overrides[index],
+  }))
+}
+
+function galleryFixture(
+  overrides: Partial<MusicianGalleryImage>[] = [{}, {}, {}],
+): MusicianGalleryImage[] {
+  return overrides.map((override, index) => ({
+    slug: override.slug ?? `gallery-${index + 1}`,
+    image: '/images/uploads/gallery.jpg',
+    description: `Description ${index + 1}`,
+    dateAdded: `2026-05-0${index + 1}T09:00:00Z`,
+    ...override,
+  }))
+}
 
 async function mountMusician() {
   const router = createRouter({ history: createMemoryHistory(), routes })
@@ -43,26 +86,20 @@ async function mountMusician() {
 }
 
 beforeEach(() => {
-  mockedPage.mockReset()
-  mockedHighlights.mockReset()
-  mockedProjects.mockReset()
-  mockedGallery.mockReset()
+  mockedPage.mockReturnValue(pageFixture())
+  mockedHighlights.mockReturnValue([])
+  mockedProjects.mockReturnValue(videosFixture(2))
+  mockedGallery.mockReturnValue(galleryFixture())
 })
 
 describe('MusicianView', () => {
-  it('renders the fullscreen hero image from the CMS', async () => {
-    const wrapper = await mountMusician()
-    expect(wrapper.find('.musician-hero img').attributes('src')).toBe(
-      '/images/uploads/maxpavlovsky-musician-hero.jpg',
-    )
-  })
-
-  it('renders the intro text below the Musician hero title from the CMS', async () => {
+  it('renders the fullscreen hero image and caption from the CMS', async () => {
     const wrapper = await mountMusician()
 
+    expect(wrapper.find('.musician-hero img').attributes('src')).toBe('/images/uploads/hero.jpg')
     expect(wrapper.find('.musician-hero__title').text()).toBe('Musician')
     expect(wrapper.find('.musician-hero__caption').text()).toBe('Cello · Guitar · Song')
-    expect(wrapper.find('.musician-intro__text').text()).toContain('self-taught musician')
+    expect(wrapper.find('.musician-intro__text').text()).toContain('self-made intro')
   })
 
   it('renders all section titles from the CMS headings', async () => {
@@ -77,25 +114,18 @@ describe('MusicianView', () => {
     const awards = wrapper.find('.musician-awards')
 
     expect(awards.find('.musician-section-title').text()).toBe('Awards')
-    expect(awards.find('.musician-awards__text').text()).toContain("People's Choice award")
+    expect(awards.find('.musician-awards__text').text()).toContain('fictional award')
     const pictures = awards.findAll('.musician-awards__picture')
     expect(pictures).toHaveLength(2)
-    expect(pictures[0].attributes('src')).toBe('/images/uploads/awards-photo-1.jpg')
-    expect(pictures[1].attributes('src')).toBe('/images/uploads/awards-48hfp.jpg')
+    expect(pictures[0].attributes('src')).toBe('/images/uploads/awards-1.jpg')
+    expect(pictures[1].attributes('src')).toBe('/images/uploads/awards-2.jpg')
   })
 
   it('renders a fallback block when only one award picture slot is filled', async () => {
-    mockedPage.mockReturnValue({
-      intro: '',
-      musicianHeading: 'Musician',
-      heroCaption: 'Cello · Guitar · Song',
-      awardsHeading: 'Awards',
+    mockedPage.mockReturnValue(pageFixture({
       awardsText: 'One photo only.',
-      awardsFirstImage: '/images/uploads/first.jpg',
-      highlightsHeading: 'Highlights',
-      projectsHeading: 'Original Projects',
-      galleryHeading: 'Gallery',
-    } satisfies MusicianPageContent)
+      awardsSecondImage: undefined,
+    }))
 
     const wrapper = await mountMusician()
 
@@ -103,16 +133,28 @@ describe('MusicianView', () => {
     expect(wrapper.find('.musician-awards__fallback').exists()).toBe(true)
   })
 
+  it('applies crop focus to the hero and awards pictures as object-position', async () => {
+    mockedPage.mockReturnValue(pageFixture({
+      heroFocus: { y: 30 },
+      awardsFirstImageFocus: { x: 40, y: 60 },
+    }))
+
+    const wrapper = await mountMusician()
+
+    expect(wrapper.find('.musician-hero img').attributes('style')).toContain(
+      'object-position: 50% 30%',
+    )
+    const pictures = wrapper.findAll('.musician-awards__picture')
+    expect(pictures[0].attributes('style')).toContain('object-position: 40% 60%')
+    expect((pictures[1].attributes('style') ?? '')).not.toContain('object-position')
+  })
+
   it('hides the awards text and pictures entirely when neither is set', async () => {
-    mockedPage.mockReturnValue({
-      intro: '',
-      musicianHeading: 'Musician',
-      heroCaption: 'Cello · Guitar · Song',
-      awardsHeading: 'Awards',
-      highlightsHeading: 'Highlights',
-      projectsHeading: 'Original Projects',
-      galleryHeading: 'Gallery',
-    } satisfies MusicianPageContent)
+    mockedPage.mockReturnValue(pageFixture({
+      awardsText: undefined,
+      awardsFirstImage: undefined,
+      awardsSecondImage: undefined,
+    }))
 
     const wrapper = await mountMusician()
 
@@ -132,36 +174,38 @@ describe('MusicianView', () => {
     const wrapper = await mountMusician()
     const videos = wrapper.findAll('.musician-projects .musician-video')
 
-    expect(videos).toHaveLength(9)
+    expect(videos).toHaveLength(2)
     expect(videos[0].find('iframe').attributes('src')).toBe(
-      'https://www.youtube-nocookie.com/embed/A4rlwpi5Z0w',
+      'https://www.youtube-nocookie.com/embed/abc123',
     )
     expect(videos[0].find('.musician-video__description').exists()).toBe(false)
-    expect(videos[6].find('.musician-video__description').text()).toContain('Vianne Furey')
+  })
+
+  it('renders video descriptions with inline links when provided', async () => {
+    mockedProjects.mockReturnValue(videosFixture(1, [
+      { description: 'With [Vianne Furey](https://example.com).' },
+    ]))
+
+    const wrapper = await mountMusician()
+    const description = wrapper.find('.musician-video__description')
+
+    expect(description.text()).toContain('Vianne Furey')
+    expect(description.find('a').attributes('href')).toBe('https://example.com')
   })
 
   it('renders gallery images with descriptions below each image', async () => {
     const wrapper = await mountMusician()
     const items = wrapper.findAll('.gallery-grid__item')
 
-    expect(items).toHaveLength(8)
-    expect(items[0].find('img').attributes('src')).toBe(
-      '/images/uploads/musician-gallery-derksen-3054.jpg',
-    )
-    expect(items[0].find('img').attributes('alt')).toContain('Annika Derksen')
-    expect(items[0].find('.gallery-grid__description').text()).toBe('By Annika Derksen')
-    expect(items[items.length - 1].find('.gallery-grid__description').text()).toContain('Hamlet')
+    expect(items).toHaveLength(3)
+    expect(items[0].find('img').attributes('src')).toBe('/images/uploads/gallery.jpg')
+    expect(items[0].find('.gallery-grid__description').text()).toBe('Description 1')
   })
 
   it('renders photographer-credit links inside gallery descriptions', async () => {
-    mockedGallery.mockReturnValue([
-      {
-        slug: 'credited',
-        image: '/images/uploads/musician-gallery-hamlet.jpg',
-        description: 'Photo by [Ana Silva](https://example.com)',
-        dateAdded: '2026-05-01T09:00:00Z',
-      },
-    ] as MusicianGalleryImage[])
+    mockedGallery.mockReturnValue(galleryFixture([
+      { slug: 'credited', description: 'Photo by [Ana Silva](https://example.com)' },
+    ]))
 
     const wrapper = await mountMusician()
     const anchor = wrapper.find('.gallery-grid__description a')
@@ -178,10 +222,10 @@ describe('MusicianView', () => {
 
     expect(document.body.querySelector('.image-lightbox')).not.toBeNull()
     expect(document.body.querySelector('.image-lightbox__figure img')?.getAttribute('src')).toBe(
-      '/images/uploads/musician-gallery-derksen-3054.jpg',
+      '/images/uploads/gallery.jpg',
     )
     expect(document.body.querySelector('.image-lightbox__caption')?.textContent).toContain(
-      'By Annika Derksen',
+      'Description 1',
     )
   })
 
@@ -198,10 +242,10 @@ describe('MusicianView', () => {
   })
 
   it('does not render lightbox triggers for gallery entries without an image', async () => {
-    mockedGallery.mockReturnValue([
-      { slug: 'with', image: '/images/a.svg', description: 'With image', dateAdded: '2026-05-01T09:00:00Z' },
-      { slug: 'without', image: undefined, description: undefined, dateAdded: '2026-04-01T09:00:00Z' },
-    ] satisfies MusicianGalleryImage[])
+    mockedGallery.mockReturnValue(galleryFixture([
+      { slug: 'with', image: '/images/a.svg', description: 'With image' },
+      { slug: 'without', image: undefined, description: undefined },
+    ]))
 
     const wrapper = await mountMusician()
     const items = wrapper.findAll('.gallery-grid__item')
@@ -219,18 +263,15 @@ describe('MusicianView', () => {
   })
 
   it('handles missing hero image and empty sections gracefully', async () => {
-    mockedPage.mockReturnValue({
-      intro: '',
-      musicianHeading: 'Musician',
-      heroCaption: 'Cello · Guitar · Song',
-      awardsHeading: 'Awards',
-      highlightsHeading: 'Highlights',
-      projectsHeading: 'Original Projects',
-      galleryHeading: 'Gallery',
-    } satisfies MusicianPageContent)
-    mockedHighlights.mockReturnValue([] as VideoEntry[])
-    mockedProjects.mockReturnValue([] as VideoEntry[])
-    mockedGallery.mockReturnValue([] as MusicianGalleryImage[])
+    mockedPage.mockReturnValue(pageFixture({
+      heroImage: undefined,
+      awardsText: undefined,
+      awardsFirstImage: undefined,
+      awardsSecondImage: undefined,
+    }))
+    mockedHighlights.mockReturnValue([])
+    mockedProjects.mockReturnValue([])
+    mockedGallery.mockReturnValue([])
 
     const wrapper = await mountMusician()
 

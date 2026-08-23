@@ -68,10 +68,41 @@ collections:
             label: Actor tile image
             widget: image
             required: false
+          - name: actorHeadshotFocus
+            label: Actor tile crop focus
+            widget: object
+            required: false
+            collapsed: true
+            hint: >-
+              Nudge which part of the photo stays visible when the site crops
+              it to fit. A lower vertical value shows more of the top of the
+              photo (e.g. a face). Leave blank to keep the photo centred.
+            fields: &focus-axis-fields
+              - name: x
+                label: Horizontal position (0 left - 100 right)
+                widget: number
+                required: false
+                min: 0
+                max: 100
+                step: 1
+              - name: y
+                label: Vertical position (0 top - 100 bottom)
+                widget: number
+                required: false
+                min: 0
+                max: 100
+                step: 1
           - name: musicianHeadshot
             label: Musician tile image
             widget: image
             required: false
+          - name: musicianHeadshotFocus
+            label: Musician tile crop focus
+            widget: object
+            required: false
+            collapsed: true
+            hint: See the actor tile crop focus.
+            fields: *focus-axis-fields
 
       - name: about
         label: About Me
@@ -89,6 +120,13 @@ collections:
             label: Portrait photo
             widget: image
             required: false
+          - name: portraitFocus
+            label: Portrait crop focus
+            widget: object
+            required: false
+            collapsed: true
+            hint: See the Home page crop focus.
+            fields: *focus-axis-fields
           - name: bioParagraphs
             label: Bio paragraphs
             widget: list
@@ -118,6 +156,13 @@ collections:
             label: Photo
             widget: image
             required: false
+          - name: contactImageFocus
+            label: Photo crop focus
+            widget: object
+            required: false
+            collapsed: true
+            hint: See the Home page crop focus.
+            fields: *focus-axis-fields
           - name: email
             label: Email address
             widget: string
@@ -140,6 +185,13 @@ collections:
             label: Hero image
             widget: image
             required: false
+          - name: heroFocus
+            label: Hero crop focus
+            widget: object
+            required: false
+            collapsed: true
+            hint: See the Home page crop focus.
+            fields: *focus-axis-fields
           - name: actorHeading
             label: Hero title
             widget: string
@@ -162,6 +214,13 @@ collections:
             label: Hero image
             widget: image
             required: false
+          - name: heroFocus
+            label: Hero crop focus
+            widget: object
+            required: false
+            collapsed: true
+            hint: See the Home page crop focus.
+            fields: *focus-axis-fields
           - name: intro
             label: Intro
             widget: text
@@ -186,10 +245,24 @@ collections:
             label: Awards photo 1
             widget: image
             required: false
+          - name: awardsFirstImageFocus
+            label: Awards photo 1 crop focus
+            widget: object
+            required: false
+            collapsed: true
+            hint: See the Home page crop focus.
+            fields: *focus-axis-fields
           - name: awardsSecondImage
             label: Awards photo 2
             widget: image
             required: false
+          - name: awardsSecondImageFocus
+            label: Awards photo 2 crop focus
+            widget: object
+            required: false
+            collapsed: true
+            hint: See the Home page crop focus.
+            fields: *focus-axis-fields
           - name: highlightsHeading
             label: Highlights title
             widget: string
@@ -249,6 +322,16 @@ collections:
         label: Photo
         widget: image
         required: false
+      - name: focus
+        label: Crop focus
+        widget: object
+        required: false
+        collapsed: true
+        hint: >-
+          Nudge which part of the photo stays visible when the site crops it.
+          A lower vertical value shows more of the top of the photo (e.g. a
+          face). Leave blank to keep the photo centred.
+        fields: *focus-axis-fields
       - name: alt
         label: Alt text
         widget: string
@@ -275,6 +358,13 @@ collections:
         label: Photo
         widget: image
         required: false
+      - name: focus
+        label: Crop focus
+        widget: object
+        required: false
+        collapsed: true
+        hint: See the Actor headshots crop focus.
+        fields: *focus-axis-fields
       - name: title
         label: Caption title
         widget: markdown
@@ -361,6 +451,13 @@ collections:
         label: Photo
         widget: image
         required: false
+      - name: focus
+        label: Crop focus
+        widget: object
+        required: false
+        collapsed: true
+        hint: See the Actor headshots crop focus.
+        fields: *focus-axis-fields
       - name: description
         label: Description
         widget: markdown

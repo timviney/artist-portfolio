@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAboutPage } from '@/composables/content'
+import { objectPositionStyle } from '@/composables/imageFocus'
 
 const page = useAboutPage()
 </script>
@@ -13,7 +14,12 @@ const page = useAboutPage()
 
     <div class="about-body">
       <div class="about-portrait">
-        <img v-if="page.portraitImage" :src="page.portraitImage" alt="" />
+        <img
+          v-if="page.portraitImage"
+          :style="objectPositionStyle(page.portraitFocus)"
+          :src="page.portraitImage"
+          alt=""
+        />
         <div v-else class="about-portrait__fallback" aria-hidden="true"></div>
       </div>
 

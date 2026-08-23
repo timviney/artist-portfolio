@@ -12,6 +12,7 @@ import type {
   ContactPageContent,
   HeadshotEntry,
   HomePageContent,
+  ImageFocus,
   MusicianGalleryImage,
   MusicianPageContent,
   SiteSettings,
@@ -64,6 +65,22 @@ function entryDate(source: Record<string, unknown>): string | undefined {
   return asOptionalTrimmedString(source.dateAdded)
 }
 
+function clampPercent(value: unknown): number | undefined {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return undefined
+  return Math.min(100, Math.max(0, Math.round(value)))
+}
+
+export function normalizeImageFocus(value: unknown): ImageFocus | undefined {
+  if (!isRecord(value)) return undefined
+  const x = clampPercent(value.x)
+  const y = clampPercent(value.y)
+  if (x === undefined && y === undefined) return undefined
+  return {
+    ...(x !== undefined ? { x } : {}),
+    ...(y !== undefined ? { y } : {}),
+  }
+}
+
 function titleFrom(source: Record<string, unknown>, slug: string): string {
   return asTrimmedString(source.title, prettifySlug(slug))
 }
@@ -90,7 +107,9 @@ export function normalizeHomePage(raw: unknown): HomePageContent {
   const source = isRecord(raw) ? raw : {}
   return {
     actorHeadshot: asOptionalTrimmedString(source.actorHeadshot),
+    actorHeadshotFocus: normalizeImageFocus(source.actorHeadshotFocus),
     musicianHeadshot: asOptionalTrimmedString(source.musicianHeadshot),
+    musicianHeadshotFocus: normalizeImageFocus(source.musicianHeadshotFocus),
   }
 }
 
@@ -100,6 +119,7 @@ export function normalizeAboutPage(raw: unknown): AboutPageContent {
     aboutEyebrow: asTrimmedString(source.aboutEyebrow, DEFAULT_ABOUT_PAGE.aboutEyebrow),
     aboutHeading: asTrimmedString(source.aboutHeading, DEFAULT_ABOUT_PAGE.aboutHeading),
     portraitImage: asOptionalTrimmedString(source.portraitImage),
+    portraitFocus: normalizeImageFocus(source.portraitFocus),
     bioParagraphs:
       Array.isArray(source.bioParagraphs) && source.bioParagraphs.length > 0
         ? asStringArray(source.bioParagraphs).filter((paragraph) => paragraph.length > 0)
@@ -118,6 +138,7 @@ export function normalizeContactPage(raw: unknown): ContactPageContent {
       DEFAULT_CONTACT_PAGE.enquiryButtonLabel,
     ),
     contactImage: asOptionalTrimmedString(source.contactImage),
+    contactImageFocus: normalizeImageFocus(source.contactImageFocus),
     email: typeof source.email === 'string' ? source.email.trim() : DEFAULT_CONTACT_PAGE.email,
     phone: asOptionalTrimmedString(source.phone),
     note: asOptionalTrimmedString(source.note),
@@ -128,6 +149,7 @@ export function normalizeActorPage(raw: unknown): ActorPageContent {
   const source = isRecord(raw) ? raw : {}
   return {
     heroImage: asOptionalTrimmedString(source.heroImage),
+    heroFocus: normalizeImageFocus(source.heroFocus),
     actorHeading: asTrimmedString(source.actorHeading, DEFAULT_ACTOR_PAGE.actorHeading),
     heroCaption: asTrimmedString(source.heroCaption, DEFAULT_ACTOR_PAGE.heroCaption),
     galleryHeading: asTrimmedString(source.galleryHeading, DEFAULT_ACTOR_PAGE.galleryHeading),
@@ -138,13 +160,16 @@ export function normalizeMusicianPage(raw: unknown): MusicianPageContent {
   const source = isRecord(raw) ? raw : {}
   return {
     heroImage: asOptionalTrimmedString(source.heroImage),
+    heroFocus: normalizeImageFocus(source.heroFocus),
     intro: typeof source.intro === 'string' ? source.intro.trim() : DEFAULT_MUSICIAN_PAGE.intro,
     musicianHeading: asTrimmedString(source.musicianHeading, DEFAULT_MUSICIAN_PAGE.musicianHeading),
     heroCaption: asTrimmedString(source.heroCaption, DEFAULT_MUSICIAN_PAGE.heroCaption),
     awardsHeading: asTrimmedString(source.awardsHeading, DEFAULT_MUSICIAN_PAGE.awardsHeading),
     awardsText: asOptionalTrimmedString(source.awardsText),
     awardsFirstImage: asOptionalTrimmedString(source.awardsFirstImage),
+    awardsFirstImageFocus: normalizeImageFocus(source.awardsFirstImageFocus),
     awardsSecondImage: asOptionalTrimmedString(source.awardsSecondImage),
+    awardsSecondImageFocus: normalizeImageFocus(source.awardsSecondImageFocus),
     highlightsHeading: asTrimmedString(
       source.highlightsHeading,
       DEFAULT_MUSICIAN_PAGE.highlightsHeading,
@@ -169,6 +194,7 @@ export function normalizeHeadshot(raw: unknown, slug: string): HeadshotEntry {
   return {
     ...{ slug: slug.trim(), dateAdded: entryDate(source) },
     image: asOptionalTrimmedString(source.image),
+    focus: normalizeImageFocus(source.focus),
     alt: asOptionalTrimmedString(source.alt),
   }
 }
@@ -178,6 +204,7 @@ export function normalizeActorGalleryImage(raw: unknown, slug: string): ActorGal
   return {
     ...{ slug: slug.trim(), dateAdded: entryDate(source) },
     image: asOptionalTrimmedString(source.image),
+    focus: normalizeImageFocus(source.focus),
     title: titleFrom(source, slug.trim()),
   }
 }
@@ -187,6 +214,7 @@ export function normalizeMusicianGalleryImage(raw: unknown, slug: string): Music
   return {
     ...{ slug: slug.trim(), dateAdded: entryDate(source) },
     image: asOptionalTrimmedString(source.image),
+    focus: normalizeImageFocus(source.focus),
     description: asOptionalTrimmedString(source.description),
   }
 }

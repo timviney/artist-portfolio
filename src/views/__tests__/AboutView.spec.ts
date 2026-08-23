@@ -23,23 +23,41 @@ beforeEach(() => {
 })
 
 describe('AboutView', () => {
-  it('renders the heading and portrait photo from the CMS', async () => {
+  it('renders the eyebrow, heading and portrait photo from the CMS', async () => {
+    mockedPage.mockReturnValue({
+      aboutEyebrow: 'Behind the curtain',
+      aboutHeading: 'Who Am I?',
+      portraitImage: '/images/uploads/about-portrait.jpg',
+      bioParagraphs: ['First paragraph.'],
+      portraitFocus: { x: 40, y: 60 },
+    } satisfies AboutPageContent)
+
     const wrapper = mount(AboutView)
 
     expect(wrapper.find('.about-title').text()).toBe('Who Am I?')
-    expect(wrapper.find('.eyebrow').text()).toBe('The person behind the work')
+    expect(wrapper.find('.eyebrow').text()).toBe('Behind the curtain')
     expect(wrapper.find('.about-portrait img').attributes('src')).toBe(
       '/images/uploads/about-portrait.jpg',
+    )
+    expect(wrapper.find('.about-portrait img').attributes('style')).toContain(
+      'object-position: 40% 60%',
     )
   })
 
   it('renders every bio paragraph in order', async () => {
+    mockedPage.mockReturnValue({
+      aboutEyebrow: 'Eyebrow',
+      aboutHeading: 'About Me',
+      bioParagraphs: ['First.', 'Second.', 'Third.'],
+    } satisfies AboutPageContent)
+
     const wrapper = mount(AboutView)
     const paragraphs = wrapper.findAll('.about-bio p')
 
-    expect(paragraphs).toHaveLength(5)
-    expect(paragraphs[0].text()).toContain('Bromley, South London')
-    expect(paragraphs[1].text()).toContain('Middleweek Newton')
+    expect(paragraphs).toHaveLength(3)
+    expect(paragraphs[0].text()).toBe('First.')
+    expect(paragraphs[1].text()).toBe('Second.')
+    expect(paragraphs[2].text()).toBe('Third.')
   })
 
   it('renders a mocked statement as a quote block when the CMS provides one', async () => {

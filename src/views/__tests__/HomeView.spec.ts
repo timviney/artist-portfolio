@@ -2,17 +2,36 @@ import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
-import { useHomePage } from '@/composables/content'
+import { useHomePage, useSiteSettings } from '@/composables/content'
+import type {
+  HomePageContent,
+  SiteSettings,
+} from '@/composables/content/types'
 import { routes } from '@/router'
 
 import HomeView from '../HomeView.vue'
 
 vi.mock('@/composables/content', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/composables/content')>()
-  return { ...actual, useHomePage: vi.fn() }
+  return { ...actual, useHomePage: vi.fn(), useSiteSettings: vi.fn() }
 })
 
-vi.mocked(useHomePage).mockReturnValue({})
+function homeFixture(overrides: Partial<HomePageContent> = {}): HomePageContent {
+  return { ...overrides }
+}
+
+function settingsFixture(overrides: Partial<SiteSettings> = {}): SiteSettings {
+  return {
+    name: 'Test Artist',
+    tagline: 'A tagline',
+    socialLinks: [],
+    cv: undefined,
+    ...overrides,
+  }
+}
+
+vi.mocked(useHomePage).mockReturnValue(homeFixture())
+vi.mocked(useSiteSettings).mockReturnValue(settingsFixture())
 
 async function mountHome() {
   const router = createRouter({ history: createMemoryHistory(), routes })
@@ -22,14 +41,15 @@ async function mountHome() {
 }
 
 beforeEach(() => {
-  vi.mocked(useHomePage).mockReturnValue({})
+  vi.mocked(useHomePage).mockReturnValue(homeFixture())
+  vi.mocked(useSiteSettings).mockReturnValue(settingsFixture())
 })
 
 describe('HomeView', () => {
   it('renders the artist name and tagline from site settings', async () => {
     const wrapper = await mountHome()
-    expect(wrapper.find('.home__name').text()).toBe('Max Pavlovsky')
-    expect(wrapper.find('.home__tagline').text()).toBe('Actor and musician.')
+    expect(wrapper.find('.home__name').text()).toBe('Test Artist')
+    expect(wrapper.find('.home__tagline').text()).toBe('A tagline')
   })
 
   it('renders two headshot tiles linking to the actor and musician pages', async () => {
@@ -48,6 +68,7 @@ describe('HomeView', () => {
   it('renders the CMS-driven headshot images', async () => {
     vi.mocked(useHomePage).mockReturnValue({
       actorHeadshot: '/images/uploads/portrait.svg',
+      actorHeadshotFocus: { x: 30, y: 20 },
       musicianHeadshot: '/images/uploads/portrait.svg',
     })
 
@@ -59,6 +80,21 @@ describe('HomeView', () => {
       '/images/uploads/portrait.svg',
     ])
     expect(images[0].attributes('alt')).toBe('Actor headshot')
+  })
+
+  it('applies crop focus to a tile image as object-position while others stay centred', async () => {
+    vi.mocked(useHomePage).mockReturnValue({
+      actorHeadshot: '/images/uploads/portrait.svg',
+      actorHeadshotFocus: { x: 25, y: 15 },
+      musicianHeadshot: '/images/uploads/portrait.svg',
+      musicianHeadshotFocus: undefined,
+    })
+
+    const wrapper = await mountHome()
+    const images = wrapper.findAll('.home__tile-image')
+
+    expect(images[0].attributes('style')).toContain('object-position: 25% 15%')
+    expect((images[1].attributes('style') ?? '')).not.toContain('object-position')
   })
 
   it('falls back to a placeholder tile when an image is missing', async () => {
