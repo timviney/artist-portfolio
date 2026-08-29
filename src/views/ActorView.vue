@@ -129,6 +129,7 @@ function openLightbox(slug: string) {
 <style scoped>
 .actor-hero {
   position: relative;
+  overflow: hidden;
   min-height: 100vh;
   min-height: 100svh;
 }
