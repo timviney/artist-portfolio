@@ -33,6 +33,26 @@ resource "aws_cloudfront_response_headers_policy" "security" {
   }
 }
 
+# The SPA fallback below serves the app shell for any missing key, but S3 has
+# no notion of a "directory index", so /admin/ would also fall through to the
+# app shell and never reach the Sveltia CMS page. Rewrite /admin and /admin/
+# to the real /admin/index.html object at the edge.
+resource "aws_cloudfront_function" "admin_index" {
+  name    = "${local.name_prefix}-admin-index"
+  runtime = "cloudfront-js-2.0"
+  comment = "Serve /admin/index.html for /admin and /admin/"
+  code    = <<-EOF
+    function handler(event) {
+      var request = event.request;
+      var uri = request.uri;
+      if (uri === "/admin" || uri === "/admin/") {
+        request.uri = "/admin/index.html";
+      }
+      return request;
+    }
+  EOF
+}
+
 # Managed-CachingOptimized: caches GET/HEAD at the edge with gzip/brotli on.
 locals {
   managed_cache_policy_optimized = "658327ea-f89d-4fab-a63d-7e88639e58f6"
@@ -58,6 +78,11 @@ resource "aws_cloudfront_distribution" "site" {
 
     cache_policy_id            = local.managed_cache_policy_optimized
     response_headers_policy_id = aws_cloudfront_response_headers_policy.security.id
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.admin_index.arn
+    }
   }
 
   # SPA fallback: unknown paths (and S3's 403 for missing keys) serve
