@@ -1,7 +1,7 @@
 variable "aws_region" {
   description = "AWS region hosting the site bucket and CloudFront."
   type        = string
-  default     = "eu-west-2"
+  default     = "eu-north-1"
 }
 
 variable "project_name" {

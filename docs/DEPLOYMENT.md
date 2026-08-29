@@ -31,7 +31,7 @@ defined in `infra/` (see `infra/iam.tf`).
 
    | Name | Value | Source |
    | --- | --- | --- |
-   | `AWS_REGION` | e.g. `eu-west-2` | `infra/variables.tf` (`aws_region`, default `eu-west-2`) |
+   | `AWS_REGION` | e.g. `eu-north-1` | `infra/variables.tf` (`aws_region`, default `eu-north-1`) |
    | `AWS_ROLE_ARN` | `arn:aws:iam::…:role/artist-portfolio-deploy` | `terraform output deploy_role_arn` |
    | `S3_BUCKET_NAME` | `artist-portfolio-site-<account-id>` | `terraform output bucket_name` |
    | `CLOUDFRONT_DISTRIBUTION_ID` | e.g. `E1234ABCDEFGH` | `terraform output distribution_id` |
