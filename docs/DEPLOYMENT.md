@@ -26,6 +26,22 @@ defined in `infra/` (see `infra/iam.tf`).
    provider and a least-privilege deploy role. It prints the values you need for
    the next step.
 
+   The same apply also provisions the custom domain (`maxpavlovsky.com`): a
+   Route53 hosted zone, an ACM TLS certificate (requested in `us-east-1`, as
+   CloudFront requires), and A/AAAA alias records for the apex and `www`.
+   Because the certificate only validates once the domain publicly resolves to
+   Route53, apply this in two stages:
+
+   ```sh
+   terraform apply -target=aws_route53_zone.site   # create the zone first
+   terraform output name_servers                   # copy these four values
+   ```
+
+   Set those four nameservers at your registrar (Spaceship), wait for
+   delegation to propagate, then run `terraform apply` to finish (certificate
+   validation, CloudFront aliases and DNS records). `www` redirects to the apex
+   automatically via the distribution's viewer-request edge function.
+
 2. **Add the deploy outputs as repository variables.** In the GitHub repo, open
    **Settings → Secrets and variables → Actions → Variables** and add:
 
@@ -46,7 +62,8 @@ defined in `infra/` (see `infra/iam.tf`).
 
 3. **Push to `main`** (or make a change through the CMS and publish). The
    `Deploy` workflow builds and publishes the site. The public URL is
-   `terraform output distribution_url`.
+   `https://maxpavlovsky.com` (or `terraform output distribution_url` for the
+   raw CloudFront domain).
 
 ## How the deploy works
 

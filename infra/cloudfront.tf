@@ -35,15 +35,32 @@ resource "aws_cloudfront_response_headers_policy" "security" {
 
 # The SPA fallback below serves the app shell for any missing key, but S3 has
 # no notion of a "directory index", so /admin/ would also fall through to the
-# app shell and never reach the Sveltia CMS page. Rewrite /admin and /admin/
-# to the real /admin/index.html object at the edge.
+# app shell and never reach the Sveltia CMS page. This viewer-request function
+# handles both edge rewrites: redirect www -> apex (301) and serve
+# /admin/index.html for /admin and /admin/. CloudFront allows only one
+# function per cache behaviour per event type, so they share this function.
 resource "aws_cloudfront_function" "admin_index" {
   name    = "${local.name_prefix}-admin-index"
   runtime = "cloudfront-js-2.0"
-  comment = "Serve /admin/index.html for /admin and /admin/"
+  comment = "Redirect www to apex; serve /admin/index.html for /admin and /admin/"
   code    = <<-EOF
     function handler(event) {
       var request = event.request;
+      var host = request.headers.host.value;
+
+      // Redirect www.maxpavlovsky.com to the bare domain (301). The query
+      // string is deliberately dropped: request.querystring is a key/value
+      // object in cloudfront-js-2.0 (not a string) and nothing in this SPA
+      // reads query parameters.
+      if (host === "www.${var.domain_name}") {
+        return {
+          statusCode: 301,
+          statusDescription: "Moved Permanently",
+          headers: { location: { value: "https://${var.domain_name}" + request.uri } }
+        };
+      }
+
+      // S3 has no directory-index, so rewrite the admin entry points.
       var uri = request.uri;
       if (uri === "/admin" || uri === "/admin/") {
         request.uri = "/admin/index.html";
@@ -62,6 +79,9 @@ resource "aws_cloudfront_distribution" "site" {
   enabled             = true
   comment             = var.project_name
   default_root_object = "index.html"
+  aliases             = [var.domain_name, "www.${var.domain_name}"]
+
+  depends_on = [aws_acm_certificate_validation.site]
 
   origin {
     domain_name              = aws_s3_bucket.site.bucket_regional_domain_name
@@ -110,7 +130,9 @@ resource "aws_cloudfront_distribution" "site" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn      = aws_acm_certificate.site.arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 }
 

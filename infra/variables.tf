@@ -16,6 +16,12 @@ variable "github_repo" {
   default     = "timviney/artist-portfolio"
 }
 
+variable "domain_name" {
+  description = "Custom domain the site is served from (apex + www)."
+  type        = string
+  default     = "maxpavlovsky.com"
+}
+
 locals {
   name_prefix = "${var.project_name}-site"
 }
