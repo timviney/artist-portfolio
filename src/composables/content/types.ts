@@ -55,6 +55,7 @@ export interface ActorPageContent {
   actorHeading: string
   heroCaption: string
   galleryHeading: string
+  headshotCaption: string
 }
 
 export interface MusicianPageContent {

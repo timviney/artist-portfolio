@@ -46,6 +46,7 @@ export const DEFAULT_ACTOR_PAGE: ActorPageContent = {
   actorHeading: 'Actor',
   heroCaption: 'Stage & screen',
   galleryHeading: 'Gallery',
+  headshotCaption: 'Headshots',
 }
 
 export const DEFAULT_MUSICIAN_PAGE: MusicianPageContent = {

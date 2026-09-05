@@ -205,6 +205,11 @@ collections:
             label: Gallery title
             widget: string
             default: Gallery
+          - name: headshotCaption
+            label: Headshot caption
+            widget: string
+            default: Headshots
+            hint: Small credit line under the headshot carousel.
 
       - name: musician
         label: Musician page

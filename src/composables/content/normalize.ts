@@ -153,6 +153,7 @@ export function normalizeActorPage(raw: unknown): ActorPageContent {
     actorHeading: asTrimmedString(source.actorHeading, DEFAULT_ACTOR_PAGE.actorHeading),
     heroCaption: asTrimmedString(source.heroCaption, DEFAULT_ACTOR_PAGE.heroCaption),
     galleryHeading: asTrimmedString(source.galleryHeading, DEFAULT_ACTOR_PAGE.galleryHeading),
+    headshotCaption: asTrimmedString(source.headshotCaption, DEFAULT_ACTOR_PAGE.headshotCaption),
   }
 }
 

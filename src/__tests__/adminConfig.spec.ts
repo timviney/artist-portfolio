@@ -114,6 +114,7 @@ describe('Sveltia admin config', () => {
       'actorHeading',
       'heroCaption',
       'galleryHeading',
+      'headshotCaption',
     ])
     expect(fieldNames(byName('musician')?.fields)).toEqual([
       'heroImage',

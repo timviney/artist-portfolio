@@ -46,6 +46,7 @@ function pageFixture(overrides: Partial<ActorPageContent> = {}): ActorPageConten
     actorHeading: 'Actor',
     heroCaption: 'Stage & screen',
     galleryHeading: 'Gallery',
+    headshotCaption: 'Headshots',
     ...overrides,
   }
 }

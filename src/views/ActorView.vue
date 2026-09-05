@@ -68,25 +68,29 @@ function openLightbox(slug: string) {
       <div class="page actor-gallery">
         <h2 class="actor-section-title">{{ page.galleryHeading }}</h2>
 
-      <Swiper
-        v-if="headshots.length > 0"
-        class="headshot-swiper"
-        :modules="[Navigation, Keyboard, A11y]"
-        :navigation="headshots.length > 1"
-        :keyboard="{ enabled: true }"
-        :style="{ '--swiper-navigation-color': 'var(--color-primary)' }"
-        aria-label="Headshots"
-      >
-        <SwiperSlide v-for="headshot in headshots" :key="headshot.slug" class="headshot-slide">
-          <img
-            v-if="headshot.image"
-            :style="objectPositionStyle(headshot.focus)"
-            :src="headshot.image"
-            :alt="headshot.alt ?? ''"
-          />
-          <div v-else class="headshot-slide__fallback" aria-hidden="true"></div>
-        </SwiperSlide>
-      </Swiper>
+      <div v-if="headshots.length > 0" class="headshot-carousel">
+        <Swiper
+          class="headshot-swiper"
+          :modules="[Navigation, Keyboard, A11y]"
+          :navigation="headshots.length > 1"
+          :keyboard="{ enabled: true }"
+          :style="{ '--swiper-navigation-color': 'var(--color-primary)' }"
+          aria-label="Headshots"
+        >
+          <SwiperSlide v-for="headshot in headshots" :key="headshot.slug" class="headshot-slide">
+            <img
+              v-if="headshot.image"
+              :style="objectPositionStyle(headshot.focus)"
+              :src="headshot.image"
+              :alt="headshot.alt ?? ''"
+            />
+            <div v-else class="headshot-slide__fallback" aria-hidden="true"></div>
+          </SwiperSlide>
+        </Swiper>
+        <p class="headshot-caption">
+          <RichText :text="page.headshotCaption" />
+        </p>
+      </div>
 
       <ul v-if="gallery.length > 0" class="gallery-grid">
         <li v-for="image in gallery" :key="image.slug" class="gallery-grid__item">
@@ -305,14 +309,26 @@ function openLightbox(slug: string) {
   text-align: center;
 }
 
-.headshot-swiper {
+.headshot-carousel {
   width: 100%;
   max-width: 30rem;
   margin: 0 auto;
+}
+
+.headshot-swiper {
+  width: 100%;
+  user-select: none;
+  -webkit-user-select: none;
 
   /* Transparent mat with no border: the carousel sits on a full-bleed
      gradient band, so nothing here should paint its own fill or edge - the
      band shows through and stays matched at every position. */
+}
+
+.headshot-caption {
+  margin: 0.55rem 0 0;
+  font-size: 0.95rem;
+  text-align: center;
 }
 
 .headshot-slide img,
