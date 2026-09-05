@@ -1,12 +1,14 @@
 {
-  "aboutEyebrow": "The person behind the work",
-  "aboutHeading": "Who Am I?",
+  "aboutEyebrow": "Who am I?",
+  "aboutHeading": "About Me",
   "portraitImage": "/images/uploads/about-portrait.jpg",
+  "portraitFocus": null,
   "bioParagraphs": [
     "I am a trained actor and musician originally from Bromley, South London",
     "I am represented by Middleweek Newton Talent Management",
     "I am based in South London with experience performing around the UK",
     "I am a huge jazz nerd, lover of podcasts and strong coffee",
     "On this site you have access to a selection of my work that shows you what I can do. If you like what you see and want to connect, please hop over to my contact page and get in touch!"
-  ]
+  ],
+  "statement": ""
 }
